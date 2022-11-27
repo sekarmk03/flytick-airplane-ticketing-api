@@ -7,7 +7,6 @@ module.exports = {
     register: async (req, res, next) => {
         try {
             const { name, email, password, role = roles.user } = req.body;
-            // const imageUrl = req.protocol + '://' + req.get('host') + '/images/' + req.file.filename;
 
             const exist = await User.findOne({ where: { email } });
             if (exist) {
