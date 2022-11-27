@@ -1,0 +1,48 @@
+{
+  "name": "flytick",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node ./bin/www",
+    "test": "jest"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "fastest-validator": "^1.15.0",
+    "googleapis": "^109.0.1",
+    "imagekit": "^4.1.2",
+    "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.8.0",
+    "pg": "^8.8.0",
+    "qr-image": "^3.2.0",
+    "query-string": "^7.1.1",
+    "sequelize": "^6.25.8",
+    "socket.io": "^4.5.4",
+    "swagger-ui-express": "^4.6.0"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sekarmk03/flytick-finalproject-bejs.git"
+  },
+  "author": "sekar, naufal, charles",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sekarmk03/flytick-finalproject-bejs/issues"
+  },
+  "homepage": "https://github.com/sekarmk03/flytick-finalproject-bejs#readme",
+  "description": "",
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "morgan": "^1.10.0",
+    "supertest": "^6.3.1"
+  }
+}
