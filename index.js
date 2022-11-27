@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use('/api', router);
+app.use('/flytick-api/images', express.static('public/images'));
+app.use('/flytick-api', router);
 
 module.exports = app;
