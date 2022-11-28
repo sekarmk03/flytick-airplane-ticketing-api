@@ -39,7 +39,7 @@ module.exports = {
             next(err);
         }
     },
-    
+
     login: async (req, res, next) => {
         try {
             const user = await User.authenticate(req.body);

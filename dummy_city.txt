@@ -3,7 +3,7 @@
     country_id: '1'
 },
 {
-    name: 'CALIFORNIA',//2
+    name: 'CALIFORNIA', //2
     country_id: '1'
 },
 {
@@ -11,11 +11,11 @@
     country_id: '1'
 },
 {
-    name: 'WASHINGTON',//4
+    name: 'WASHINGTON', //4
     country_id: '1'
 },
 {
-    name: 'NEW YORK',//5
+    name: 'NEW YORK', //5
     country_id: '1'
 },
 {
@@ -23,22 +23,22 @@
     country_id: '2'
 },
 {
-    name: 'Chiba',//7
+    name: 'Chiba', //7
     country_id: '2'
 },
 {
-    name: 'Tokyo',//8
+    name: 'Tokyo', //8
     country_id: '2'
 },
 {
-    name: 'Aichi',//9
+    name: 'Aichi', //9
     country_id: '2'
 },
 {
-    name: 'Hokkaido',//10
+    name: 'Hokkaido', //10
     country_id: '2'
 },
 {
-    name: 'Fukuoka',//11
+    name: 'Fukuoka', //11
     country_id: '2'
 },

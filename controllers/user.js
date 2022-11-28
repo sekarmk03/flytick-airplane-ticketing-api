@@ -1,4 +1,4 @@
-const { User, Image } = require('../models');
+const { User, Biodata, Image } = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
@@ -78,6 +78,25 @@ module.exports = {
                 login_type: loginType.basic
             });
 
+            const newBiodata = await Biodata.create({
+                email: newUser.email,
+                name: newUser.name,
+                nik: null,
+                birth_place: null,
+                birth_date: null,
+                telp: null,
+                nationality: null,
+                no_passport: null,
+                issue_date: null,
+                expire_date: null
+            });
+
+            await User.update({
+                biodata_id: newBiodata.id
+            }, {
+                where: {id: newUser.id}
+            });
+
             res.status(201).json({
                 status: true,
                 message: 'user created',
@@ -125,6 +144,13 @@ module.exports = {
             if(!role) role = userData.role;
             if(!balance) balance = userData.balance;
 
+            await Biodata.update({
+                email: email,
+                name: name
+            }, {
+                where: {id: userData.biodata_id}
+            });
+
             const isUpdated = await User.update({
                 name: name,
                 email: email,
@@ -162,6 +188,8 @@ module.exports = {
             await imagekit.deleteFile(imageData.imagekit_id);
 
             await Image.destroy({where: {id: userData.avatar_id}});
+
+            await Biodata.destroy({where: {id: userData.biodata_id}});
 
             const isDeleted = await User.destroy({
                 where: {id: userId}

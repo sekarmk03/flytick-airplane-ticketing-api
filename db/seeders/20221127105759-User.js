@@ -17,7 +17,7 @@ module.exports = {
      await queryInterface.bulkInsert('Users', [
       {
         name: 'Sekar MK',
-        email: 'sekarmk@gmail.com',
+        email: 'sekarmadukusumawardani@gmail.com',
         password: await bcrypt.hash('secret123', 10),
         avatar_id: 1,
         role: roles.superadmin,
@@ -29,7 +29,7 @@ module.exports = {
       },
       {
         name: 'Azar Nuzy',
-        email: 'azarn@gmail.com',
+        email: 'azarnuzy@gmail.com',
         password: await bcrypt.hash('secret456', 10),
         avatar_id: 1,
         role: roles.admin,
@@ -41,7 +41,7 @@ module.exports = {
       },
       {
         name: 'Madu Kusumawardani',
-        email: 'madu@gmail.com',
+        email: 'sekarmadu@upi.edu',
         password: await bcrypt.hash('secret789', 10),
         avatar_id: 1,
         role: roles.user,
