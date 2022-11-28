@@ -112,6 +112,7 @@ module.exports = {
         try {
             const { userId } = req.params;
             let { name, email, role, balance } = req.body;
+            // let { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
             let image = req.file.buffer.toString('base64');
 
             const userData = await User.findOne({where: {id: userId}});
@@ -145,14 +146,14 @@ module.exports = {
             if(!role) role = userData.role;
             if(!balance) balance = userData.balance;
 
-            // c_biodata.update;
+            c_biodata.update;
 
-            await Biodata.update({
-                email: email,
-                name: name
-            }, {
-                where: {id: userData.biodata_id}
-            });
+            // await Biodata.update({
+            //     email: email,
+            //     name: name
+            // }, {
+            //     where: {id: userData.biodata_id}
+            // });
 
             const isUpdated = await User.update({
                 name: name,
