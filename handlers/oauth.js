@@ -94,7 +94,7 @@ module.exports = {
     
             if(!user) {
                 const newAvatar = await Image.create({
-                    filename: userInfo.data.email,
+                    filename: userInfo.email,
                     imagekit_id: 'oauth-image',
                     imagekit_url: userInfo.picture.data.url,
                     imagekit_path: ''

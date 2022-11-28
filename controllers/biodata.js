@@ -16,5 +16,13 @@ module.exports = {
             next(err);
         }
     },
-    
+
+    update: async (req, res, next) => {
+        try {
+            
+        } catch (err) {
+            next(err);
+        }
+    }
+
 }

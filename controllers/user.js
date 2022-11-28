@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
+const c_biodata = require('./biodata');
 
 module.exports = {
     index: async (req, res, next) => {
@@ -144,6 +145,8 @@ module.exports = {
             if(!role) role = userData.role;
             if(!balance) balance = userData.balance;
 
+            // c_biodata.update;
+
             await Biodata.update({
                 email: email,
                 name: name
@@ -170,6 +173,7 @@ module.exports = {
         }
     },
 
+    // admin
     delete: async (req, res, next) => {
         try {
             const {userId} = req.params;
