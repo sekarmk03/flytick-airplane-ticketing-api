@@ -1,8 +1,7 @@
 const { Biodata, User } = require('../models');
-const imagekit = require('../utils/imagekit');
 
 module.exports = {
-    // ini keknya ga dipake
+    // daftar semua penumpang
     index: async (req, res, next) => {
         try {
             try {
@@ -79,14 +78,13 @@ module.exports = {
         }
     },
 
-    // update data by biodata_id at Users table
+    // update data penumpang via ticket
     update: async (req, res, next) => {
         try {
+            const {biodataId} = req.params;
             let { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
 
-            const userData = await User.findOne({where: {email: email}});
-            const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
-
+            const biodata = await Biodata.findOne({where: {id: biodataId}});
             if(!biodata) {
                 return res.status(400).json({
                     status: false,

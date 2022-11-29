@@ -4,15 +4,15 @@ const c = require('../controllers');
 const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
-// get all user
-router.get('/', authorize([roles.admin, roles.superadmin]), c.user.index);
-// get detail user
-router.get('/:biodataId', authorize([roles.admin, roles.superadmin]), c.user.show);
-// create user
-router.post('/', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.user.create);
-// update user
-router.put('/:biodataId', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.user.update);
-// delete user
-router.delete('/:biodataId', authorize([roles.admin, roles.superadmin]), c.user.delete);
+// get all biodata
+router.get('/', authorize([roles.admin, roles.superadmin]), c.biodata.index);
+// get detail biodata
+router.get('/:biodataId', authorize([roles.admin, roles.superadmin]), c.biodata.show);
+// create biodata
+router.post('/', authorize([roles.admin, roles.superadmin]), c.biodata.create);
+// update biodata
+router.put('/:biodataId', authorize([roles.admin, roles.superadmin]), c.biodata.update);
+// delete biodata
+router.delete('/:biodataId', authorize([roles.admin, roles.superadmin]), c.biodata.delete);
 
 module.exports = router;

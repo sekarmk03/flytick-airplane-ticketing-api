@@ -112,7 +112,7 @@ module.exports = {
         try {
             const { userId } = req.params;
             let { name, email, role, balance } = req.body;
-            // let { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
+            let { nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
             let image = req.file.buffer.toString('base64');
 
             const userData = await User.findOne({where: {id: userId}});
@@ -120,6 +120,15 @@ module.exports = {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
+                    data: null
+                });
+            }
+
+            const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
+            if(!biodata) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'biodata not found',
                     data: null
                 });
             }
@@ -139,6 +148,8 @@ module.exports = {
                 imagekit_id: uploadNewImage.fileId,
                 imagekit_url: uploadNewImage.url,
                 imagekit_path: uploadNewImage.filePath
+            },{
+                where: {id: imageData.id}
             });
 
             if(!name) name = userData.name;
@@ -146,16 +157,16 @@ module.exports = {
             if(!role) role = userData.role;
             if(!balance) balance = userData.balance;
 
-            c_biodata.update;
+            if(!nik) nik = biodata.nik;
+            if(!birth_place) birth_place = biodata.birth_place;
+            if(!birth_date) birth_date = biodata.birth_date;
+            if(!telp) telp = biodata.telp;
+            if(!nationality) nationality = biodata.nationality;
+            if(!no_passport) no_passport = biodata.no_passport;
+            if(!issue_date) issue_date = biodata.issue_date;
+            if(!expire_date) expire_date = biodata.expire_date;
 
-            // await Biodata.update({
-            //     email: email,
-            //     name: name
-            // }, {
-            //     where: {id: userData.biodata_id}
-            // });
-
-            const isUpdated = await User.update({
+            const isUpdatedUser = await User.update({
                 name: name,
                 email: email,
                 avatar: image,
@@ -164,10 +175,28 @@ module.exports = {
                 where: {id: userId}
             });
 
+            const isUpdatedBiodata = await Biodata.update({
+                email: email,
+                name: name,
+                nik: nik,
+                birth_place: birth_place,
+                birth_date: birth_date,
+                telp: telp,
+                nationality: nationality,
+                no_passport: no_passport,
+                issue_date: issue_date,
+                expire_date: expire_date,
+            }, {
+                where: {id: userData.biodata_id}
+            });
+
             return res.status(200).json({
                 status: true,
                 message: 'update user success',
-                data: isUpdated
+                data: {
+                    user: isUpdatedUser,
+                    biodata: isUpdatedBiodata
+                }
             });
         } catch (err) {
             next(err);
