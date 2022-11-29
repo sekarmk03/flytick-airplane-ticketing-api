@@ -1,3 +1,4 @@
 const user = require('./user');
+const biodata = require('./biodata');
 
-module.exports = { user };
+module.exports = { user, biodata };
