@@ -5,8 +5,7 @@ on:
     types:
       - closed
   push:
-    branches:
-      - development
+    branches: [development]
 
 jobs:
   if_merged:
@@ -30,6 +29,6 @@ jobs:
           run: npm i -g @railway/cli
 
         - name: Deploy
-          run: railway up
+          run: flytick
           env:
             RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
