@@ -5,7 +5,6 @@ const {
   DB_PASSWORD,
   DB_HOST,
   DB_NAME,
-  DB_DIALECT,
   DB_PORT
 } = process.env;
 
@@ -15,7 +14,7 @@ module.exports = {
     "password": DB_PASSWORD,
     "database": DB_NAME,
     "host": DB_HOST,
-    "dialect": DB_DIALECT,
+    "dialect": "postgres",
     "port":DB_PORT
 
   },
@@ -24,7 +23,7 @@ module.exports = {
     "password": DB_PASSWORD,
     "database": DB_NAME,
     "host": DB_HOST,
-    "dialect": DB_DIALECT,
+    "dialect": "postgres",
     "port":DB_PORT
 
   },
@@ -33,7 +32,7 @@ module.exports = {
     "password": DB_PASSWORD,
     "database": DB_NAME,
     "host": DB_HOST,
-    "dialect": DB_DIALECT,
+    "dialect": "postgres",
     "port":DB_PORT
 
   }
