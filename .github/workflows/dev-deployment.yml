@@ -10,25 +10,25 @@ on:
 jobs:
   if_merged:
     if: github.event.pull_request.merged == true
-    deploy:
-      runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Use Node 16
-          uses: actions/setup-node@v1
-          with:
-            node-version: 16.x
+      - name: Use Node 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
 
-        - name: Install packages
-          run: npm install
+      - name: Install packages
+        run: npm install
 
-        - name: Install Railway
-          run: npm i -g @railway/cli
+      - name: Install Railway
+        run: npm i -g @railway/cli
 
-        - name: Deploy
-          run: flytick
-          env:
-            RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
+      - name: Deploy
+        run: flytick
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
