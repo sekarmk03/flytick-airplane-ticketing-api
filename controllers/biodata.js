@@ -19,7 +19,7 @@ module.exports = {
         }
     },
 
-    // keknya ini jg ga dipake
+    // keknya ini dipake buat tiket
     show: async (req, res, next) => {
         try {
             const {biodataId} = req.params;
