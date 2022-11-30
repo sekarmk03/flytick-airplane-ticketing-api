@@ -9,10 +9,10 @@ router.get('/', country_c.getAll);
 // get detail country
 router.get('/:id', country_c.getDetail);
 // create country
-router.post('/create', /*authorize([roles.admin, roles.superadmin]),*/ country_c.create);
+router.post('/create', authorize([roles.admin, roles.superadmin]), country_c.create);
 // update country
-router.put('/:id', /*authorize([roles.admin, roles.superadmin]),*/ country_c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), country_c.update);
 // delete country
-router.delete('/:id', /*authorize([roles.admin, roles.superadmin]),*/ country_c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), country_c.delete);
 
 module.exports = router;

@@ -1,44 +1,113 @@
 {
-    name: 'ALABAMA', //1
-    country_id: '1'
+    name: 'Alabama', //1
+    country_id: 1
 },
 {
-    name: 'CALIFORNIA', //2
-    country_id: '1'
+    name: 'California', //2
+    country_id: 1
 },
 {
-    name: 'HAWAII',//3
-    country_id: '1'
+    name: 'Hawaii',//3
+    country_id: 1
 },
 {
-    name: 'WASHINGTON', //4
-    country_id: '1'
+    name: 'Washington', //4
+    country_id: 1
 },
 {
-    name: 'NEW YORK', //5
-    country_id: '1'
+    name: 'New York', //5
+    country_id: 1
 },
 {
     name: 'Osaka', //6
-    country_id: '2'
+    country_id: 2
 },
 {
     name: 'Chiba', //7
-    country_id: '2'
+    country_id: 2
 },
 {
     name: 'Tokyo', //8
-    country_id: '2'
+    country_id: 2
 },
 {
     name: 'Aichi', //9
-    country_id: '2'
+    country_id: 2
 },
 {
     name: 'Hokkaido', //10
-    country_id: '2'
+    country_id: 2
 },
 {
     name: 'Fukuoka', //11
-    country_id: '2'
+    country_id: 2
+},
+
+{
+    name: 'Mataram', //12
+    country_id: 3
+},
+{
+    name: 'Ambon', //13
+    country_id: 3
+},
+{
+    name: 'Banjarmasin', //14
+    country_id: 3
+},
+{
+    name: 'Bandung', //15
+    country_id: 3
+},
+{
+    name: 'Banda Aceh', //16
+    country_id: 3
+},
+{
+    name: 'Cilacap', //17
+    country_id: 3
+},
+{
+    name: 'Jambi', //18
+    country_id: 3
+},
+{
+    name: 'Jayapura', //19
+    country_id: 3
+},
+{
+    name: 'Jakarta', //20
+    country_id: 3
+},
+{
+    name: 'Yogyakarta', //21
+    country_id: 3
+},
+{
+    name: 'Manado', //22
+    country_id: 3
+},
+{
+    name: 'Pekanbaru', //23
+    country_id: 3
+},
+{
+    name: 'Palembang', //24
+    country_id: 3
+},
+{
+    name: 'Semarang', //25
+    country_id: 3
+},
+{
+    name: 'Surabaya', //26
+    country_id: 3
+},
+{
+    name: 'Makassar', //27
+    country_id: 3
+},
+{
+    name: 'Denpasar', //28
+    country_id: 3
 },
