@@ -112,7 +112,7 @@ module.exports = {
             if(!message) message = notification.message;
             if(!is_read) is_read = notification.is_read;
 
-            const updated = await country.update({
+            const updated = await notification.update({
                 user_id: user_id,
                 topic: topic,
                 message: message,
