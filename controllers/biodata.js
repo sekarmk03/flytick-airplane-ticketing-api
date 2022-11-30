@@ -84,6 +84,8 @@ module.exports = {
             const {biodataId} = req.params;
             let { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
 
+            // const userData = await User.findOne({where: {email: email}});
+            // const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
             const biodata = await Biodata.findOne({where: {id: biodataId}});
             if(!biodata) {
                 return res.status(400).json({
@@ -117,6 +119,7 @@ module.exports = {
                 expire_date: expire_date,
             }, {
                 where: {id: biodataId}
+                // where: {id: userData.biodata_id}
             });
 
             return res.status(200).json({

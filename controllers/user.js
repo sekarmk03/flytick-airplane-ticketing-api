@@ -175,6 +175,8 @@ module.exports = {
                 where: {id: userId}
             });
 
+            // c_biodata.update(req, res);
+
             const isUpdatedBiodata = await Biodata.update({
                 email: email,
                 name: name,
