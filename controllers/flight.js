@@ -9,8 +9,8 @@ module.exports = {
                 code,
                 capacity,
                 current_airport,
-                is_ready,
-                is_maintain
+                is_ready = true,
+                is_maintain = false
             } = req.body;
 
             const plane = await Flight.create({
