@@ -3,11 +3,36 @@ const { City } = require('../models')
 module.exports = {
     index: async (req, res, next) => {
         try {
-            const dataCity = await City.findAll()
+            const dataCity = await City.findAll({raw: true});
 
-            return res.status(200).json(dataCity)
+            return res.status(200).json({
+                status: true,
+                message: 'get all cities success',
+                data: dataCity
+            });
         } catch (err) {
-            next(err)
+            next(err);
+        }
+    },
+
+    show: async (req, res, next) => {
+        try {
+            const {cityId} = req.params;
+            const city = await City.findOne({where: {id: cityId}});
+            if(!city) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'city not found',
+                    data: null
+                });
+            }
+            return res.status(200).json({
+                status: true,
+                message: 'get city success',
+                data: city.get()
+            });
+        } catch (err) {
+            next(err);
         }
     },
 
@@ -19,7 +44,7 @@ module.exports = {
             if (dataCity) {
                 return res.status(409).json({
                     status: false,
-                    message: 'data already exist!',
+                    message: 'data already exist',
                     data: null
                 })
             }
@@ -28,8 +53,8 @@ module.exports = {
 
             return res.status(200).json({
                 status: true,
-                message: 'data created!',
-                data: { name, country_id }
+                message: 'city created',
+                data: created
             })
         } catch (err) {
             next(err)
@@ -39,16 +64,19 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const { cityId } = req.params
-            const { name, country_id } = req.body
-            const dataCity = await City.findOne({ where: { id: cityId } })
+            let { name, country_id } = req.body
 
+            const dataCity = await City.findOne({ where: { id: cityId } })
             if (!dataCity) {
                 return res.status(409).json({
                     status: false,
-                    message: 'data not found!',
+                    message: 'data not found',
                     data: null
                 })
             }
+
+            if(!name) name = dataCity.name;
+            if(!country_id) country_id = dataCity.country_id;
 
             const updated = await City.update({
                 name: name,
@@ -59,8 +87,8 @@ module.exports = {
 
             return res.status(200).json({
                 status: true,
-                message: 'data updated successfully!',
-                data: { name, country_id }
+                message: 'update city success',
+                data: updated
             })
         } catch (err) {
             next(err)
@@ -76,7 +104,7 @@ module.exports = {
             if (!dataCity) {
                 return res.status(409).json({
                     status: false,
-                    message: 'data not found!',
+                    message: 'data not found',
                     data: null
                 })
             }
@@ -85,8 +113,8 @@ module.exports = {
 
             return res.status(200).json({
                 status: true,
-                message: 'success delete data!',
-                data: dataCity
+                message: 'delete city success',
+                data: deleted
             })
         } catch (err) {
             next(err)
