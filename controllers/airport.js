@@ -3,11 +3,37 @@ const { Airport } = require('../models')
 module.exports = {
     index: async (req, res, next) => {
         try {
-            const dataAirport = await Airport.findAll()
+            const dataAirport = await Airport.findAll({raw: true})
 
-            return res.status(200).json({ dataAirport })
+            return res.status(200).json({
+                status: true,
+                message: 'get all airport success',
+                data: dataAirport
+            })
         } catch (err) {
             next(err)
+        }
+    },
+
+    show: async (req, res, next) => {
+        try {
+            const {airportId} = req.params;
+
+            const airport = await Airport.findOne({where: {id: airportId}});
+            if(!airport) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'airport not found',
+                    data: null
+                });
+            }
+            return res.status(200).json({
+                status: true,
+                message: 'get biodata success',
+                data: airport.get()
+            });
+        } catch (err) {
+            next(err);
         }
     },
 
@@ -15,23 +41,30 @@ module.exports = {
         try {
             const { code, name, city_id, country_id, maps_link, maps_embed } = req.body
 
-            const dataExist = await Airport.findOne({ where: { code } })
+            const airport = await Airport.findOne({ where: { code } })
 
-            if (dataExist) {
+            if (airport) {
                 return res.status(409).json({
                     status: false,
-                    message: 'data already exist!',
+                    message: 'data already exist',
                     data: null
                 })
             }
 
-            const created = await Airport.create({ code, name, city_id, country_id, maps_link, maps_embed })
-            console.log('tes coba coba')
+            const newAirport = await Airport.create({
+                code,
+                name,
+                city_id,
+                country_id,
+                maps_link,
+                maps_embed
+            });
+            
             return res.status(200).json({
                 status: true,
-                message: 'data created successfully!',
-                data: { code, name, city_id, country_id, maps_link, maps_embed }
-            })
+                message: 'airport created',
+                data: newAirport
+            });
         } catch (err) {
             next(err)
         }
@@ -39,18 +72,25 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { airportId } = req.params
-            const { code, name, city_id, country_id, maps_link, maps_embed } = req.body
+            const { airportId } = req.params;
+            let { code, name, city_id, country_id, maps_link, maps_embed } = req.body;
 
-            const dataAirport = await Airport.findOne({ where: { id: airportId } })
+            const dataAirport = await Airport.findOne({ where: { id: airportId } });
 
             if (!dataAirport) {
                 return res.status(409).json({
                     status: false,
-                    message: 'data not found!',
+                    message: 'data not found',
                     data: null
                 })
             }
+
+            if(!code) code = dataAirport.code;
+            if(!name) name = dataAirport.name;
+            if(!city_id) city_id = dataAirport.city_id;
+            if(!country_id) country_id = dataAirport.country_id;
+            if(!maps_link) maps_link = dataAirport.maps_link;
+            if(!maps_embed) maps_embed = dataAirport.maps_embed;
 
             const updated = await Airport.update({
                 code, name, city_id, country_id, maps_link, maps_embed
@@ -60,8 +100,8 @@ module.exports = {
 
             return res.status(200).json({
                 status: true,
-                message: 'data updated successfully!',
-                data: { code, name, city_id, country_id, maps_link, maps_embed }
+                message: 'update airport success',
+                data: updated
             })
         } catch (err) {
             next(err)
@@ -87,7 +127,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'delete data success!',
-                data: dataAirport
+                data: deleted
             })
         } catch (err) {
             next(err)

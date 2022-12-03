@@ -1,4 +1,4 @@
-const { Biodata, User } = require('../models');
+const { Biodata } = require('../models');
 
 module.exports = {
     // daftar semua penumpang
@@ -23,7 +23,7 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {biodataId} = req.params;
-            const biodata = await User.findOne({where: {id: biodataId}});
+            const biodata = await Biodata.findOne({where: {id: biodataId}});
             if(!biodata) {
                 return res.status(400).json({
                     status: false,
