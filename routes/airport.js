@@ -1,17 +1,22 @@
 const express = require('express')
 const router = express.Router()
 const c = require('../controllers')
+const authorize = require('../middleware/authorize');
+const roles = require('../utils/roles');
 
 // get all data airport
-router.get('/', c.airport.index)
+router.get('/', authorize([roles.admin, roles.superadmin]), c.airport.index)
+
+// get detail data airport
+router.get('/:airportId', authorize([roles.admin, roles.superadmin]), c.airport.show)
 
 // create data airport
-router.post('/create', c.airport.create)
+router.post('/', authorize([roles.admin, roles.superadmin]), c.airport.create)
 
 // update data airport
-router.put('/update/:airportId', c.airport.update)
+router.put('/:airportId', authorize([roles.admin, roles.superadmin]), c.airport.update)
 
 // delete data airport
-router.delete('/delete/:airportId', c.airport.delete)
+router.delete('/:airportId', authorize([roles.admin, roles.superadmin]), c.airport.delete)
 
 module.exports = router
