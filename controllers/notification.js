@@ -9,7 +9,7 @@ module.exports = {
                 user_id,
                 topic,
                 message,
-                is_read
+                is_read = false
             } = req.body;
 
             const notification = await Notification.create({
@@ -29,9 +29,9 @@ module.exports = {
             next(err);
         }
     },
-    getAll: async (req, res, next) => {
+    index: async (req, res, next) => {
         try {
-            const notifications = await Notification.findAll();
+            const notifications = await Notification.findAll({raw: true});
 
             if (!notifications) {
                 return res.status(400).json({
@@ -51,15 +51,15 @@ module.exports = {
             next(err);
         }
     },
-    getDetail: async (req, res, next) => {
+    show: async (req, res, next) => {
         try {
             const {
-                id
+                notificationId
             } = req.params;
 
             const notification = await Notification.findOne({
                 where: {
-                    id: id
+                    id: notificationId
                 }
             });
 
@@ -83,7 +83,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                id
+                notificationId
             } = req.params;
 
             let {
@@ -95,7 +95,7 @@ module.exports = {
 
             const notification = await Notification.findOne({
                 where: {
-                    id: id
+                    id: notificationId
                 }
             });
 
@@ -117,11 +117,13 @@ module.exports = {
                 topic: topic,
                 message: message,
                 is_read: is_read
+            }, {
+                where: {id: notificationId}
             });
 
             return res.status(200).json({
                 status: true,
-                message: 'update success',
+                message: 'update notification success',
                 data: updated
             });
         } catch (err) {
@@ -130,9 +132,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const {notificationId} = req.params;
 
-            const notification = await Notification.findOne({where: {id: id}});
+            const notification = await Notification.findOne({where: {id: notificationId}});
             if(!notification) {
                 return res.status(400).json({
                     status: false,
@@ -141,7 +143,7 @@ module.exports = {
                 });
             }
 
-            const deleted = await Notification.destroy({where: {id: notification.id}});
+            const deleted = await Notification.destroy({where: {id: notificationId}});
             
             return res.status(201).json({
                 status: true,
