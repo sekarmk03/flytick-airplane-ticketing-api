@@ -221,11 +221,17 @@ module.exports = {
 
             const imageData = await Image.findOne({where: {id: userData.avatar_id}});
 
-            await imagekit.deleteFile(imageData.imagekit_id);
+            if(imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
+                await imagekit.deleteFile(imageData.imagekit_id);
+            }
 
-            await Image.destroy({where: {id: userData.avatar_id}});
+            if(userData.avatar_id != 1) {
+                await Image.destroy({where: {id: userData.avatar_id}});
+            }
 
-            await Biodata.destroy({where: {id: userData.biodata_id}});
+            if(userData.biodata_id != 0) {
+                await Biodata.destroy({where: {id: userData.biodata_id}});
+            }
 
             const isDeleted = await User.destroy({
                 where: {id: userId}
