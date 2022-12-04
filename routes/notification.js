@@ -7,7 +7,7 @@ const roles = require('../utils/roles');
 // get all notif
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get all notif sorted
-router.get('/?sort=&type=', authorize([roles.admin, roles.superadmin]), c.index);
+router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail notif
 router.get('/:notificationId', authorize([roles.admin, roles.superadmin]), c.show);
 // create notif

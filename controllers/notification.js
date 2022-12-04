@@ -31,8 +31,13 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let {sort="createdAt", type="ASC"} = req.query;
-            const notifications = await Notification.findAll({order:[[sort,type]]});
+            let {sort="createdAt", type="ASC", search=""} = req.query;
+            const notifications = await Notification.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
 
             if (!notifications) {
                 return res.status(400).json({

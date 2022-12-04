@@ -3,8 +3,13 @@ const { City } = require('../models')
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="name", type="ASC"} = req.query;
-            const dataCity = await City.findAll({order:[[sort,type]]});
+            let {sort="name", type="ASC", search=""} = req.query;
+            const dataCity = await City.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
 
             return res.status(200).json({
                 status: true,

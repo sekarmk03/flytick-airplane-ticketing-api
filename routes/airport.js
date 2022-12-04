@@ -8,7 +8,7 @@ const roles = require('../utils/roles');
 router.get('/', authorize([roles.admin, roles.superadmin]), c.airport.index)
 
 // gett all data airport sored
-router.get('/?sort=&type=', authorize([roles.admin, roles.superadmin]), c.airport.index)
+router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.airport.index)
 
 // get detail data airport
 router.get('/:airportId', authorize([roles.admin, roles.superadmin]), c.airport.show)

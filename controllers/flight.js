@@ -2,6 +2,8 @@ const {
     Flight
 } = require('../models');
 
+const {Op} = require('sequelize')
+
 module.exports = {
     create: async (req, res, next) => {
         try {
@@ -43,8 +45,13 @@ module.exports = {
     index: async (req, res, next) => {
         try {
 
-            let {sort="code", type="ASC"} = req.query;
-            const allFlight = await Flight.findAll({order:[[sort,type]]});
+            let {sort="code", type="ASC", search=""} = req.query;
+            const allFlight = await Flight.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
 
             if (!allFlight) {
                 return res.status(400).json({
