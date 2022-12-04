@@ -96,7 +96,7 @@ module.exports = {
                 is_maintain
             } = req.body;
 
-            const flight = await Flight.findOne({
+            let flight = await Flight.findOne({
                 where: {
                     id: id
                 }

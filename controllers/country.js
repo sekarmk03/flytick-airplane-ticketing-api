@@ -10,6 +10,32 @@ module.exports = {
                 name
             } = req.body;
 
+            const existCode = await Country.findOne({
+                where: {
+                    code: code,
+                }
+            });
+
+            const existName = await Country.findOne({
+                where: {
+                    name: name
+                }
+            });
+
+            if(existCode){
+                return res.status(400).json({
+                status: false,
+                message: 'code already used',
+                data: existCode
+            })}
+
+            if(existName){
+                return res.status(400).json({
+                status: false,
+                message: 'name already used',
+                data: existName
+            })}
+
             const country = await Country.create({
                 code: code,
                 name: name
@@ -27,7 +53,7 @@ module.exports = {
     },
     getAll: async (req, res, next) => {
         try {
-            const countries = await Country.findAll();
+            const countries = await Country.findAll({order:[['code','ASC'],['name','ASC']]});
 
             if (!countries) {
                 return res.status(400).json({
@@ -101,6 +127,32 @@ module.exports = {
                 });
             };
 
+            const existCode = await Country.findOne({
+                where: {
+                    code: code,
+                }
+            });
+
+            const existName = await Country.findOne({
+                where: {
+                    name: name
+                }
+            });
+
+            if(existCode){
+                return res.status(400).json({
+                status: false,
+                message: 'code already used',
+                data: existCode
+            })}
+
+            if(existName){
+                return res.status(400).json({
+                status: false,
+                message: 'name already used',
+                data: existName
+            })}
+
             if(!code) code = country.code;
             if(!name) name = country.name;
 
@@ -109,21 +161,6 @@ module.exports = {
                 name: name
             });
 
-            const codeExist = await Country.findOne({
-                where: {code: updated.code}
-            })
-
-            const nameExist = await Country.findOne({
-                where: {name: updated.name}
-            })
-
-            if(codeExist || nameExist){
-                return res.status(400).json({
-                    status: true,
-                    message: 'code or name is already exist',
-                    data: null
-                });
-            }
 
             return res.status(200).json({
                 status: true,
