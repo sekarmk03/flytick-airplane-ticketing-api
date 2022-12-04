@@ -124,7 +124,7 @@ module.exports = {
                 await Schedule.update({passenger}, {where: {id: schedule_id[i]}});
 
                 // update is_ready
-                const flight = await Flight.findOne
+                const flight = await Flight.findOne({where: {id: schedule.flight_id}});
             }
 
             // update user balance
