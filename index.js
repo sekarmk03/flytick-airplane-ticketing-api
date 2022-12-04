@@ -12,8 +12,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use('/flytick-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/flytick-api/images', express.static('public/images'));
-app.use('/flytick-api', router);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/images', express.static('public/images'));
+app.use('/api', router);
 
 module.exports = app;

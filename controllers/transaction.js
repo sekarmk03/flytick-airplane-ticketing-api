@@ -1,4 +1,8 @@
 const {Transaction, Schedule, Ticket} = require('../models');
+const c_ticket = require('./ticket');
+const c_biodata = require('./biodata');
+const generate_qr = require('../utils/generate_qr');
+const BASE_URL = process.env.BASE_URL;
 
 module.exports = {
     index: async (req, res, next) => {
@@ -15,19 +19,19 @@ module.exports = {
     },
     show: async (req, res, next) => {
         try {
-            const {biodataId} = req.params;
-            const biodata = await Biodata.findOne({where: {id: biodataId}});
-            if(!biodata) {
+            const {transactionId} = req.params;
+            const transaction = await Transaction.findOne({where: {id: transactionId}});
+            if(!transaction) {
                 return res.status(400).json({
                     status: false,
-                    message: 'biodata not found',
+                    message: 'transaction not found',
                     data: null
                 });
             }
             return res.status(200).json({
                 status: true,
-                message: 'get biodata success',
-                data: biodata.get()
+                message: 'get transaction success',
+                data: transaction.get()
             });
         } catch (err) {
             next(err);
@@ -36,8 +40,11 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const {user_id, schedule_id, adult, child, round_trip} = req.body;
+            let data = [];
 
             for (let i = 0; i < schedule_id.length; i++) {
+                let t_data = {};
+
                 // generate invoice number
                 let invoice_number = (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)).toUpperCase();
                 // set paid_status auto true
@@ -59,33 +66,54 @@ module.exports = {
                     total_cost
                 });
 
-                // generate ticket
-                for(let i = 0; i < adult.length; i++) {
+                t_data.transaction = newTransaction;
+                t_data.tickets = [];
+                req.ticket_schedule_id = schedule_id[0];
+                req.transaction_id = newTransaction.id;
+
+                // generate ticket adult
+                for(let i = 0; i < adult.length + child.length; i++) {
+                    let ticket = {};
+
                     // new biodata
+                    const newBiodata = await c_biodata.create(req, res, next);
+                    if(newBiodata != null) {
+                        ticket.passenger_data = newBiodata;
+                    }
+
+                    if(i < adult.length) req.type = 'Adult';
+                    else req.type = 'Children';
+
+                    req.biodata_id = newBiodata.id;
                     
+                    // new ticket
+                    const newTicket = await c_ticket.create(req, res, next);
 
                     // generate qr
-                    const newTicket = await Ticket.create({
-                        type: 'Adult',
-                        schedule_id: schedule_id[0],
-                        user_id,
-                        biodata_id,
-                        transaction_id: newTransaction.id,
-                        checked_in: false,
-                        qr_code
-                    });
-                }
-            }
+                    const qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
 
-            
+                    // update qr_code ticket
+                    await Ticket.update({qr_code: qr_code.url}, {where: {id: newTicket.id}});
+
+                    const fixTicket = await Ticket.findOne({where: {id: newTicket.id}});
+
+                    if(fixTicket) {
+                        ticket.ticket_data = fixTicket;
+                    }
+
+                    t_data.tickets.push(ticket);
+                }
+
+                data.push(t_data);
+            }
 
             return res.status(201).json({
                 status: true,
                 message: 'transaction created',
-                data: newTransaction
+                data: data
             });
         } catch (err) {
             next(err);
         }
-    },
+    }
 }
