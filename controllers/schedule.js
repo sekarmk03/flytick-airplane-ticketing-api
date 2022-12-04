@@ -79,6 +79,14 @@ module.exports = {
                 to_airport
             } = req.body;
 
+            if(departure_time >= arrival_time) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'arrival time must be greater than departure time',
+                    data: null
+                });
+            }
+
             const newSchedule = await Schedule.create({
                 flight_id,
                 cost,

@@ -85,7 +85,7 @@ module.exports = {
                 req.transaction_id = newTransaction.id;
 
                 // generate ticket adult
-                for(let i = 0; i < adult.length + child.length; i++) {
+                for(let j = 0; j < adult.length + child.length; j++) {
                     let ticket = {};
 
                     // new biodata
@@ -94,7 +94,7 @@ module.exports = {
                         ticket.passenger_data = newBiodata;
                     }
 
-                    if(i < adult.length) req.type = 'Adult';
+                    if(j < adult.length) req.type = 'Adult';
                     else req.type = 'Children';
 
                     req.biodata_id = newBiodata.id;
@@ -124,7 +124,12 @@ module.exports = {
                 await Schedule.update({passenger}, {where: {id: schedule_id[i]}});
 
                 // update is_ready
+                const schedulePass = await Schedule.findOne({where: {id: schedule_id[i]}});
                 const flight = await Flight.findOne({where: {id: schedule.flight_id}});
+
+                if (flight.capacity == schedulePass.passenger) {
+                    await Flight.update({is_ready: false}, {where: {id: flight.id}});
+                }
             }
 
             // update user balance

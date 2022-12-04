@@ -152,6 +152,8 @@ module.exports = {
             if (!is_ready) is_ready = flight.is_ready;
             if (!is_maintain) is_maintain = flight.is_maintain;
 
+            if(is_maintain == true) is_ready = false;
+
             const updated = await flight.update({
                 code: code,
                 capacity: capacity,
