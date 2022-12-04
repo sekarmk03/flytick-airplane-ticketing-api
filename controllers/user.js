@@ -9,13 +9,14 @@ const c_biodata = require('./biodata');
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="id", type="ASC", search=""} = req.query;
+            let {sort="id", type="ASC"} = req.query;
             const usersData = await User.findAll({order:[[sort,type]],
-                where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
-                    }
-                }});
+                // where: {
+                //     code: {
+                //         [Op.iLike]: `%${search}%`
+                //     }
+                // }
+            });
             return res.status(200).json({
                 status: true,
                 message: 'get all user success',

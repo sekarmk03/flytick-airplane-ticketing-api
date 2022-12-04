@@ -1,16 +1,35 @@
-const { Airport } = require('../models')
-const {Op} = require('sequelize')
+const {
+    Airport
+} = require('../models')
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="code", type="ASC", search=""} = req.query;
-            const dataAirport = await Airport.findAll({order:[[sort,type]],
+            let {
+                sort = "code", type = "ASC", search = ""
+            } = req.query;
+            const dataAirport = await Airport.findAll({
                 where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
-                    }
-                }})
+                    [Op.or]: [{
+                            code: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            name: {
+                                [Op.iLike]: `%${search}%`
+                            }
+
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ]
+            })
 
             return res.status(200).json({
                 status: true,
@@ -24,10 +43,16 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {airportId} = req.params;
+            const {
+                airportId
+            } = req.params;
 
-            const airport = await Airport.findOne({where: {id: airportId}});
-            if(!airport) {
+            const airport = await Airport.findOne({
+                where: {
+                    id: airportId
+                }
+            });
+            if (!airport) {
                 return res.status(400).json({
                     status: false,
                     message: 'airport not found',
@@ -46,9 +71,20 @@ module.exports = {
 
     create: async (req, res, next) => {
         try {
-            const { code, name, city_id, country_id, maps_link, maps_embed } = req.body
+            const {
+                code,
+                name,
+                city_id,
+                country_id,
+                maps_link,
+                maps_embed
+            } = req.body
 
-            const airport = await Airport.findOne({ where: { code } })
+            const airport = await Airport.findOne({
+                where: {
+                    code
+                }
+            })
 
             if (airport) {
                 return res.status(409).json({
@@ -66,7 +102,7 @@ module.exports = {
                 maps_link,
                 maps_embed
             });
-            
+
             return res.status(200).json({
                 status: true,
                 message: 'airport created',
@@ -79,10 +115,23 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { airportId } = req.params;
-            let { code, name, city_id, country_id, maps_link, maps_embed } = req.body;
+            const {
+                airportId
+            } = req.params;
+            let {
+                code,
+                name,
+                city_id,
+                country_id,
+                maps_link,
+                maps_embed
+            } = req.body;
 
-            const dataAirport = await Airport.findOne({ where: { id: airportId } });
+            const dataAirport = await Airport.findOne({
+                where: {
+                    id: airportId
+                }
+            });
 
             if (!dataAirport) {
                 return res.status(409).json({
@@ -92,17 +141,24 @@ module.exports = {
                 })
             }
 
-            if(!code) code = dataAirport.code;
-            if(!name) name = dataAirport.name;
-            if(!city_id) city_id = dataAirport.city_id;
-            if(!country_id) country_id = dataAirport.country_id;
-            if(!maps_link) maps_link = dataAirport.maps_link;
-            if(!maps_embed) maps_embed = dataAirport.maps_embed;
+            if (!code) code = dataAirport.code;
+            if (!name) name = dataAirport.name;
+            if (!city_id) city_id = dataAirport.city_id;
+            if (!country_id) country_id = dataAirport.country_id;
+            if (!maps_link) maps_link = dataAirport.maps_link;
+            if (!maps_embed) maps_embed = dataAirport.maps_embed;
 
             const updated = await Airport.update({
-                code, name, city_id, country_id, maps_link, maps_embed
+                code,
+                name,
+                city_id,
+                country_id,
+                maps_link,
+                maps_embed
             }, {
-                where: { id: airportId }
+                where: {
+                    id: airportId
+                }
             })
 
             return res.status(200).json({
@@ -117,9 +173,15 @@ module.exports = {
 
     delete: async (req, res, next) => {
         try {
-            const { airportId } = req.params
+            const {
+                airportId
+            } = req.params
 
-            const dataAirport = await Airport.findOne({ where: { id: airportId } })
+            const dataAirport = await Airport.findOne({
+                where: {
+                    id: airportId
+                }
+            })
 
             if (!dataAirport) {
                 return res.status(409).json({
@@ -129,7 +191,11 @@ module.exports = {
                 })
             }
 
-            const deleted = await Airport.destroy({ where: { id: airportId } })
+            const deleted = await Airport.destroy({
+                where: {
+                    id: airportId
+                }
+            })
 
             return res.status(200).json({
                 status: true,
