@@ -26,6 +26,9 @@ module.exports = {
       to_airport: {
         type: Sequelize.INTEGER
       },
+      passenger: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
