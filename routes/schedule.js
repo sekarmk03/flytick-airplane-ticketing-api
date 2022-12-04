@@ -4,7 +4,7 @@ const c = require('../controllers/schedule');
 const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
-// get all schedules
+// get all schedule
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail schedule
 router.get('/:scheduleId', authorize([roles.admin, roles.superadmin]), c.show);
