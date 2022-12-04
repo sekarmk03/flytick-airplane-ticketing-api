@@ -1,4 +1,4 @@
-const { Biodata } = require('../models');
+const { Biodata, User } = require('../models');
 
 module.exports = {
     // daftar semua penumpang
@@ -40,15 +40,18 @@ module.exports = {
     // if user buy ticket for other people
     create: async (req, res, next) => {
         try {
-            const { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null} = req.body;
+            const { email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null} = req.body;
 
-            const exist = await Biodata.findOne({where: {email: email}});
-            if(exist) {
-                return res.status(409).json({
-                    status: false,
-                    message: 'biodata already exist',
-                    data: null
-                });
+            if(email) {
+                const exist = await Biodata.findOne({where: {email: email}});
+                if(exist) {
+                    /*return res.status(409).json({
+                        status: false,
+                        message: 'biodata already exist',
+                        data: null
+                    });*/
+                    return null;
+                }
             }
 
             const newBiodata = await Biodata.create({
@@ -64,11 +67,12 @@ module.exports = {
                 expire_date: expire_date
             });
 
-            return res.status(201).json({
+            /*return res.status(201).json({
                 status: true,
                 message: 'biodata created',
                 data: newBiodata
-            });
+            });*/
+            return newBiodata;
         } catch (err) {
             next(err);
         }
