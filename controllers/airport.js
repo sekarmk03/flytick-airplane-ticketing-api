@@ -1,10 +1,16 @@
 const { Airport } = require('../models')
+const {Op} = require('sequelize')
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="code", type="ASC"} = req.query;
-            const dataAirport = await Airport.findAll({order:[[sort,type]]})
+            let {sort="code", type="ASC", search=""} = req.query;
+            const dataAirport = await Airport.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }})
 
             return res.status(200).json({
                 status: true,

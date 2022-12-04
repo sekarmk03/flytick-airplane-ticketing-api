@@ -1,10 +1,16 @@
 const {Ticket} = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="createdAt", type="DESC"} = req.query;
-            const tickets = await Ticket.findAll({order:[[sort,type]]});
+            let {sort="createdAt", type="DESC", search=""} = req.query;
+            const tickets = await Ticket.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
             return res.status(200).json({
                 status: true,
                 message: 'get all tickets success',

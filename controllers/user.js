@@ -3,12 +3,19 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
+const {Op} = require('sequelize')
 const c_biodata = require('./biodata');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            const usersData = await User.findAll({raw: true});
+            let {sort="id", type="ASC", search=""} = req.query;
+            const usersData = await User.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
             return res.status(200).json({
                 status: true,
                 message: 'get all user success',

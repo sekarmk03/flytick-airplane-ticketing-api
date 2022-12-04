@@ -8,6 +8,8 @@ const upload = multer();
 
 // get all user
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
+// get all sorted
+// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail user
 router.get('/:userId', authorize([roles.admin, roles.superadmin]), c.show);
 // create user
