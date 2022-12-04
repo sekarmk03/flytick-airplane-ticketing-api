@@ -8,7 +8,7 @@ const roles = require('../utils/roles');
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 
 // get all schedules sorted
-router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
+// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail schedule
 router.get('/:ticketId', authorize([roles.admin, roles.superadmin]), c.show);
 // create schedule
