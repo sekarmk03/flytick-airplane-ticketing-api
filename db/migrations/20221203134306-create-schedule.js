@@ -1,24 +1,30 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Notifications', {
+    await queryInterface.createTable('Schedules', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      flight_id: {
         type: Sequelize.INTEGER
       },
-      topic: {
-        type: Sequelize.STRING
+      cost: {
+        type: Sequelize.INTEGER
       },
-      message: {
-        type: Sequelize.TEXT
+      departure_time: {
+        type: Sequelize.DATE
       },
-      is_read: {
-        type: Sequelize.BOOLEAN
+      arrival_time: {
+        type: Sequelize.DATE
+      },
+      from_airport: {
+        type: Sequelize.INTEGER
+      },
+      to_airport: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -31,6 +37,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Notifications');
+    await queryInterface.dropTable('Schedules');
   }
 };

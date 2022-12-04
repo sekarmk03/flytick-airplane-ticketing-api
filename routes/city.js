@@ -1,17 +1,22 @@
 const express = require('express')
 const router = express.Router()
 const c = require('../controllers')
+const authorize = require('../middleware/authorize');
+const roles = require('../utils/roles');
 
 // get all data city
-router.get('/', c.city.index)
+router.get('/', authorize([roles.admin, roles.superadmin]), c.city.index)
+
+// get detail data city
+router.get('/:cityId', authorize([roles.admin, roles.superadmin]), c.city.show)
 
 // create data city
-router.post('/create', c.city.create)
+router.post('/', authorize([roles.admin, roles.superadmin]), c.city.create)
 
 // update data city
-router.put('/update/:cityId', c.city.update)
+router.put('/:cityId', authorize([roles.admin, roles.superadmin]), c.city.update)
 
 // delete data city
-router.delete('/delete/:cityId', c.city.delete)
+router.delete('/:cityId', authorize([roles.admin, roles.superadmin]), c.city.delete)
 
 module.exports = router

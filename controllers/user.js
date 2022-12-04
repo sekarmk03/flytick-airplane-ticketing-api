@@ -98,7 +98,7 @@ module.exports = {
                 where: {id: newUser.id}
             });
 
-            res.status(201).json({
+            return res.status(201).json({
                 status: true,
                 message: 'user created',
                 data: newUser
@@ -157,6 +157,7 @@ module.exports = {
             if(!role) role = userData.role;
             if(!balance) balance = userData.balance;
 
+            /*
             if(!nik) nik = biodata.nik;
             if(!birth_place) birth_place = biodata.birth_place;
             if(!birth_date) birth_date = biodata.birth_date;
@@ -165,6 +166,7 @@ module.exports = {
             if(!no_passport) no_passport = biodata.no_passport;
             if(!issue_date) issue_date = biodata.issue_date;
             if(!expire_date) expire_date = biodata.expire_date;
+            */
 
             const isUpdatedUser = await User.update({
                 name: name,
@@ -175,6 +177,9 @@ module.exports = {
                 where: {id: userId}
             });
 
+            const isUpdatedBiodata = await c_biodata.update(req, res, next);
+
+            /*
             const isUpdatedBiodata = await Biodata.update({
                 email: email,
                 name: name,
@@ -189,6 +194,7 @@ module.exports = {
             }, {
                 where: {id: userData.biodata_id}
             });
+            */
 
             return res.status(200).json({
                 status: true,
@@ -219,11 +225,17 @@ module.exports = {
 
             const imageData = await Image.findOne({where: {id: userData.avatar_id}});
 
-            await imagekit.deleteFile(imageData.imagekit_id);
+            if(imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
+                await imagekit.deleteFile(imageData.imagekit_id);
+            }
 
-            await Image.destroy({where: {id: userData.avatar_id}});
+            if(userData.avatar_id != 1) {
+                await Image.destroy({where: {id: userData.avatar_id}});
+            }
 
-            await Biodata.destroy({where: {id: userData.biodata_id}});
+            if(userData.biodata_id != 0) {
+                await Biodata.destroy({where: {id: userData.biodata_id}});
+            }
 
             const isDeleted = await User.destroy({
                 where: {id: userId}

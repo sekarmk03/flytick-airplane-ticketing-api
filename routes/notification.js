@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const notification_c = require('../controllers/notification');
+const c = require('../controllers/notification');
 const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all notif
-router.get('/', notification_c.getAll);
+router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail notif
-router.get('/:id', notification_c.getDetail);
+router.get('/:notificationId', authorize([roles.admin, roles.superadmin]), c.show);
 // create notif
-router.post('/create', /*authorize([roles.admin, roles.superadmin]),*/ notification_c.create);
+router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update notif
-router.put('/:id', /*authorize([roles.admin, roles.superadmin]),*/ notification_c.update);
+router.put('/:notificationId', authorize([roles.admin, roles.superadmin]), c.update);
 // delete notif
-router.delete('/:id', /*authorize([roles.admin, roles.superadmin]),*/ notification_c.delete);
+router.delete('/:notificationId', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

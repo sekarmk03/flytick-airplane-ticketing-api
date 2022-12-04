@@ -21,6 +21,24 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     },
+    {
+      code: "GA-456",
+      capacity: 300,
+      current_airport: 2,
+      is_ready: true,
+      is_maintain: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      code: "GA-789",
+      capacity: 600,
+      current_airport: 3,
+      is_ready: true,
+      is_maintain: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
    ], {});
   },
 

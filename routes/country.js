@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const country_c = require('../controllers/country');
+const c = require('../controllers/country');
 const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all country
-router.get('/', country_c.getAll);
+router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail country
-router.get('/:id', country_c.getDetail);
+router.get('/:countryId', authorize([roles.admin, roles.superadmin]), c.show);
 // create country
-router.post('/create', authorize([roles.admin, roles.superadmin]), country_c.create);
+router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update country
-router.put('/:id', authorize([roles.admin, roles.superadmin]), country_c.update);
+router.put('/:countryId', authorize([roles.admin, roles.superadmin]), c.update);
 // delete country
-router.delete('/:id', authorize([roles.admin, roles.superadmin]), country_c.delete);
+router.delete('/:countryId', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

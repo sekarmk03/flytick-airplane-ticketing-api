@@ -5,10 +5,16 @@ const {
 module.exports = {
     create: async (req, res, next) => {
         try {
-            const {
-                code,
-                name
-            } = req.body;
+            const { code, name } = req.body;
+
+            const exist = await Country.findOne({where: {code: code}});
+            if(exist) {
+                return res.status(409).json({
+                    status: false,
+                    message: 'country already exist',
+                    data: null
+                });
+            }
 
             const existCode = await Country.findOne({
                 where: {
@@ -51,7 +57,7 @@ module.exports = {
             next(err);
         }
     },
-    getAll: async (req, res, next) => {
+    index: async (req, res, next) => {
         try {
             const countries = await Country.findAll({order:[['code','ASC'],['name','ASC']]});
 
@@ -73,18 +79,11 @@ module.exports = {
             next(err);
         }
     },
-    getDetail: async (req, res, next) => {
+    show: async (req, res, next) => {
         try {
-            const {
-                id
-            } = req.params;
+            const { countryId } = req.params;
 
-            const country = await Country.findOne({
-                where: {
-                    id: id
-                }
-            });
-
+            const country = await Country.findOne({ where: { id: countryId } });
             if(!country) {
                 return res.status(400).json({
                     status: false,
@@ -105,7 +104,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                id
+                countryId
             } = req.params;
 
             let {
@@ -115,7 +114,7 @@ module.exports = {
 
             const country = await Country.findOne({
                 where: {
-                    id: id
+                    id: countryId
                 }
             });
 
@@ -161,7 +160,6 @@ module.exports = {
                 name: name
             });
 
-
             return res.status(200).json({
                 status: true,
                 message: 'update success',
@@ -173,9 +171,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const {countryId} = req.params;
 
-            const country = await Country.findOne({where: {id: id}});
+            const country = await Country.findOne({where: {id: countryId}});
             if(!country) {
                 return res.status(400).json({
                     status: false,
@@ -184,7 +182,7 @@ module.exports = {
                 });
             }
 
-            const deleted = await Country.destroy({where: {id: country.id}});
+            const deleted = await Country.destroy({where: {id: countryId}});
             
             return res.status(201).json({
                 status: true,

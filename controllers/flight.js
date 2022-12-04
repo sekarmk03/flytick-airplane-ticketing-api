@@ -9,11 +9,20 @@ module.exports = {
                 code,
                 capacity,
                 current_airport,
-                is_ready,
-                is_maintain
+                is_ready = true,
+                is_maintain = false
             } = req.body;
 
-            const plane = await Flight.create({
+            const exist = await Flight.findOne({where: {code: code}});
+            if(exist) {
+                return res.status(409).json({
+                    status: false,
+                    message: 'flight already exist',
+                    data: null
+                });
+            }
+
+            const flight = await Flight.create({
                 code: code,
                 capacity: capacity,
                 current_airport: current_airport,
@@ -24,16 +33,16 @@ module.exports = {
             return res.status(201).json({
                 status: true,
                 message: 'flight created',
-                data: plane
+                data: flight
             });
 
         } catch (err) {
             next(err);
         }
     },
-    getAll: async (req, res, next) => {
+    index: async (req, res, next) => {
         try {
-            const allFlight = await Flight.findAll();
+            const allFlight = await Flight.findAll({raw: true});
 
             if (!allFlight) {
                 return res.status(400).json({
@@ -53,15 +62,15 @@ module.exports = {
             next(err);
         }
     },
-    getDetail: async (req, res, next) => {
+    show: async (req, res, next) => {
         try {
             const {
-                id
+                flightId
             } = req.params;
 
             const flight = await Flight.findOne({
                 where: {
-                    id: id
+                    id: flightId
                 }
             });
 
@@ -85,7 +94,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                id
+                flightId
             } = req.params;
 
             let {
@@ -98,7 +107,7 @@ module.exports = {
 
             let flight = await Flight.findOne({
                 where: {
-                    id: id
+                    id: flightId
                 }
             });
 
@@ -122,11 +131,13 @@ module.exports = {
                 current_airport: current_airport,
                 is_ready: is_ready,
                 is_maintain: is_maintain
+            }, {
+                where: {id: flightId}
             });
 
             return res.status(200).json({
                 status: true,
-                message: 'update success',
+                message: 'update flight success',
                 data: updated
             });
         } catch (err) {
@@ -135,9 +146,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const {flightId} = req.params;
 
-            const flight = await Flight.findOne({where: {id: id}});
+            const flight = await Flight.findOne({where: {id: flightId}});
             if(!flight) {
                 return res.status(400).json({
                     status: false,
@@ -146,7 +157,7 @@ module.exports = {
                 });
             }
 
-            const deleted = await Flight.destroy({where: {id: flight.id}});
+            const deleted = await Flight.destroy({where: {id: flightId}});
             
             return res.status(201).json({
                 status: true,
