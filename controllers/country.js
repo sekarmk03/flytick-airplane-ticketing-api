@@ -7,15 +7,6 @@ module.exports = {
         try {
             const { code, name } = req.body;
 
-            const exist = await Country.findOne({where: {code: code}});
-            if(exist) {
-                return res.status(409).json({
-                    status: false,
-                    message: 'country already exist',
-                    data: null
-                });
-            }
-
             const existCode = await Country.findOne({
                 where: {
                     code: code,
@@ -59,7 +50,8 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            const countries = await Country.findAll({order:[['code','ASC'],['name','ASC']]});
+            let {sort="code", type="ASC"} = req.query;
+            const countries = await Country.findAll({order:[[sort,type]]});
 
             if (!countries) {
                 return res.status(400).json({

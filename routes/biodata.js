@@ -6,6 +6,8 @@ const roles = require('../utils/roles');
 
 // get all biodata
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
+// get all biodata sorted
+router.get('/?sort=&type=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail biodata
 router.get('/:biodataId', authorize([roles.admin, roles.superadmin]), c.show);
 // create biodata

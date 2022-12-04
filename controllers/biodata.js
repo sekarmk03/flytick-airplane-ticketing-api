@@ -1,10 +1,20 @@
-const { Biodata, User } = require('../models');
+const {
+    Biodata,
+    User
+} = require('../models');
 
 module.exports = {
     // daftar semua penumpang
     index: async (req, res, next) => {
         try {
-            const biodata = await Biodata.findAll({raw: true});
+            let {
+                sort = "name", type = "ASC"
+            } = req.query;
+            const biodata = await Biodata.findAll({
+                order: [
+                    [sort, type]
+                ]
+            });
             return res.status(200).json({
                 status: true,
                 message: 'get all biodata success',
@@ -18,9 +28,15 @@ module.exports = {
     // keknya ini dipake buat tiket
     show: async (req, res, next) => {
         try {
-            const {biodataId} = req.params;
-            const biodata = await Biodata.findOne({where: {id: biodataId}});
-            if(!biodata) {
+            const {
+                biodataId
+            } = req.params;
+            const biodata = await Biodata.findOne({
+                where: {
+                    id: biodataId
+                }
+            });
+            if (!biodata) {
                 return res.status(400).json({
                     status: false,
                     message: 'biodata not found',
@@ -40,11 +56,17 @@ module.exports = {
     // if user buy ticket for other people
     create: async (req, res, next) => {
         try {
-            const { email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null} = req.body;
+            const {
+                email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null
+            } = req.body;
 
-            if(email) {
-                const exist = await Biodata.findOne({where: {email: email}});
-                if(exist) {
+            if (email) {
+                const exist = await Biodata.findOne({
+                    where: {
+                        email: email
+                    }
+                });
+                if (exist) {
                     /*return res.status(409).json({
                         status: false,
                         message: 'biodata already exist',
@@ -82,12 +104,31 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             // const {biodataId} = req.params;
-            let { email, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
+            let {
+                email,
+                name,
+                nik,
+                birth_place,
+                birth_date,
+                telp,
+                nationality,
+                no_passport = null,
+                issue_date = null,
+                expire_date = null
+            } = req.body;
 
-            const userData = await User.findOne({where: {email: email}});
-            const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
+            const userData = await User.findOne({
+                where: {
+                    email: email
+                }
+            });
+            const biodata = await Biodata.findOne({
+                where: {
+                    id: userData.biodata_id
+                }
+            });
             // const biodata = await Biodata.findOne({where: {id: biodataId}});
-            if(!biodata) {
+            if (!biodata) {
                 /*
                 return res.status(400).json({
                     status: false,
@@ -95,19 +136,19 @@ module.exports = {
                     data: null
                 });
                 */
-               return null;
+                return null;
             }
 
-            if(!email) email = biodata.email;
-            if(!name) name = biodata.name;
-            if(!nik) nik = biodata.nik;
-            if(!birth_place) birth_place = biodata.birth_place;
-            if(!birth_date) birth_date = biodata.birth_date;
-            if(!telp) telp = biodata.telp;
-            if(!nationality) nationality = biodata.nationality;
-            if(!no_passport) no_passport = biodata.no_passport;
-            if(!issue_date) issue_date = biodata.issue_date;
-            if(!expire_date) expire_date = biodata.expire_date;
+            if (!email) email = biodata.email;
+            if (!name) name = biodata.name;
+            if (!nik) nik = biodata.nik;
+            if (!birth_place) birth_place = biodata.birth_place;
+            if (!birth_date) birth_date = biodata.birth_date;
+            if (!telp) telp = biodata.telp;
+            if (!nationality) nationality = biodata.nationality;
+            if (!no_passport) no_passport = biodata.no_passport;
+            if (!issue_date) issue_date = biodata.issue_date;
+            if (!expire_date) expire_date = biodata.expire_date;
 
             const isUpdated = await Biodata.update({
                 email: email,
@@ -122,7 +163,9 @@ module.exports = {
                 expire_date: expire_date,
             }, {
                 // where: {id: biodataId}
-                where: {id: userData.biodata_id}
+                where: {
+                    id: userData.biodata_id
+                }
             });
 
             /*
@@ -132,7 +175,7 @@ module.exports = {
                 data: isUpdated
             });
             */
-           return isUpdated;
+            return isUpdated;
         } catch (err) {
             next(err);
         }
@@ -141,10 +184,16 @@ module.exports = {
     // ini juga keknya ga dipake
     delete: async (req, res, next) => {
         try {
-            const {biodataId} = req.params;
+            const {
+                biodataId
+            } = req.params;
 
-            const biodata = await Biodata.findOne({where: {id: biodataId}});
-            if(!biodata) {
+            const biodata = await Biodata.findOne({
+                where: {
+                    id: biodataId
+                }
+            });
+            if (!biodata) {
                 return res.status(400).json({
                     status: false,
                     message: 'biodata not found',
@@ -153,7 +202,9 @@ module.exports = {
             }
 
             const isDeleted = await Biodata.destroy({
-                where: {id: biodataId}
+                where: {
+                    id: biodataId
+                }
             });
 
             return res.status(201).json({
