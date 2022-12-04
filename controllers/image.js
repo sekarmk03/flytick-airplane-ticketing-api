@@ -5,16 +5,12 @@ module.exports = {
 
     index: async (req, res, next) => {
         try {
-            try {
-                const image = await Image.findAll({raw: true});
-                return res.status(200).json({
-                    status: true,
-                    message: 'get all images success',
-                    data: image
-                })
-            } catch (err) {
-                next(err);
-            }
+            const image = await Image.findAll({raw: true});
+            return res.status(200).json({
+                status: true,
+                message: 'get all images success',
+                data: image
+            })
         } catch (err) {
             next(err);
         }
@@ -57,7 +53,7 @@ module.exports = {
                 imagekit_path: uploadImage.filePath
             });
 
-            res.status(201).json({
+            return res.status(201).json({
                 status: true,
                 message: 'image created',
                 data: newImage

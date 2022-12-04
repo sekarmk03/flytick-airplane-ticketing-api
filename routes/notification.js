@@ -5,9 +5,9 @@ const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all notif
-router.get('/', authorize([roles.admin, roles.superadmin]), c.getAll);
+router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail notif
-router.get('/:notificationId', authorize([roles.admin, roles.superadmin]), c.getDetail);
+router.get('/:notificationId', authorize([roles.admin, roles.superadmin]), c.show);
 // create notif
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update notif
