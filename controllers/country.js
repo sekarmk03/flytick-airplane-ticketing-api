@@ -1,6 +1,7 @@
 const {
     Country
 } = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     create: async (req, res, next) => {

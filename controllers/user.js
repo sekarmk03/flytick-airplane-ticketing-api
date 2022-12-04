@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
+const {Op} = require('sequelize')
 const c_biodata = require('./biodata');
 
 module.exports = {

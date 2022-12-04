@@ -1,4 +1,5 @@
 const {Ticket} = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     index: async (req, res, next) => {

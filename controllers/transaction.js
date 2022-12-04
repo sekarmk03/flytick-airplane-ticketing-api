@@ -1,6 +1,7 @@
 const {Transaction, Schedule, Ticket} = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
+const {Op} = require('sequelize')
 const generate_qr = require('../utils/generate_qr');
 const BASE_URL = process.env.BASE_URL;
 

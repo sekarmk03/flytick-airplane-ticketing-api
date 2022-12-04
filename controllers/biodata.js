@@ -2,6 +2,7 @@ const {
     Biodata,
     User
 } = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     // daftar semua penumpang
