@@ -1,10 +1,16 @@
 const {Schedule} = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="departure_time", type="ASC"} = req.query;
-            const schedules = await Schedule.findAll({order:[[sort,type]]});
+            let {sort="departure_time", type="ASC", search=""} = req.query;
+            const schedules = await Schedule.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
 
             return res.status(200).json({
                 status: true,

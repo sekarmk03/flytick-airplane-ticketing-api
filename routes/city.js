@@ -8,7 +8,7 @@ const roles = require('../utils/roles');
 router.get('/', authorize([roles.admin, roles.superadmin]), c.city.index)
 
 // get all data city sorted
-router.get('/?sort=&type=', authorize([roles.admin, roles.superadmin]), c.city.index);
+// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.city.index);
 
 // get detail data city
 router.get('/:cityId', authorize([roles.admin, roles.superadmin]), c.city.show)

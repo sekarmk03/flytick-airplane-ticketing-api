@@ -2,19 +2,21 @@ const {
     Biodata,
     User
 } = require('../models');
+const {Op} = require('sequelize')
 
 module.exports = {
     // daftar semua penumpang
     index: async (req, res, next) => {
         try {
             let {
-                sort = "name", type = "ASC"
+                sort = "name", type = "ASC", search = ""
             } = req.query;
-            const biodata = await Biodata.findAll({
-                order: [
-                    [sort, type]
-                ]
-            });
+            const biodata = await Biodata.findAll({order:[[sort,type]],
+                where: {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                }});
             return res.status(200).json({
                 status: true,
                 message: 'get all biodata success',
