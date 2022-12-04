@@ -9,29 +9,28 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "departure_time", type = "ASC", departure_time = 0000-00-00, arrival_time = 0000-00-00, from_airport = 0000-00-00, to_airport = 0000-00-00
+                sort = "departure_time", type = "ASC", departure_time = 0000 - 00 - 00, arrival_time = 0000 - 00 - 00, from_airport = 0000 - 00 - 00, to_airport = 0000 - 00 - 00
             } = req.query;
             const schedules = await Schedule.findAll({
                 order: [
                     [sort, type]
                 ],
-                where: 
-                    [{
-                            departure_time: departure_time
-                        },
+                where: [{
+                        departure_time: departure_time
+                    },
 
-                        {
-                            arrival_time: arrival_time
-                        },
+                    {
+                        arrival_time: arrival_time
+                    },
 
-                        {
-                            from_airport: from_airport
-                        },
+                    {
+                        from_airport: from_airport
+                    },
 
-                        {
-                            to_airport: to_airport
-                        }
-                    ]
+                    {
+                        to_airport: to_airport
+                    }
+                ]
             });
 
             return res.status(200).json({
@@ -86,7 +85,8 @@ module.exports = {
                 departure_time,
                 arrival_time,
                 from_airport,
-                to_airport
+                to_airport,
+                passenger: 0
             });
 
             return res.status(201).json({
@@ -108,7 +108,8 @@ module.exports = {
             departure_time,
             arrival_time,
             from_airport,
-            to_airport
+            to_airport,
+            passenger
         } = req.body;
 
         const scheduleData = await Schedule.findOne({
@@ -130,6 +131,7 @@ module.exports = {
         if (!arrival_time) arrival_time = scheduleData.arrival_time;
         if (!from_airport) from_airport = scheduleData.from_airport;
         if (!to_airport) to_airport = scheduleData.to_airport;
+        if (!passenger) passenger = scheduleData.passenger;
 
         const isUpdateSchedule = await Schedule.update({
             flight_id,
@@ -137,7 +139,8 @@ module.exports = {
             departure_time,
             arrival_time,
             from_airport,
-            to_airport
+            to_airport,
+            passenger
         }, {
             where: {
                 id: scheduleId

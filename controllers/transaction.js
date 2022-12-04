@@ -1,7 +1,7 @@
-const {Transaction, Schedule, Ticket} = require('../models');
+const {Transaction, Schedule, Ticket, User, Flight} = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
-const {Op} = require('sequelize')
+const {Op} = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
 const BASE_URL = process.env.BASE_URL;
 
@@ -47,18 +47,23 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const {user_id, schedule_id, adult, child, round_trip} = req.body;
+            if(!adult) adult = req.query.adult;
+            if(!child) child = req.query.child;
+
             let data = [];
+            let final_cost = 0;
 
             for (let i = 0; i < schedule_id.length; i++) {
                 let t_data = {};
+                let passenger = 0;
 
                 // generate invoice number
                 let invoice_number = (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)).toUpperCase();
                 // set paid_status auto true
                 const paid_status = true;
                 // search cost of the schedule
-                const cost = await Schedule.findOne({where: {id: schedule_id[i]}});
-                const total_cost = (adult * cost) + (child * (cost * 0.2)); // child 80%
+                const schedule = await Schedule.findOne({where: {id: schedule_id[i]}});
+                const total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
 
                 const newTransaction = await Transaction.create({
                     transaction_time: new Date(),
@@ -73,9 +78,10 @@ module.exports = {
                     total_cost
                 });
 
+                final_cost += total_cost;
                 t_data.transaction = newTransaction;
                 t_data.tickets = [];
-                req.ticket_schedule_id = schedule_id[0];
+                req.ticket_schedule_id = schedule_id[i];
                 req.transaction_id = newTransaction.id;
 
                 // generate ticket adult
@@ -109,10 +115,21 @@ module.exports = {
                     }
 
                     t_data.tickets.push(ticket);
+                    passenger++;
                 }
 
                 data.push(t_data);
+
+                // update passenger
+                await Schedule.update({passenger}, {where: {id: schedule_id[i]}});
+
+                // update is_ready
+                const flight = await Flight.findOne({where: {id: schedule.flight_id}});
             }
+
+            // update user balance
+            const userData = await User.findOne({where: {id: user_id}});
+            await User.update({balance: userData.balance - final_cost}, {where: {id: user_id}});
 
             return res.status(201).json({
                 status: true,

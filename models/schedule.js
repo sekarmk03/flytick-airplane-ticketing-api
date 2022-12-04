@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     departure_time: DataTypes.DATE,
     arrival_time: DataTypes.DATE,
     from_airport: DataTypes.INTEGER,
-    to_airport: DataTypes.INTEGER
+    to_airport: DataTypes.INTEGER,
+    passenger: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Schedule',
