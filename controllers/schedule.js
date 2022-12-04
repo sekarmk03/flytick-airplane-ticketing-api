@@ -3,7 +3,8 @@ const {Schedule} = require('../models');
 module.exports = {
     index: async (req, res, next) => {
         try {
-            const schedules = await Schedule.findAll({raw: true});
+            let {sort="departure_time", type="ASC"} = req.query;
+            const schedules = await Schedule.findAll({order:[[sort,type]]});
 
             return res.status(200).json({
                 status: true,

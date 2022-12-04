@@ -6,6 +6,8 @@ const roles = require('../utils/roles');
 
 // get all flight
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
+// get all flight sorted
+router.get('/?sort=&type=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail flight
 router.get('/:flightId', authorize([roles.admin, roles.superadmin]), c.show);
 // create flight

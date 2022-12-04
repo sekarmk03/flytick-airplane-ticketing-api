@@ -31,7 +31,8 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            const notifications = await Notification.findAll({raw: true});
+            let {sort="createdAt", type="ASC"} = req.query;
+            const notifications = await Notification.findAll({order:[[sort,type]]});
 
             if (!notifications) {
                 return res.status(400).json({

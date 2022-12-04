@@ -42,7 +42,9 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            const allFlight = await Flight.findAll({raw: true});
+
+            let {sort="code", type="ASC"} = req.query;
+            const allFlight = await Flight.findAll({order:[[sort,type]]});
 
             if (!allFlight) {
                 return res.status(400).json({
@@ -105,7 +107,7 @@ module.exports = {
                 is_maintain
             } = req.body;
 
-            const flight = await Flight.findOne({
+            let flight = await Flight.findOne({
                 where: {
                     id: flightId
                 }
