@@ -56,9 +56,6 @@ module.exports = {
                 where: {
                     code: {
                         [Op.iLike]: `%${searchC}%`
-                    },
-                    name: {
-                        [Op.iLike]: `%${searchN}%`
                     }
                 }});
 

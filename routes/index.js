@@ -10,6 +10,7 @@ const notif = require('./notification');
 const city = require('./city');
 const airport = require('./airport');
 const image = require('./image');
+const schedule = require('./schedule');
 
 router.use('/auth', auth);
 router.use('/oauth', oauth);
@@ -21,5 +22,6 @@ router.use('/notification', notif);
 router.use('/city', city);
 router.use('/airport', airport);
 router.use('/image', image);
+router.use('/schedule', schedule);
 
 module.exports = router;
