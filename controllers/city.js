@@ -3,7 +3,8 @@ const { City } = require('../models')
 module.exports = {
     index: async (req, res, next) => {
         try {
-            const dataCity = await City.findAll({raw: true});
+            let {sort="name", type="ASC"} = req.query;
+            const dataCity = await City.findAll({order:[[sort,type]]});
 
             return res.status(200).json({
                 status: true,
