@@ -35,10 +35,11 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {schedule_id, user_id, biodata_id, transaction_id, qr_code} = req.body;
+            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
 
             const newTicket = await Ticket.create({
-                schedule_id,
+                type,
+                schedule_id: ticket_schedule_id,
                 user_id,
                 biodata_id,
                 transaction_id,
@@ -46,11 +47,12 @@ module.exports = {
                 qr_code
             });
 
-            return res.status(201).json({
+            /*return res.status(201).json({
                 status: true,
                 message: 'ticket created',
                 data: newTicket
-            });
+            });*/
+            return newTicket;
         } catch (err) {
             next(err);
         }
@@ -58,7 +60,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {ticketId} = req.params;
-            let {schedule_id, user_id, biodata_id, transaction_id, qr_code} = req.body;
+            let {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
 
             const ticket = await Ticket.findOne({where: {id: ticketId}});
             if(!ticket) {
@@ -69,6 +71,7 @@ module.exports = {
                 });
             }
 
+            if(!type) type = ticket.type;
             if(!schedule_id) schedule_id = ticket.schedule_id;
             if(!user_id) user_id = ticket.user_id;
             if(!biodata_id) biodata_id = ticket.biodata_id;
@@ -76,6 +79,7 @@ module.exports = {
             if(!qr_code) qr_code = ticket.qr_code;
 
             const isUpdated = await Ticket.update({
+                type,
                 schedule_id,
                 user_id,
                 biodata_id,
@@ -89,6 +93,36 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'update ticket success',
+                data: isUpdated
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    update_checked_in: async (req, res, next) => {
+        try {
+            const {ticketId} = req.params;
+
+            const ticket = await Ticket.findOne({where: {id: ticketId}});
+            if(!ticket) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'ticket not found',
+                    data: null
+                });
+            }
+
+            const isUpdated = await Ticket.update({
+                checked_in: true
+            }, {
+                where: {id: ticketId}
+            });
+
+            // kirim email berhasil check in
+
+            return res.status(200).json({
+                status: true,
+                message: 'check in success',
                 data: isUpdated
             });
         } catch (err) {
