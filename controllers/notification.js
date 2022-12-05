@@ -36,7 +36,7 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "createdAt", type = "ASC", search = "", read = "false"
+                sort = "createdAt", type = "DESC", search = "", read = "false"
             } = req.query;
             const notifications = await Notification.findAll({
                 order: [

@@ -3,7 +3,7 @@ const {
 } = require('../models');
 const {
     Op,
-} = require('sequelize')
+} = require('sequelize');
 
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
                 ],
                 where: {
                     departure_time: {
-                        [Op.between]: [`${departure_time} 00:00:00`, `${departure_time} 23:59:59`]
+                        [Op.between]: [departure_time, departure_time]
                     },
                     from_airport: from_airport,
                     to_airport: to_airport
@@ -81,7 +81,6 @@ module.exports = {
                 });
             }
 
-            
             const newSchedule = await Schedule.create({
                 flight_id,
                 cost,

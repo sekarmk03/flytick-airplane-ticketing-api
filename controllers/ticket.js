@@ -1,10 +1,12 @@
 const {Ticket} = require('../models');
-const {Op} = require('sequelize')
+const {Op} = require('sequelize');
+const user = require('./user');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
             let {sort="createdAt", type="DESC", search=""} = req.query;
+
             const tickets = await Ticket.findAll({order:[[sort,type]],
                 where: {
                     [Op.or]: [
