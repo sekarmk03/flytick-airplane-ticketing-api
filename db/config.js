@@ -15,8 +15,8 @@ module.exports = {
     "database": DB_NAME,
     "host": DB_HOST,
     "dialect": "postgres",
-    "port":DB_PORT
-
+    "port":DB_PORT,
+    "timezone": "+07:00"
   },
   "test": {
     "username": DB_USERNAME,
@@ -24,8 +24,8 @@ module.exports = {
     "database": DB_NAME,
     "host": DB_HOST,
     "dialect": "postgres",
-    "port":DB_PORT
-
+    "port":DB_PORT,
+    "timezone": "+07:00"
   },
   "production": {
     "username": DB_USERNAME,
@@ -33,7 +33,7 @@ module.exports = {
     "database": DB_NAME,
     "host": DB_HOST,
     "dialect": "postgres",
-    "port":DB_PORT
-
+    "port":DB_PORT,
+    "timezone": "+07:00"
   }
 };

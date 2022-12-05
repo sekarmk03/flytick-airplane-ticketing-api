@@ -2,32 +2,28 @@ const {
     Schedule
 } = require('../models');
 const {
-    Op, DATEONLY
+    Op,
 } = require('sequelize')
 
+
 module.exports = {
+    // show shedules by departure_time, from_airport, and to_airport, also the shcedules were sorted by departure_time with ASC type
     index: async (req, res, next) => {
         try {
             let {
-                sort = "departure_time", type = "ASC", departure_time_start = "", departure_time_end = "", from_airport = "5", to_airport = "3"
+                sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = ""
             } = req.query;
 
-            // var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000; // get TZ offset in milliseconds
-            // var corrected_datetime = new Date(Date.now() - tz_offset); // now corrected
-            // departure_time = departure_time.split('T')[0];
-            departure_time_start = new Date(departure_time_start).toISOString();
             const schedules = await Schedule.findAll({
                 order: [
                     [sort, type]
                 ],
                 where: {
-                    departure_time: [{
-                            [Op.gte]: DATEONLY(departure_time_start + '00:00:00')
-                        },
-                        {
-                            [Op.lte]: DATEONLY(departure_time_start + '23:59:59')
-                        }
-                    ]
+                    departure_time: {
+                        [Op.between]: [`${departure_time} 00:00:00`, `${departure_time} 23:59:59`]
+                    },
+                    from_airport: from_airport,
+                    to_airport: to_airport
                 }
             });
 
@@ -77,7 +73,7 @@ module.exports = {
                 to_airport
             } = req.body;
 
-            if(departure_time >= arrival_time) {
+            if (departure_time >= arrival_time) {
                 return res.status(400).json({
                     status: false,
                     message: 'arrival time must be greater than departure time',
@@ -85,13 +81,14 @@ module.exports = {
                 });
             }
 
+            
             const newSchedule = await Schedule.create({
-                flight_id: flight_id,
-                cost: cost,
-                departure_time: departure_time,
-                arrival_time: arrival_time,
-                from_airport: from_airport,
-                to_airport: to_airport,
+                flight_id,
+                cost,
+                departure_time,
+                arrival_time,
+                from_airport,
+                to_airport,
                 passenger: 0
             });
 
