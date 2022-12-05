@@ -51,11 +51,11 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let {sort="code", type="ASC", search=""} = req.query;
+            let {sort="code", type="ASC", searchC="", searchN=""} = req.query;
             const countries = await Country.findAll({order:[[sort,type]],
                 where: {
                     code: {
-                        [Op.iLike]: `%${search}%`
+                        [Op.iLike]: `%${searchC}%`
                     }
                 }});
 

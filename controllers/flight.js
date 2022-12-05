@@ -2,7 +2,9 @@ const {
     Flight
 } = require('../models');
 
-const {Op} = require('sequelize')
+const {
+    Op
+} = require('sequelize')
 
 module.exports = {
     create: async (req, res, next) => {
@@ -15,8 +17,12 @@ module.exports = {
                 is_maintain = false
             } = req.body;
 
-            const exist = await Flight.findOne({where: {code: code}});
-            if(exist) {
+            const exist = await Flight.findOne({
+                where: {
+                    code: code
+                }
+            });
+            if (exist) {
                 return res.status(409).json({
                     status: false,
                     message: 'flight already exist',
@@ -44,14 +50,26 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-
-            let {sort="code", type="ASC", search=""} = req.query;
-            const allFlight = await Flight.findAll({order:[[sort,type]],
+            let {
+                sort = "code", type = "ASC", search = ""
+            } = req.query;
+            const allFlight = await Flight.findAll({
                 where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
-                    }
-                }});
+                    [Op.or]: [{
+                            code: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            current_airport: parseInt(search)
+
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ]
+            });
 
             if (!allFlight) {
                 return res.status(400).json({
@@ -83,7 +101,7 @@ module.exports = {
                 }
             });
 
-            if(!flight) {
+            if (!flight) {
                 return res.status(400).json({
                     status: false,
                     message: 'flight not found',
@@ -120,7 +138,7 @@ module.exports = {
                 }
             });
 
-            if(!flight) {
+            if (!flight) {
                 return res.status(400).json({
                     status: false,
                     message: 'flight not found',
@@ -128,11 +146,11 @@ module.exports = {
                 });
             };
 
-            if(!code) code = flight.code;
-            if(!capacity) capacity = flight.capacity;
-            if(!current_airport) current_airport = flight.current_airport;
-            if(!is_ready) is_ready = flight.is_ready;
-            if(!is_maintain) is_maintain = flight.is_maintain;
+            if (!code) code = flight.code;
+            if (!capacity) capacity = flight.capacity;
+            if (!current_airport) current_airport = flight.current_airport;
+            if (!is_ready) is_ready = flight.is_ready;
+            if (!is_maintain) is_maintain = flight.is_maintain;
 
             if(is_maintain == true) is_ready = false;
 
@@ -143,7 +161,9 @@ module.exports = {
                 is_ready: is_ready,
                 is_maintain: is_maintain
             }, {
-                where: {id: flightId}
+                where: {
+                    id: flightId
+                }
             });
 
             return res.status(200).json({
@@ -157,10 +177,16 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {flightId} = req.params;
+            const {
+                flightId
+            } = req.params;
 
-            const flight = await Flight.findOne({where: {id: flightId}});
-            if(!flight) {
+            const flight = await Flight.findOne({
+                where: {
+                    id: flightId
+                }
+            });
+            if (!flight) {
                 return res.status(400).json({
                     status: false,
                     message: 'flight not found',
@@ -168,8 +194,12 @@ module.exports = {
                 });
             }
 
-            const deleted = await Flight.destroy({where: {id: flightId}});
-            
+            const deleted = await Flight.destroy({
+                where: {
+                    id: flightId
+                }
+            });
+
             return res.status(201).json({
                 status: true,
                 message: 'delete flight success',
