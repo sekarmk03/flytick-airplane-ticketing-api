@@ -1,5 +1,7 @@
 const {
-    Schedule
+    Schedule,
+    Flight,
+    Transaction
 } = require('../models');
 const {
     Op,
@@ -11,14 +13,25 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = ""
+                sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = "", adult = "0", child = "0"
             } = req.query;
+
+            let buyer = parseInt(adult) + parseInt(child);
+            let flights = await Flight.findAll({
+                where: {
+                    is_ready: true,
+                }
+            });
 
             const schedules = await Schedule.findAll({
                 order: [
                     [sort, type]
                 ],
                 where: {
+                    flight_id: [flights.id], //blom di tes bisa atau gak
+                    passenger:{
+                        [Op.gte]: flights.capacity-buyer
+                    },
                     departure_time: {
                         [Op.between]: [departure_time, departure_time]
                     },
