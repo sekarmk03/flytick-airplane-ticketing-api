@@ -7,9 +7,19 @@ module.exports = {
             let {sort="createdAt", type="DESC", search=""} = req.query;
             const tickets = await Ticket.findAll({order:[[sort,type]],
                 where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
+                    [Op.or]: [
+                        {
+                        user_id: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    {
+                        biodata_id: {
+                            [Op.iLike]: `%${search}%`
+                        }
+
                     }
+                ]
                 }});
             return res.status(200).json({
                 status: true,
