@@ -6,7 +6,7 @@ module.exports = {
             let {sort="name", type="ASC", search=""} = req.query;
             const dataCity = await City.findAll({order:[[sort,type]],
                 where: {
-                    code: {
+                    name: {
                         [Op.iLike]: `%${search}%`
                     }
                 }});

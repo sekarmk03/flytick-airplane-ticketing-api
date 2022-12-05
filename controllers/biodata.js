@@ -13,7 +13,7 @@ module.exports = {
             } = req.query;
             const biodata = await Biodata.findAll({order:[[sort,type]],
                 where: {
-                    code: {
+                    name: {
                         [Op.iLike]: `%${search}%`
                     }
                 }});

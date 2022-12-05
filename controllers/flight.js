@@ -55,18 +55,25 @@ module.exports = {
             } = req.query;
             const allFlight = await Flight.findAll({
                 where: {
-                    [Op.or]: [{
+                    // [Op.or]: [
+                        // {
+                        //     id: {
+                        //         [Op.gt]: 0
+                        //     }
+                        // },
+                        // {
                             code: {
                                 [Op.iLike]: `%${search}%`
                             }
-                        },
-                        {
-                            current_airport: parseInt(search)
-
-                        }
-                    ]
+                        // }
+                        ,
+                        // {
+                        //     current_airport: parseInt(search)
+                        // }
+                    // ]
                 },
                 order: [
+                    ['is_ready', 'desc'],
                     [sort, type]
                 ]
             });
