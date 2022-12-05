@@ -2,35 +2,33 @@ const {
     Schedule
 } = require('../models');
 const {
-    Op
+    Op, DATEONLY
 } = require('sequelize')
 
 module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "departure_time", type = "ASC", departure_time = 0000 - 00 - 00, arrival_time = 0000 - 00 - 00, from_airport = 0000 - 00 - 00, to_airport = 0000 - 00 - 00
+                sort = "departure_time", type = "ASC", departure_time_start = "", departure_time_end = "", from_airport = "5", to_airport = "3"
             } = req.query;
+
+            // var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000; // get TZ offset in milliseconds
+            // var corrected_datetime = new Date(Date.now() - tz_offset); // now corrected
+            // departure_time = departure_time.split('T')[0];
+            departure_time_start = new Date(departure_time_start).toISOString();
             const schedules = await Schedule.findAll({
                 order: [
                     [sort, type]
                 ],
-                where: [{
-                        departure_time: departure_time
-                    },
-
-                    {
-                        arrival_time: arrival_time
-                    },
-
-                    {
-                        from_airport: from_airport
-                    },
-
-                    {
-                        to_airport: to_airport
-                    }
-                ]
+                where: {
+                    departure_time: [{
+                            [Op.gte]: DATEONLY(departure_time_start + '00:00:00')
+                        },
+                        {
+                            [Op.lte]: DATEONLY(departure_time_start + '23:59:59')
+                        }
+                    ]
+                }
             });
 
             return res.status(200).json({
@@ -80,12 +78,12 @@ module.exports = {
             } = req.body;
 
             const newSchedule = await Schedule.create({
-                flight_id,
-                cost,
-                departure_time,
-                arrival_time,
-                from_airport,
-                to_airport,
+                flight_id: flight_id,
+                cost: cost,
+                departure_time: departure_time,
+                arrival_time: arrival_time,
+                from_airport: from_airport,
+                to_airport: to_airport,
                 passenger: 0
             });
 
