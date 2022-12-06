@@ -1,12 +1,23 @@
 const {
     Country
 } = require('../models');
-const {Op} = require('sequelize')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     create: async (req, res, next) => {
         try {
             const { code, name } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.country.createCountry)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const existCode = await Country.findOne({
                 where: {
@@ -20,19 +31,21 @@ module.exports = {
                 }
             });
 
-            if(existCode){
+            if (existCode) {
                 return res.status(400).json({
-                status: false,
-                message: 'code already used',
-                data: existCode
-            })}
+                    status: false,
+                    message: 'code already used',
+                    data: existCode
+                })
+            }
 
-            if(existName){
+            if (existName) {
                 return res.status(400).json({
-                status: false,
-                message: 'name already used',
-                data: existName
-            })}
+                    status: false,
+                    message: 'name already used',
+                    data: existName
+                })
+            }
 
             const country = await Country.create({
                 code: code,
@@ -51,13 +64,15 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let {sort="code", type="ASC", searchC="", searchN=""} = req.query;
-            const countries = await Country.findAll({order:[[sort,type]],
+            let { sort = "code", type = "ASC", searchC = "", searchN = "" } = req.query;
+            const countries = await Country.findAll({
+                order: [[sort, type]],
                 where: {
                     code: {
                         [Op.iLike]: `%${searchC}%`
                     }
-                }});
+                }
+            });
 
             if (!countries) {
                 return res.status(400).json({
@@ -82,7 +97,7 @@ module.exports = {
             const { countryId } = req.params;
 
             const country = await Country.findOne({ where: { id: countryId } });
-            if(!country) {
+            if (!country) {
                 return res.status(400).json({
                     status: false,
                     message: 'country not found',
@@ -110,13 +125,21 @@ module.exports = {
                 name
             } = req.body;
 
+            const body = req.body
+
+            const validate = v.validate(body, schema.country.createCountry)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
             const country = await Country.findOne({
                 where: {
                     id: countryId
                 }
             });
 
-            if(!country) {
+            if (!country) {
                 return res.status(400).json({
                     status: false,
                     message: 'country not found',
@@ -136,22 +159,24 @@ module.exports = {
                 }
             });
 
-            if(existCode){
+            if (existCode) {
                 return res.status(400).json({
-                status: false,
-                message: 'code already used',
-                data: existCode
-            })}
+                    status: false,
+                    message: 'code already used',
+                    data: existCode
+                })
+            }
 
-            if(existName){
+            if (existName) {
                 return res.status(400).json({
-                status: false,
-                message: 'name already used',
-                data: existName
-            })}
+                    status: false,
+                    message: 'name already used',
+                    data: existName
+                })
+            }
 
-            if(!code) code = country.code;
-            if(!name) name = country.name;
+            if (!code) code = country.code;
+            if (!name) name = country.name;
 
             const updated = await country.update({
                 code: code,
@@ -169,10 +194,10 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {countryId} = req.params;
+            const { countryId } = req.params;
 
-            const country = await Country.findOne({where: {id: countryId}});
-            if(!country) {
+            const country = await Country.findOne({ where: { id: countryId } });
+            if (!country) {
                 return res.status(400).json({
                     status: false,
                     message: 'country not found',
@@ -180,8 +205,8 @@ module.exports = {
                 });
             }
 
-            const deleted = await Country.destroy({where: {id: countryId}});
-            
+            const deleted = await Country.destroy({ where: { id: countryId } });
+
             return res.status(201).json({
                 status: true,
                 message: 'delete country success',

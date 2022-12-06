@@ -3,14 +3,18 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
-const {Op} = require('sequelize')
+const { Op } = require('sequelize')
 const c_biodata = require('./biodata');
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="id", type="ASC"} = req.query;
-            const usersData = await User.findAll({order:[[sort,type]],
+            let { sort = "id", type = "ASC" } = req.query;
+            const usersData = await User.findAll({
+                order: [[sort, type]],
                 // where: {
                 //     code: {
                 //         [Op.iLike]: `%${search}%`
@@ -29,9 +33,9 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {userId} = req.params;
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const { userId } = req.params;
+            const userData = await User.findOne({ where: { id: userId } });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -52,9 +56,17 @@ module.exports = {
         try {
             const { name, email, password, role = roles.user } = req.body;
             const image = req.file.buffer.toString('base64');
-            
-            const exist = await User.findOne({where: {email: email}});
-            if(exist) {
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.user.createUser)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const exist = await User.findOne({ where: { email: email } });
+            if (exist) {
                 return res.status(409).json({
                     status: false,
                     message: 'user already exist',
@@ -103,7 +115,7 @@ module.exports = {
             await User.update({
                 biodata_id: newBiodata.id
             }, {
-                where: {id: newUser.id}
+                where: { id: newUser.id }
             });
 
             return res.status(201).json({
@@ -123,8 +135,16 @@ module.exports = {
             let { nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
             let image = req.file.buffer.toString('base64');
 
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const body = req.body
+
+            const validate = v.validate(body, schema.user.updateUser)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const userData = await User.findOne({ where: { id: userId } });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -132,8 +152,8 @@ module.exports = {
                 });
             }
 
-            const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
-            if(!biodata) {
+            const biodata = await Biodata.findOne({ where: { id: userData.biodata_id } });
+            if (!biodata) {
                 return res.status(400).json({
                     status: false,
                     message: 'biodata not found',
@@ -141,7 +161,7 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({where: {id: userData.avatar_id}});
+            const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
 
             if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
@@ -156,14 +176,14 @@ module.exports = {
                 imagekit_id: uploadNewImage.fileId,
                 imagekit_url: uploadNewImage.url,
                 imagekit_path: uploadNewImage.filePath
-            },{
-                where: {id: imageData.id}
+            }, {
+                where: { id: imageData.id }
             });
 
-            if(!name) name = userData.name;
-            if(!email) email = userData.email;
-            if(!role) role = userData.role;
-            if(!balance) balance = userData.balance;
+            if (!name) name = userData.name;
+            if (!email) email = userData.email;
+            if (!role) role = userData.role;
+            if (!balance) balance = userData.balance;
 
             /*
             if(!nik) nik = biodata.nik;
@@ -182,7 +202,7 @@ module.exports = {
                 avatar: image,
                 role: role,
             }, {
-                where: {id: userId}
+                where: { id: userId }
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
@@ -220,10 +240,10 @@ module.exports = {
     // admin
     delete: async (req, res, next) => {
         try {
-            const {userId} = req.params;
+            const { userId } = req.params;
 
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const userData = await User.findOne({ where: { id: userId } });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -231,24 +251,24 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({where: {id: userData.avatar_id}});
+            const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
 
-            if(imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
+            if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
             }
 
-            if(userData.avatar_id != 1) {
-                await Image.destroy({where: {id: userData.avatar_id}});
+            if (userData.avatar_id != 1) {
+                await Image.destroy({ where: { id: userData.avatar_id } });
             }
 
-            if(userData.biodata_id != 0) {
-                await Biodata.destroy({where: {id: userData.biodata_id}});
+            if (userData.biodata_id != 0) {
+                await Biodata.destroy({ where: { id: userData.biodata_id } });
             }
 
             const isDeleted = await User.destroy({
-                where: {id: userId}
+                where: { id: userId }
             });
-            
+
             return res.status(201).json({
                 status: true,
                 message: 'delete user success',

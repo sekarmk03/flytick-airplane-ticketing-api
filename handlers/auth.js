@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const { User } = require('../models');
 const loginType = require('../utils/login_type');
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     register: async (req, res, next) => {
@@ -15,6 +18,14 @@ module.exports = {
                     message: 'user already exist',
                     data: null
                 });
+            }
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.auth.register) //password min:8
+
+            if (validate.length) {
+                return res.status(409).json(validate)
             }
 
             const hashed = await bcrypt.hash(password, 10);

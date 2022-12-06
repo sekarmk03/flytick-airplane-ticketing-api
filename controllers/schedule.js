@@ -4,6 +4,9 @@ const {
 const {
     Op
 } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     index: async (req, res, next) => {
@@ -16,20 +19,20 @@ module.exports = {
                     [sort, type]
                 ],
                 where: [{
-                        departure_time: departure_time
-                    },
+                    departure_time: departure_time
+                },
 
-                    {
-                        arrival_time: arrival_time
-                    },
+                {
+                    arrival_time: arrival_time
+                },
 
-                    {
-                        from_airport: from_airport
-                    },
+                {
+                    from_airport: from_airport
+                },
 
-                    {
-                        to_airport: to_airport
-                    }
+                {
+                    to_airport: to_airport
+                }
                 ]
             });
 
@@ -79,7 +82,15 @@ module.exports = {
                 to_airport
             } = req.body;
 
-            if(!(departure_time < arrival_time)) {
+            const body = req.body
+
+            const validate = v.validate(body, schema.schedule.createSchedule)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            if (!(departure_time < arrival_time)) {
                 return res.status(400).json({
                     status: false,
                     message: 'arrival time must be greater than departure time',
@@ -119,6 +130,14 @@ module.exports = {
             to_airport,
             passenger
         } = req.body;
+
+        const body = req.body
+
+        const validate = v.validate(body, schema.schedule.updateSchedule)
+
+        if (validate.length) {
+            return res.status(409).json(validate)
+        }
 
         const scheduleData = await Schedule.findOne({
             where: {

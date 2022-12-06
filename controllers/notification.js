@@ -2,7 +2,10 @@ const {
     Notification
 } = require('../models');
 
-const {Op} = require('sequelize')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     create: async (req, res, next) => {
@@ -13,6 +16,14 @@ module.exports = {
                 message,
                 is_read = false
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.notification.createNotif)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const notification = await Notification.create({
                 user_id: user_id,
@@ -33,13 +44,15 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let {sort="createdAt", type="ASC", search=""} = req.query;
-            const notifications = await Notification.findAll({order:[[sort,type]],
+            let { sort = "createdAt", type = "ASC", search = "" } = req.query;
+            const notifications = await Notification.findAll({
+                order: [[sort, type]],
                 where: {
                     code: {
                         [Op.iLike]: `%${search}%`
                     }
-                }});
+                }
+            });
 
             if (!notifications) {
                 return res.status(400).json({
@@ -71,7 +84,7 @@ module.exports = {
                 }
             });
 
-            if(!notification) {
+            if (!notification) {
                 return res.status(400).json({
                     status: false,
                     message: 'notification not found',
@@ -101,13 +114,21 @@ module.exports = {
                 is_read
             } = req.body;
 
+            const body = req.body
+
+            const validate = v.validate(body, schema.notification.createNotif)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
             const notification = await Notification.findOne({
                 where: {
                     id: notificationId
                 }
             });
 
-            if(!notification) {
+            if (!notification) {
                 return res.status(400).json({
                     status: false,
                     message: 'notification not found',
@@ -115,10 +136,10 @@ module.exports = {
                 });
             };
 
-            if(!user_id) user_id = notification.user_id;
-            if(!topic) topic = notification.topic;
-            if(!message) message = notification.message;
-            if(!is_read) is_read = notification.is_read;
+            if (!user_id) user_id = notification.user_id;
+            if (!topic) topic = notification.topic;
+            if (!message) message = notification.message;
+            if (!is_read) is_read = notification.is_read;
 
             const updated = await notification.update({
                 user_id: user_id,
@@ -126,7 +147,7 @@ module.exports = {
                 message: message,
                 is_read: is_read
             }, {
-                where: {id: notificationId}
+                where: { id: notificationId }
             });
 
             return res.status(200).json({
@@ -140,10 +161,10 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {notificationId} = req.params;
+            const { notificationId } = req.params;
 
-            const notification = await Notification.findOne({where: {id: notificationId}});
-            if(!notification) {
+            const notification = await Notification.findOne({ where: { id: notificationId } });
+            if (!notification) {
                 return res.status(400).json({
                     status: false,
                     message: 'notification not found',
@@ -151,8 +172,8 @@ module.exports = {
                 });
             }
 
-            const deleted = await Notification.destroy({where: {id: notificationId}});
-            
+            const deleted = await Notification.destroy({ where: { id: notificationId } });
+
             return res.status(201).json({
                 status: true,
                 message: 'delete notification success',
