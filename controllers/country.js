@@ -64,13 +64,22 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let { sort = "code", type = "ASC", searchC = "", searchN = "" } = req.query;
+            let { sort = "code", type = "ASC", search = "" } = req.query;
             const countries = await Country.findAll({
                 order: [[sort, type]],
                 where: {
-                    code: {
-                        [Op.iLike]: `%${searchC}%`
+                    [Op.or]: [{
+                        code: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    {
+                        name: {
+                            [Op.iLike]: `%${search}%`
+                        }
+
                     }
+                    ]
                 }
             });
 

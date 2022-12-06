@@ -44,13 +44,27 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let { sort = "createdAt", type = "ASC", search = "" } = req.query;
+            let {
+                sort = "createdAt", type = "ASC", search = "", read = "false"
+            } = req.query;
             const notifications = await Notification.findAll({
-                order: [[sort, type]],
+                order: [
+                    [sort, type]
+                ],
                 where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
+                    is_read: read,
+                    [Op.or]: [{
+                        topic: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    {
+                        message: {
+                            [Op.iLike]: `%${search}%`
+                        }
+
                     }
+                    ]
                 }
             });
 
@@ -147,7 +161,9 @@ module.exports = {
                 message: message,
                 is_read: is_read
             }, {
-                where: { id: notificationId }
+                where: {
+                    id: notificationId
+                }
             });
 
             return res.status(200).json({
@@ -161,9 +177,15 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const { notificationId } = req.params;
+            const {
+                notificationId
+            } = req.params;
 
-            const notification = await Notification.findOne({ where: { id: notificationId } });
+            const notification = await Notification.findOne({
+                where: {
+                    id: notificationId
+                }
+            });
             if (!notification) {
                 return res.status(400).json({
                     status: false,
@@ -172,7 +194,11 @@ module.exports = {
                 });
             }
 
-            const deleted = await Notification.destroy({ where: { id: notificationId } });
+            const deleted = await Notification.destroy({
+                where: {
+                    id: notificationId
+                }
+            });
 
             return res.status(201).json({
                 status: true,

@@ -12,7 +12,7 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "code", type = "ASC", search = ""
+                sort1 = "code", type1 = "ASC", search = ""
             } = req.query;
             const dataAirport = await Airport.findAll({
                 where: {
@@ -30,7 +30,7 @@ module.exports = {
                     ]
                 },
                 order: [
-                    [sort, type]
+                    [sort1, type1]
                 ]
             })
 

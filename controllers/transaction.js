@@ -11,8 +11,8 @@ module.exports = {
             let {sort="createdAt", type="DESC", search=""} = req.query;
             const transactions = await Transaction.findAll({order:[[sort,type]],
                 where: {
-                    code: {
-                        [Op.iLike]: `%${search}%`
+                    invoice_number: {
+                        [Op.iLike]: parseInt(`%${search}%`)
                     }
                 }});
             return res.status(200).json({

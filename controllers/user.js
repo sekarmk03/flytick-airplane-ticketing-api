@@ -12,6 +12,7 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
+<<<<<<< HEAD
             let { sort = "id", type = "ASC" } = req.query;
             const usersData = await User.findAll({
                 order: [[sort, type]],
@@ -20,6 +21,24 @@ module.exports = {
                 //         [Op.iLike]: `%${search}%`
                 //     }
                 // }
+=======
+            let {sort="id", type="ASC", search=""} = req.query;
+            const usersData = await User.findAll({order:[[sort,type]],
+                where: {
+                    [Op.or]: [{
+                        name: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    {
+                        email: {
+                            [Op.iLike]: `%${search}%`
+                        }
+
+                    }
+                ]
+                }
+>>>>>>> 532efc6050e75c521f8966c35804db492464134f
             });
             return res.status(200).json({
                 status: true,

@@ -11,7 +11,7 @@ module.exports = {
             const dataCity = await City.findAll({
                 order: [[sort, type]],
                 where: {
-                    code: {
+                    name: {
                         [Op.iLike]: `%${search}%`
                     }
                 }
