@@ -127,7 +127,7 @@ module.exports = {
 
             const body = req.body
 
-            const validate = v.validate(body, schema.country.createCountry)
+            const validate = v.validate(body, schema.country.createCountry) //max:5
 
             if (validate.length) {
                 return res.status(409).json(validate)
