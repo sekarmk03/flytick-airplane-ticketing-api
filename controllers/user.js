@@ -1,4 +1,8 @@
-const { User, Biodata, Image } = require('../models');
+const {
+    User,
+    Biodata,
+    Image
+} = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
@@ -12,38 +16,61 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-<<<<<<< HEAD
-            let { sort = "id", type = "ASC" } = req.query;
-            const usersData = await User.findAll({
-                order: [[sort, type]],
-                // where: {
-                //     code: {
-                //         [Op.iLike]: `%${search}%`
-                //     }
-                // }
-=======
-            let {sort="id", type="ASC", search=""} = req.query;
-            const usersData = await User.findAll({order:[[sort,type]],
+            let {
+                sort = "id", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page -1) * limit;
+            let end = page * limit;
+            const usersData = await User.findAndCountAll({
+                order: [
+                    [sort, type]
+                ],
                 where: {
                     [Op.or]: [{
-                        name: {
-                            [Op.iLike]: `%${search}%`
-                        }
-                    },
-                    {
-                        email: {
-                            [Op.iLike]: `%${search}%`
-                        }
+                            name: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            email: {
+                                [Op.iLike]: `%${search}%`
+                            }
 
-                    }
-                ]
-                }
->>>>>>> 532efc6050e75c521f8966c35804db492464134f
+                        }
+                    ]
+                },
+                limit: limit,
+                offset: start
             });
+            let count = usersData.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
             return res.status(200).json({
                 status: true,
                 message: 'get all user success',
-                data: usersData
+                pagination,
+                data: usersData.rows
             })
         } catch (err) {
             next(err);
@@ -73,7 +100,12 @@ module.exports = {
 
     create: async (req, res, next) => {
         try {
-            const { name, email, password, role = roles.user } = req.body;
+            const {
+                name,
+                email,
+                password,
+                role = roles.user
+            } = req.body;
             const image = req.file.buffer.toString('base64');
 
             const body = req.body
@@ -149,9 +181,25 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { userId } = req.params;
-            let { name, email, role, balance } = req.body;
-            let { nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
+            const {
+                userId
+            } = req.params;
+            let {
+                name,
+                email,
+                role,
+                balance
+            } = req.body;
+            let {
+                nik,
+                birth_place,
+                birth_date,
+                telp,
+                nationality,
+                no_passport = null,
+                issue_date = null,
+                expire_date = null
+            } = req.body;
             let image = req.file.buffer.toString('base64');
 
             const body = req.body

@@ -4,12 +4,15 @@ const {
 const { Op } = require('sequelize')
 const schema = require('../schema')
 const validator = require('fastest-validator')
-const v = new validator
+const v = new validatorlopment;
 
 module.exports = {
     create: async (req, res, next) => {
         try {
-            const { code, name } = req.body;
+            const {
+                code,
+                name
+            } = req.body;
 
             const body = req.body
 
@@ -64,37 +67,62 @@ module.exports = {
     },
     index: async (req, res, next) => {
         try {
-            let { sort = "code", type = "ASC", search = "" } = req.query;
-            const countries = await Country.findAll({
-                order: [[sort, type]],
+            let {
+                sort = "code", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            const countries = await Country.findAndCountAll({
+                order: [
+                    [sort, type]
+                ],
                 where: {
                     [Op.or]: [{
-                        code: {
-                            [Op.iLike]: `%${search}%`
-                        }
-                    },
-                    {
-                        name: {
-                            [Op.iLike]: `%${search}%`
-                        }
+                            code: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            name: {
+                                [Op.iLike]: `%${search}%`
+                            }
 
-                    }
+                        }
                     ]
-                }
+                },
+                limit: limit,
+                offset: start
             });
-
-            if (!countries) {
-                return res.status(400).json({
+            let count = countries.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
                     status: false,
-                    message: 'country not found',
-                    data: null
-                });
+                    message: 'DATA NOT FOUND',
+                })
             }
 
             return res.status(200).json({
                 status: true,
                 message: 'get all countries success',
-                data: countries
+                pagination,
+                data: countries.rows
             });
 
         } catch (err) {
@@ -103,7 +131,9 @@ module.exports = {
     },
     show: async (req, res, next) => {
         try {
-            const { countryId } = req.params;
+            const {
+                countryId
+            } = req.params;
 
             const country = await Country.findOne({ where: { id: countryId } });
             if (!country) {

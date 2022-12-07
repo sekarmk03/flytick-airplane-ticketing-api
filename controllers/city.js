@@ -7,20 +7,53 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let { sort = "name", type = "ASC", search = "" } = req.query;
-            const dataCity = await City.findAll({
-                order: [[sort, type]],
+            let {
+                sort = "name", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            const dataCity = await City.findAndCountAll({
+                order: [
+                    [sort, type]
+                ],
                 where: {
                     name: {
                         [Op.iLike]: `%${search}%`
                     }
-                }
+                },
+                limit: limit,
+                offset: start
             });
+            let count = dataCity.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
 
             return res.status(200).json({
                 status: true,
                 message: 'get all cities success',
-                data: dataCity
+                pagination,
+                data: dataCity.rows
             });
         } catch (err) {
             next(err);
@@ -70,7 +103,10 @@ module.exports = {
                 })
             }
 
-            const created = await City.create({ name, country_id })
+            const created = await City.create({
+                name,
+                country_id
+            })
 
             return res.status(200).json({
                 status: true,
@@ -111,7 +147,9 @@ module.exports = {
                 name: name,
                 country_id: country_id
             }, {
-                where: { id: cityId }
+                where: {
+                    id: cityId
+                }
             })
 
             return res.status(200).json({
@@ -126,9 +164,15 @@ module.exports = {
 
     delete: async (req, res, next) => {
         try {
-            const { cityId } = req.params
+            const {
+                cityId
+            } = req.params
 
-            const dataCity = await City.findOne({ where: { id: cityId } })
+            const dataCity = await City.findOne({
+                where: {
+                    id: cityId
+                }
+            })
 
             if (!dataCity) {
                 return res.status(409).json({
@@ -138,7 +182,11 @@ module.exports = {
                 })
             }
 
-            const deleted = await City.destroy({ where: { id: cityId } })
+            const deleted = await City.destroy({
+                where: {
+                    id: cityId
+                }
+            })
 
             return res.status(200).json({
                 status: true,

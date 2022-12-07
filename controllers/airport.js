@@ -12,9 +12,13 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort1 = "code", type1 = "ASC", search = ""
+                sort = "code", type = "ASC", search = "", page ="1", limit="10"
             } = req.query;
-            const dataAirport = await Airport.findAll({
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page -1) * limit;
+            let end = page * limit;
+            const dataAirport = await Airport.findAndCountAll({
                 where: {
                     [Op.or]: [{
                         code: {
@@ -30,14 +34,39 @@ module.exports = {
                     ]
                 },
                 order: [
-                    [sort1, type1]
-                ]
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
             })
+            let count = dataAirport.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
 
             return res.status(200).json({
                 status: true,
                 message: 'get all airport success',
-                data: dataAirport
+                pagination,
+                data: dataAirport.rows
             })
         } catch (err) {
             next(err)

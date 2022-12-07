@@ -1,30 +1,64 @@
-const {Ticket} = require('../models');
-const {Op} = require('sequelize')
+const {Ticket,sequelize} = require('../models');
+const {Op, QueryTypes} = require('sequelize');
+const user = require('./user');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="createdAt", type="DESC", search=""} = req.query;
-            const tickets = await Ticket.findAll({order:[[sort,type]],
-                where: {
-                    [Op.or]: [
-                        {
-                        user_id: {
-                            [Op.iLike]: `%${search}%`
-                        }
-                    },
-                    {
-                        biodata_id: {
-                            [Op.iLike]: `%${search}%`
-                        }
+            let {sort="createdAt", type="DESC", search="", page ="1", limit="10"} = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page -1) * limit;
+            let end = page * limit;
+            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                type: QueryTypes.SELECT
+            })
+            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
+                type: QueryTypes.SELECT
+            })
 
-                    }
-                ]
-                }});
+            // const tickets = await Ticket.findAll({order:[[sort,type]],
+            //     where: {
+            //         [Op.or]: [
+            //             {
+            //             user_id: {
+            //                 [Op.iLike]: `%${search}%`
+            //             }
+            //         },
+            //         {
+            //             biodata_id: {
+            //                 [Op.iLike]: `%${search}%`
+            //             }
+
+            //         }
+            //     ]
+            //     }});
+            let count = countTickets.length;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
             return res.status(200).json({
                 status: true,
                 message: 'get all tickets success',
-                data: tickets
+                data: tickets.rows
             })
         } catch (err) {
             next(err);

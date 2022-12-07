@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     transaction_time: DataTypes.DATE,
     invoice_number: DataTypes.STRING,
     user_id: DataTypes.INTEGER,
-    // schedule_id: DataTypes.INTEGER,
     paid_time: DataTypes.DATE,
     paid_status: DataTypes.BOOLEAN,
     adult: DataTypes.INTEGER,
