@@ -83,7 +83,7 @@ module.exports = {
                 status: true,
                 message: "get all schedules success",
                 pagination,
-                data: schedules.rows
+                data: schedules
             });
         } catch (err) {
             next(err);
