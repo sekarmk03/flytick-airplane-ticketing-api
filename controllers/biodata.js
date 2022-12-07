@@ -2,9 +2,10 @@ const {
     Biodata,
     User
 } = require('../models');
-const {
-    Op
-} = require('sequelize')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     // daftar semua penumpang
@@ -97,6 +98,14 @@ module.exports = {
                 email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null
             } = req.body;
 
+            const body = req.body
+
+            const validate = v.validate(body, schema.biodata.createBiodata)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
             if (email) {
                 const exist = await Biodata.findOne({
                     where: {
@@ -153,6 +162,14 @@ module.exports = {
                 issue_date = null,
                 expire_date = null
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.biodata.createBiodata)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const userData = await User.findOne({
                 where: {
