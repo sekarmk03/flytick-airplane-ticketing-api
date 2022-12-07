@@ -2,9 +2,10 @@ const {
     Notification
 } = require('../models');
 
-const {
-    Op
-} = require('sequelize')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     create: async (req, res, next) => {
@@ -15,6 +16,14 @@ module.exports = {
                 message,
                 is_read = false
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.notification.createNotif)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const notification = await Notification.create({
                 user_id: user_id,
@@ -140,6 +149,14 @@ module.exports = {
                 message,
                 is_read
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.notification.createNotif)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const notification = await Notification.findOne({
                 where: {

@@ -1,9 +1,10 @@
 const {
     Country
 } = require('../models');
-const {
-    Op
-} = require('sequelize')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validatorlopment;
 
 module.exports = {
     create: async (req, res, next) => {
@@ -12,6 +13,14 @@ module.exports = {
                 code,
                 name
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.country.createCountry)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const existCode = await Country.findOne({
                 where: {
@@ -126,11 +135,7 @@ module.exports = {
                 countryId
             } = req.params;
 
-            const country = await Country.findOne({
-                where: {
-                    id: countryId
-                }
-            });
+            const country = await Country.findOne({ where: { id: countryId } });
             if (!country) {
                 return res.status(400).json({
                     status: false,
@@ -158,6 +163,14 @@ module.exports = {
                 code,
                 name
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.country.createCountry) //max:5
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const country = await Country.findOne({
                 where: {
@@ -220,15 +233,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {
-                countryId
-            } = req.params;
+            const { countryId } = req.params;
 
-            const country = await Country.findOne({
-                where: {
-                    id: countryId
-                }
-            });
+            const country = await Country.findOne({ where: { id: countryId } });
             if (!country) {
                 return res.status(400).json({
                     status: false,
@@ -237,11 +244,7 @@ module.exports = {
                 });
             }
 
-            const deleted = await Country.destroy({
-                where: {
-                    id: countryId
-                }
-            });
+            const deleted = await Country.destroy({ where: { id: countryId } });
 
             return res.status(201).json({
                 status: true,

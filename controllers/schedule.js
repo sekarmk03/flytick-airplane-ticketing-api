@@ -7,7 +7,10 @@ const {
 const {
     Op,
     QueryTypes
-} = require('sequelize');
+} = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 
 module.exports = {
@@ -126,6 +129,14 @@ module.exports = {
                 to_airport
             } = req.body;
 
+            const body = req.body
+
+            const validate = v.validate(body, schema.schedule.createSchedule)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
             if (departure_time >= arrival_time) {
                 return res.status(400).json({
                     status: false,
@@ -133,6 +144,7 @@ module.exports = {
                     data: null
                 });
             }
+
 
             const newSchedule = await Schedule.create({
                 flight_id,
@@ -166,6 +178,14 @@ module.exports = {
             to_airport,
             passenger
         } = req.body;
+
+        const body = req.body
+
+        const validate = v.validate(body, schema.schedule.updateSchedule)
+
+        if (validate.length) {
+            return res.status(409).json(validate)
+        }
 
         const scheduleData = await Schedule.findOne({
             where: {

@@ -4,6 +4,9 @@ const {
 const {
     Op
 } = require('sequelize');
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     index: async (req, res, next) => {
@@ -18,16 +21,16 @@ module.exports = {
             const dataAirport = await Airport.findAndCountAll({
                 where: {
                     [Op.or]: [{
-                            code: {
-                                [Op.iLike]: `%${search}%`
-                            }
-                        },
-                        {
-                            name: {
-                                [Op.iLike]: `%${search}%`
-                            }
-
+                        code: {
+                            [Op.iLike]: `%${search}%`
                         }
+                    },
+                    {
+                        name: {
+                            [Op.iLike]: `%${search}%`
+                        }
+
+                    }
                     ]
                 },
                 order: [
@@ -109,6 +112,14 @@ module.exports = {
                 maps_embed
             } = req.body
 
+            const body = req.body
+
+            const validate = v.validate(body, schema.airport.createAirport)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
             const airport = await Airport.findOne({
                 where: {
                     code
@@ -155,6 +166,14 @@ module.exports = {
                 maps_link,
                 maps_embed
             } = req.body;
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.airport.createAirport)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
 
             const dataAirport = await Airport.findOne({
                 where: {

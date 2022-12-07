@@ -1,9 +1,9 @@
-const {
-    City
-} = require('../models')
-const {
-    Op
-} = require('sequelize')
+const { City } = require('../models')
+const { Op } = require('sequelize')
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
+
 module.exports = {
     index: async (req, res, next) => {
         try {
@@ -62,14 +62,8 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {
-                cityId
-            } = req.params;
-            const city = await City.findOne({
-                where: {
-                    id: cityId
-                }
-            });
+            const { cityId } = req.params;
+            const city = await City.findOne({ where: { id: cityId } });
             if (!city) {
                 return res.status(400).json({
                     status: false,
@@ -89,15 +83,17 @@ module.exports = {
 
     create: async (req, res, next) => {
         try {
-            const {
-                name,
-                country_id
-            } = req.body
-            const dataCity = await City.findOne({
-                where: {
-                    name
-                }
-            })
+            const { name, country_id } = req.body
+
+            const body = req.body
+
+            const validate = v.validate(body, schema.city.createCity)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const dataCity = await City.findOne({ where: { name } })
 
             if (dataCity) {
                 return res.status(409).json({
@@ -124,19 +120,18 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const {
-                cityId
-            } = req.params
-            let {
-                name,
-                country_id
-            } = req.body
+            const { cityId } = req.params
+            let { name, country_id } = req.body
 
-            const dataCity = await City.findOne({
-                where: {
-                    id: cityId
-                }
-            })
+            const body = req.body
+
+            const validate = v.validate(body, schema.city.createCity)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const dataCity = await City.findOne({ where: { id: cityId } })
             if (!dataCity) {
                 return res.status(409).json({
                     status: false,

@@ -7,10 +7,11 @@ const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
-const {
-    Op
-} = require('sequelize')
+const { Op } = require('sequelize')
 const c_biodata = require('./biodata');
+const schema = require('../schema')
+const validator = require('fastest-validator')
+const v = new validator
 
 module.exports = {
     index: async (req, res, next) => {
@@ -78,14 +79,8 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {
-                userId
-            } = req.params;
-            const userData = await User.findOne({
-                where: {
-                    id: userId
-                }
-            });
+            const { userId } = req.params;
+            const userData = await User.findOne({ where: { id: userId } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -113,11 +108,15 @@ module.exports = {
             } = req.body;
             const image = req.file.buffer.toString('base64');
 
-            const exist = await User.findOne({
-                where: {
-                    email: email
-                }
-            });
+            const body = req.body
+
+            const validate = v.validate(body, schema.user.createUser)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const exist = await User.findOne({ where: { email: email } });
             if (exist) {
                 return res.status(409).json({
                     status: false,
@@ -167,9 +166,7 @@ module.exports = {
             await User.update({
                 biodata_id: newBiodata.id
             }, {
-                where: {
-                    id: newUser.id
-                }
+                where: { id: newUser.id }
             });
 
             return res.status(201).json({
@@ -205,11 +202,15 @@ module.exports = {
             } = req.body;
             let image = req.file.buffer.toString('base64');
 
-            const userData = await User.findOne({
-                where: {
-                    id: userId
-                }
-            });
+            const body = req.body
+
+            const validate = v.validate(body, schema.user.updateUser)
+
+            if (validate.length) {
+                return res.status(409).json(validate)
+            }
+
+            const userData = await User.findOne({ where: { id: userId } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -218,11 +219,7 @@ module.exports = {
                 });
             }
 
-            const biodata = await Biodata.findOne({
-                where: {
-                    id: userData.biodata_id
-                }
-            });
+            const biodata = await Biodata.findOne({ where: { id: userData.biodata_id } });
             if (!biodata) {
                 return res.status(400).json({
                     status: false,
@@ -231,11 +228,7 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({
-                where: {
-                    id: userData.avatar_id
-                }
-            });
+            const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
 
             if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
@@ -251,9 +244,7 @@ module.exports = {
                 imagekit_url: uploadNewImage.url,
                 imagekit_path: uploadNewImage.filePath
             }, {
-                where: {
-                    id: imageData.id
-                }
+                where: { id: imageData.id }
             });
 
             if (!name) name = userData.name;
@@ -278,9 +269,7 @@ module.exports = {
                 avatar: image,
                 role: role,
             }, {
-                where: {
-                    id: userId
-                }
+                where: { id: userId }
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
@@ -318,15 +307,9 @@ module.exports = {
     // admin
     delete: async (req, res, next) => {
         try {
-            const {
-                userId
-            } = req.params;
+            const { userId } = req.params;
 
-            const userData = await User.findOne({
-                where: {
-                    id: userId
-                }
-            });
+            const userData = await User.findOne({ where: { id: userId } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -335,36 +318,22 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({
-                where: {
-                    id: userData.avatar_id
-                }
-            });
+            const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
 
             if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
             }
 
             if (userData.avatar_id != 1) {
-                await Image.destroy({
-                    where: {
-                        id: userData.avatar_id
-                    }
-                });
+                await Image.destroy({ where: { id: userData.avatar_id } });
             }
 
             if (userData.biodata_id != 0) {
-                await Biodata.destroy({
-                    where: {
-                        id: userData.biodata_id
-                    }
-                });
+                await Biodata.destroy({ where: { id: userData.biodata_id } });
             }
 
             const isDeleted = await User.destroy({
-                where: {
-                    id: userId
-                }
+                where: { id: userId }
             });
 
             return res.status(201).json({
