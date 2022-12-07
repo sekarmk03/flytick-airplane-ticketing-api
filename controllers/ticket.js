@@ -10,10 +10,10 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page -1) * limit;
             let end = page * limit;
-            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
                 type: QueryTypes.SELECT
             })
-            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
+            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
                 type: QueryTypes.SELECT
             })
 

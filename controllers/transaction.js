@@ -29,7 +29,7 @@ module.exports = {
                 ],
                 where: {
                     invoice_number: {
-                        [Op.iLike]: search
+                        [Op.iLike]: `%${search}%`
                     }
                 },
                 limit: limit,
