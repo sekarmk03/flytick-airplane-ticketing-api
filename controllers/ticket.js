@@ -34,19 +34,19 @@ module.exports = {
             //     ]
             //     }});
             let count = countTickets.length;
+            let thisPageRows = tickets.length;
             let pagination ={}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count/limit);
+            pagination.thisPageRows = thisPageRows;
             if (end<count){
                 pagination.next = {
-                    page: page + 1,
-                    limit
+                    page: page + 1
                 }
             }
             if (start>0){
                 pagination.prev = {
-                    page: page - 1,
-                    limit
+                    page: page - 1
                 }
             }
             if (page>pagination.totalPages){
@@ -58,7 +58,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get all tickets success',
-                data: tickets.rows
+                data: tickets
             })
         } catch (err) {
             next(err);
