@@ -51,45 +51,66 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "code", type = "ASC", search = ""
+                sort = "code", type = "ASC", search = "", page = "1", limit = "10"
             } = req.query;
-            const allFlight = await Flight.findAll({
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            const allFlight = await Flight.findAndCountAll({
                 where: {
                     // [Op.or]: [
-                        // {
-                        //     id: {
-                        //         [Op.gt]: 0
-                        //     }
-                        // },
-                        // {
-                            code: {
-                                [Op.iLike]: `%${search}%`
-                            }
-                        // }
-                        ,
-                        // {
-                        //     current_airport: parseInt(search)
-                        // }
+                    // {
+                    //     id: {
+                    //         [Op.gt]: 0
+                    //     }
+                    // },
+                    // {
+                    code: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                    // }
+                    ,
+                    // {
+                    //     current_airport: parseInt(search)
+                    // }
                     // ]
                 },
                 order: [
                     ['is_ready', 'desc'],
                     [sort, type]
-                ]
+                ],
+                limit: limit,
+                offset: start
             });
-
-            if (!allFlight) {
-                return res.status(400).json({
+            let count = allFlight.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
                     status: false,
-                    message: 'flight not found',
-                    data: null
-                });
+                    message: 'DATA NOT FOUND',
+                })
             }
 
             return res.status(200).json({
                 status: true,
                 message: 'get all flight success',
-                data: allFlight
+                pagination,
+                data: allFlight.rows
             });
 
         } catch (err) {
@@ -159,7 +180,7 @@ module.exports = {
             if (!is_ready) is_ready = flight.is_ready;
             if (!is_maintain) is_maintain = flight.is_maintain;
 
-            if(is_maintain == true) is_ready = false;
+            if (is_maintain == true) is_ready = false;
 
             const updated = await flight.update({
                 code: code,

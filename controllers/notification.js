@@ -36,9 +36,13 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "createdAt", type = "ASC", search = "", read = "false"
+                sort = "createdAt", type = "DESC", search = "", read = "false", page = "1", limit = "10"
             } = req.query;
-            const notifications = await Notification.findAll({
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            const notifications = await Notification.findAndCountAll({
                 order: [
                     [sort, type]
                 ],
@@ -56,21 +60,39 @@ module.exports = {
 
                         }
                     ]
-                }
+                },
+                limit: limit,
+                offset: start
             });
 
-            if (!notifications) {
-                return res.status(400).json({
+            let count = notifications.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
                     status: false,
-                    message: 'notification not found',
-                    data: null
-                });
+                    message: 'DATA NOT FOUND',
+                })
             }
 
             return res.status(200).json({
                 status: true,
                 message: 'get all notifications success',
-                data: notifications
+                pagination,
+                data: notifications.rows
             });
 
         } catch (err) {

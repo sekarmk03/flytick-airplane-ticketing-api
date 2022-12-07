@@ -1,35 +1,75 @@
-const { User, Biodata, Image } = require('../models');
+const {
+    User,
+    Biodata,
+    Image
+} = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
 const loginType = require('../utils/login_type');
 const imagekit = require('../utils/imagekit');
-const {Op} = require('sequelize')
+const {
+    Op
+} = require('sequelize')
 const c_biodata = require('./biodata');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="id", type="ASC", search=""} = req.query;
-            const usersData = await User.findAll({order:[[sort,type]],
+            let {
+                sort = "id", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page -1) * limit;
+            let end = page * limit;
+            const usersData = await User.findAndCountAll({
+                order: [
+                    [sort, type]
+                ],
                 where: {
                     [Op.or]: [{
-                        name: {
-                            [Op.iLike]: `%${search}%`
-                        }
-                    },
-                    {
-                        email: {
-                            [Op.iLike]: `%${search}%`
-                        }
+                            name: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            email: {
+                                [Op.iLike]: `%${search}%`
+                            }
 
-                    }
-                ]
-                }
+                        }
+                    ]
+                },
+                limit: limit,
+                offset: start
             });
+            let count = usersData.count;
+            let pagination ={}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count/limit);
+            if (end<count){
+                pagination.next = {
+                    page: page + 1,
+                    limit
+                }
+            }
+            if (start>0){
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page>pagination.totalPages){
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
             return res.status(200).json({
                 status: true,
                 message: 'get all user success',
-                data: usersData
+                pagination,
+                data: usersData.rows
             })
         } catch (err) {
             next(err);
@@ -38,9 +78,15 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {userId} = req.params;
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const {
+                userId
+            } = req.params;
+            const userData = await User.findOne({
+                where: {
+                    id: userId
+                }
+            });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -59,11 +105,20 @@ module.exports = {
 
     create: async (req, res, next) => {
         try {
-            const { name, email, password, role = roles.user } = req.body;
+            const {
+                name,
+                email,
+                password,
+                role = roles.user
+            } = req.body;
             const image = req.file.buffer.toString('base64');
-            
-            const exist = await User.findOne({where: {email: email}});
-            if(exist) {
+
+            const exist = await User.findOne({
+                where: {
+                    email: email
+                }
+            });
+            if (exist) {
                 return res.status(409).json({
                     status: false,
                     message: 'user already exist',
@@ -112,7 +167,9 @@ module.exports = {
             await User.update({
                 biodata_id: newBiodata.id
             }, {
-                where: {id: newUser.id}
+                where: {
+                    id: newUser.id
+                }
             });
 
             return res.status(201).json({
@@ -127,13 +184,33 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { userId } = req.params;
-            let { name, email, role, balance } = req.body;
-            let { nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null } = req.body;
+            const {
+                userId
+            } = req.params;
+            let {
+                name,
+                email,
+                role,
+                balance
+            } = req.body;
+            let {
+                nik,
+                birth_place,
+                birth_date,
+                telp,
+                nationality,
+                no_passport = null,
+                issue_date = null,
+                expire_date = null
+            } = req.body;
             let image = req.file.buffer.toString('base64');
 
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const userData = await User.findOne({
+                where: {
+                    id: userId
+                }
+            });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -141,8 +218,12 @@ module.exports = {
                 });
             }
 
-            const biodata = await Biodata.findOne({where: {id: userData.biodata_id}});
-            if(!biodata) {
+            const biodata = await Biodata.findOne({
+                where: {
+                    id: userData.biodata_id
+                }
+            });
+            if (!biodata) {
                 return res.status(400).json({
                     status: false,
                     message: 'biodata not found',
@@ -150,7 +231,11 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({where: {id: userData.avatar_id}});
+            const imageData = await Image.findOne({
+                where: {
+                    id: userData.avatar_id
+                }
+            });
 
             if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
@@ -165,14 +250,16 @@ module.exports = {
                 imagekit_id: uploadNewImage.fileId,
                 imagekit_url: uploadNewImage.url,
                 imagekit_path: uploadNewImage.filePath
-            },{
-                where: {id: imageData.id}
+            }, {
+                where: {
+                    id: imageData.id
+                }
             });
 
-            if(!name) name = userData.name;
-            if(!email) email = userData.email;
-            if(!role) role = userData.role;
-            if(!balance) balance = userData.balance;
+            if (!name) name = userData.name;
+            if (!email) email = userData.email;
+            if (!role) role = userData.role;
+            if (!balance) balance = userData.balance;
 
             /*
             if(!nik) nik = biodata.nik;
@@ -191,7 +278,9 @@ module.exports = {
                 avatar: image,
                 role: role,
             }, {
-                where: {id: userId}
+                where: {
+                    id: userId
+                }
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
@@ -229,10 +318,16 @@ module.exports = {
     // admin
     delete: async (req, res, next) => {
         try {
-            const {userId} = req.params;
+            const {
+                userId
+            } = req.params;
 
-            const userData = await User.findOne({where: {id: userId}});
-            if(!userData) {
+            const userData = await User.findOne({
+                where: {
+                    id: userId
+                }
+            });
+            if (!userData) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found',
@@ -240,24 +335,38 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({where: {id: userData.avatar_id}});
+            const imageData = await Image.findOne({
+                where: {
+                    id: userData.avatar_id
+                }
+            });
 
-            if(imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
+            if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                 await imagekit.deleteFile(imageData.imagekit_id);
             }
 
-            if(userData.avatar_id != 1) {
-                await Image.destroy({where: {id: userData.avatar_id}});
+            if (userData.avatar_id != 1) {
+                await Image.destroy({
+                    where: {
+                        id: userData.avatar_id
+                    }
+                });
             }
 
-            if(userData.biodata_id != 0) {
-                await Biodata.destroy({where: {id: userData.biodata_id}});
+            if (userData.biodata_id != 0) {
+                await Biodata.destroy({
+                    where: {
+                        id: userData.biodata_id
+                    }
+                });
             }
 
             const isDeleted = await User.destroy({
-                where: {id: userId}
+                where: {
+                    id: userId
+                }
             });
-            
+
             return res.status(201).json({
                 status: true,
                 message: 'delete user success',

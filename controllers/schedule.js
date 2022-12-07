@@ -1,9 +1,13 @@
 const {
-    Schedule
+    Schedule,
+    Flight,
+    Transaction,
+    sequelize
 } = require('../models');
 const {
     Op,
-} = require('sequelize')
+    QueryTypes
+} = require('sequelize');
 
 
 module.exports = {
@@ -11,26 +15,75 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = ""
+                sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = "", adult = "0", child = "0", page = "1", limit = "10"
             } = req.query;
+            let buyer = parseInt(adult) + parseInt(child);
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
 
-            const schedules = await Schedule.findAll({
-                order: [
-                    [sort, type]
-                ],
-                where: {
-                    departure_time: {
-                        [Op.between]: [`${departure_time} 00:00:00`, `${departure_time} 23:59:59`]
-                    },
-                    from_airport: from_airport,
-                    to_airport: to_airport
+            const schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                type: QueryTypes.SELECT
+            })
+
+            const countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
+                type: QueryTypes.SELECT
+            })
+
+            let count = countSchedules.length;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1,
+                    limit
                 }
-            });
+            }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1,
+                    limit
+                }
+            }
+            if (page > pagination.totalPages) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'DATA NOT FOUND',
+                })
+            }
+            // let flights = await Flight.findAll({
+            //     where: {
+            //         is_ready: true,
+            //     }
+            // });
+
+            // const schedules = await Schedule.findAll({
+            //     order: [
+            //         [sort, type]
+            //     ],
+            //     where: {
+            //         flight_id: [flights.id], //blom di tes bisa atau gak
+            //         passenger:{
+            //             [Op.gte]: flights.capacity-buyer
+            //         },
+            //         departure_time: {
+            //             [Op.between]: [departure_time, departure_time]
+            //         },
+            //         from_airport: from_airport,
+            //         to_airport: to_airport
+            //     }
+            // });
+
+            // console.log(id_flights)
+
 
             return res.status(200).json({
                 status: true,
                 message: "get all schedules success",
-                data: schedules
+                pagination,
+                data: schedules.rows
             });
         } catch (err) {
             next(err);
@@ -81,7 +134,6 @@ module.exports = {
                 });
             }
 
-            
             const newSchedule = await Schedule.create({
                 flight_id,
                 cost,
