@@ -12,6 +12,7 @@ const airport = require('./airport');
 const image = require('./image');
 const schedule = require('./schedule');
 const ticket = require('./ticket');
+const transaction = require('./transaction');
 
 router.use('/auth', auth);
 router.use('/oauth', oauth);
@@ -25,5 +26,6 @@ router.use('/airport', airport);
 router.use('/image', image);
 router.use('/schedule', schedule);
 router.use('/ticket', ticket);
+router.use('/transaction', transaction);
 
 module.exports = router;

@@ -4,7 +4,7 @@ const {
 const { Op } = require('sequelize')
 const schema = require('../schema')
 const validator = require('fastest-validator')
-const v = new validatorlopment;
+const v = new validator;
 
 module.exports = {
     create: async (req, res, next) => {
@@ -99,16 +99,15 @@ module.exports = {
             let pagination ={}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count/limit);
+            pagination.thisPageRows = countries.rows.length;
             if (end<count){
                 pagination.next = {
-                    page: page + 1,
-                    limit
+                    page: page + 1
                 }
             }
             if (start>0){
                 pagination.prev = {
-                    page: page - 1,
-                    limit
+                    page: page - 1
                 }
             }
             if (page>pagination.totalPages){

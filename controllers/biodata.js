@@ -34,16 +34,15 @@ module.exports = {
             let pagination ={}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count/limit);
+            pagination.thisPageRows = biodata.rows.length;
             if (end<count){
                 pagination.next = {
-                    page: page + 1,
-                    limit
+                    page: page + 1
                 }
             }
             if (start>0){
                 pagination.prev = {
-                    page: page - 1,
-                    limit
+                    page: page - 1
                 }
             }
             if (page>pagination.totalPages){

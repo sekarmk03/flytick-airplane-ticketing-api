@@ -10,10 +10,10 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page -1) * limit;
             let end = page * limit;
-            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
                 type: QueryTypes.SELECT
             })
-            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name LIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
+            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
                 type: QueryTypes.SELECT
             })
 
@@ -34,19 +34,19 @@ module.exports = {
             //     ]
             //     }});
             let count = countTickets.length;
+            let thisPageRows = tickets.length;
             let pagination ={}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count/limit);
+            pagination.thisPageRows = thisPageRows;
             if (end<count){
                 pagination.next = {
-                    page: page + 1,
-                    limit
+                    page: page + 1
                 }
             }
             if (start>0){
                 pagination.prev = {
-                    page: page - 1,
-                    limit
+                    page: page - 1
                 }
             }
             if (page>pagination.totalPages){
@@ -58,7 +58,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get all tickets success',
-                data: tickets.rows
+                data: tickets
             })
         } catch (err) {
             next(err);
