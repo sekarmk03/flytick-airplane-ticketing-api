@@ -75,12 +75,12 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {
-                airportId
+                id
             } = req.params;
 
             const airport = await Airport.findOne({
                 where: {
-                    id: airportId
+                    id: id
                 }
             });
             if (!airport) {
@@ -155,7 +155,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                airportId
+                id
             } = req.params;
             let {
                 code,
@@ -176,7 +176,7 @@ module.exports = {
 
             const dataAirport = await Airport.findOne({
                 where: {
-                    id: airportId
+                    id: id
                 }
             });
 
@@ -204,7 +204,7 @@ module.exports = {
                 maps_embed
             }, {
                 where: {
-                    id: airportId
+                    id: id
                 }
             })
 
@@ -221,12 +221,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                airportId
+                id
             } = req.params
 
             const dataAirport = await Airport.findOne({
                 where: {
-                    id: airportId
+                    id: id
                 }
             })
 
@@ -240,7 +240,7 @@ module.exports = {
 
             const deleted = await Airport.destroy({
                 where: {
-                    id: airportId
+                    id: id
                 }
             })
 

@@ -18,8 +18,8 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const {imageId} = req.params;
-            const image = await Image.findOne({where: {id: imageId}});
+            const {id} = req.params;
+            const image = await Image.findOne({where: {id: id}});
             if(!image) {
                 return res.status(400).json({
                     status: false,
@@ -65,10 +65,10 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { imageId } = req.params;
+            const { id } = req.params;
             const image = req.file.buffer.toString('base64');
             
-            const imageData = await Image.findOne({where: {id: imageId}});
+            const imageData = await Image.findOne({where: {id: id}});
             if(!imageData) {
                 return res.status(400).json({
                     status: false,
@@ -107,9 +107,9 @@ module.exports = {
     // ini juga keknya ga dipake
     delete: async (req, res, next) => {
         try {
-            const {imageId} = req.params;
+            const {id} = req.params;
 
-            const image = await Image.findOne({where: {id: imageId}});
+            const image = await Image.findOne({where: {id: id}});
             if(!image) {
                 return res.status(400).json({
                     status: false,
@@ -123,7 +123,7 @@ module.exports = {
             }
 
             const isDeleted = await Image.destroy({
-                where: {id: imageId}
+                where: {id: id}
             });
 
             return res.status(201).json({

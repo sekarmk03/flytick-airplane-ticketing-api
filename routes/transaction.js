@@ -5,12 +5,12 @@ const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all transaction
-router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
+router.get('/', authorize(), c.index);
 // get all transaction sorted
-// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
+// router.get('/?sort=&type=&search=', authorize(), c.index);
 // get detail user
-router.get('/:transactionId', authorize([roles.admin, roles.superadmin]), c.show);
-// create user
-router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
+router.get('/:id', authorize(), c.show);
+// create transaction
+router.post('/', authorize(), c.create);
 
 module.exports = router;

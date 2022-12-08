@@ -62,15 +62,14 @@ module.exports = {
         }
     },
 
-    // keknya ini dipake buat tiket
+    // kalau user mau liat profile nya
     show: async (req, res, next) => {
         try {
-            const {
-                biodataId
-            } = req.params;
+            const userData = await User.findOne({where: {id: req.user.id}});
+            const id = userData.biodata_id;
             const biodata = await Biodata.findOne({
                 where: {
-                    id: biodataId
+                    id: id
                 }
             });
             if (!biodata) {
@@ -112,11 +111,6 @@ module.exports = {
                     }
                 });
                 if (exist) {
-                    /*return res.status(409).json({
-                        status: false,
-                        message: 'biodata already exist',
-                        data: null
-                    });*/
                     return null;
                 }
             }
@@ -134,11 +128,6 @@ module.exports = {
                 expire_date: expire_date
             });
 
-            /*return res.status(201).json({
-                status: true,
-                message: 'biodata created',
-                data: newBiodata
-            });*/
             return newBiodata;
         } catch (err) {
             next(err);
@@ -148,7 +137,7 @@ module.exports = {
     // update data penumpang via ticket
     update: async (req, res, next) => {
         try {
-            // const {biodataId} = req.params;
+            // const {id} = req.params;
             let {
                 email,
                 name,
@@ -180,15 +169,8 @@ module.exports = {
                     id: userData.biodata_id
                 }
             });
-            // const biodata = await Biodata.findOne({where: {id: biodataId}});
+
             if (!biodata) {
-                /*
-                return res.status(400).json({
-                    status: false,
-                    message: 'biodata not found',
-                    data: null
-                });
-                */
                 return null;
             }
 
@@ -215,19 +197,11 @@ module.exports = {
                 issue_date: issue_date,
                 expire_date: expire_date,
             }, {
-                // where: {id: biodataId}
                 where: {
                     id: userData.biodata_id
                 }
             });
 
-            /*
-            return res.status(200).json({
-                status: true,
-                message: 'update user success',
-                data: isUpdated
-            });
-            */
             return isUpdated;
         } catch (err) {
             next(err);
@@ -238,12 +212,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                biodataId
+                id
             } = req.params;
 
             const biodata = await Biodata.findOne({
                 where: {
-                    id: biodataId
+                    id: id
                 }
             });
             if (!biodata) {
@@ -256,7 +230,7 @@ module.exports = {
 
             const isDeleted = await Biodata.destroy({
                 where: {
-                    id: biodataId
+                    id: id
                 }
             });
 

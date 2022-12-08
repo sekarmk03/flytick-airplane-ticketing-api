@@ -61,8 +61,8 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const { cityId } = req.params;
-            const city = await City.findOne({ where: { id: cityId } });
+            const { id } = req.params;
+            const city = await City.findOne({ where: { id: id } });
             if (!city) {
                 return res.status(400).json({
                     status: false,
@@ -119,7 +119,7 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const { cityId } = req.params
+            const { id } = req.params
             let { name, country_id } = req.body
 
             const body = req.body
@@ -130,7 +130,7 @@ module.exports = {
                 return res.status(409).json(validate)
             }
 
-            const dataCity = await City.findOne({ where: { id: cityId } })
+            const dataCity = await City.findOne({ where: { id: id } })
             if (!dataCity) {
                 return res.status(409).json({
                     status: false,
@@ -147,7 +147,7 @@ module.exports = {
                 country_id: country_id
             }, {
                 where: {
-                    id: cityId
+                    id: id
                 }
             })
 
@@ -164,12 +164,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                cityId
+                id
             } = req.params
 
             const dataCity = await City.findOne({
                 where: {
-                    id: cityId
+                    id: id
                 }
             })
 
@@ -183,7 +183,7 @@ module.exports = {
 
             const deleted = await City.destroy({
                 where: {
-                    id: cityId
+                    id: id
                 }
             })
 

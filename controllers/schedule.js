@@ -64,31 +64,6 @@ module.exports = {
                     message: 'DATA NOT FOUND',
                 })
             }
-            // let flights = await Flight.findAll({
-            //     where: {
-            //         is_ready: true,
-            //     }
-            // });
-
-            // const schedules = await Schedule.findAll({
-            //     order: [
-            //         [sort, type]
-            //     ],
-            //     where: {
-            //         flight_id: [flights.id], //blom di tes bisa atau gak
-            //         passenger:{
-            //             [Op.gte]: flights.capacity-buyer
-            //         },
-            //         departure_time: {
-            //             [Op.between]: [departure_time, departure_time]
-            //         },
-            //         from_airport: from_airport,
-            //         to_airport: to_airport
-            //     }
-            // });
-
-            // console.log(id_flights)
-
 
             return res.status(200).json({
                 status: true,
@@ -103,11 +78,11 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {
-                scheduleId
+                id
             } = req.params;
             const schedule = await Schedule.findOne({
                 where: {
-                    id: scheduleId
+                    id: id
                 }
             });
             if (!schedule) {
@@ -175,7 +150,7 @@ module.exports = {
     },
     update: async (req, res, next) => {
         const {
-            scheduleId
+            id
         } = req.params;
         let {
             flight_id,
@@ -197,7 +172,7 @@ module.exports = {
 
         const scheduleData = await Schedule.findOne({
             where: {
-                id: scheduleId
+                id: id
             }
         });
         if (!scheduleData) {
@@ -226,7 +201,7 @@ module.exports = {
             passenger
         }, {
             where: {
-                id: scheduleId
+                id: id
             }
         });
 
@@ -239,12 +214,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                scheduleId
+                id
             } = req.params;
 
             const scheduleData = await Schedule.findOne({
                 where: {
-                    id: scheduleId
+                    id: id
                 }
             });
             if (!scheduleData) {
@@ -257,7 +232,7 @@ module.exports = {
 
             const isDeleted = await Schedule.destroy({
                 where: {
-                    id: scheduleId
+                    id: id
                 }
             });
 

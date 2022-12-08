@@ -9,12 +9,12 @@ const upload = multer();
 // get all images
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail image
-router.get('/:userId', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
 // create image
 router.post('/', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.create);
 // update image
-router.put('/:userId', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.update);
 // delete image
-router.delete('/:userId', authorize([roles.admin, roles.superadmin]), c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

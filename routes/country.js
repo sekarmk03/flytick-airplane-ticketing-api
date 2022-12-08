@@ -9,12 +9,12 @@ router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
 // get all country sorted
 // router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail country
-router.get('/:countryId', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
 // create country
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update country
-router.put('/:countryId', authorize([roles.admin, roles.superadmin]), c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
 // delete country
-router.delete('/:countryId', authorize([roles.admin, roles.superadmin]), c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

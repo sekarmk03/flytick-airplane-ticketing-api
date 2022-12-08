@@ -17,22 +17,6 @@ module.exports = {
                 type: QueryTypes.SELECT
             })
 
-            // const tickets = await Ticket.findAll({order:[[sort,type]],
-            //     where: {
-            //         [Op.or]: [
-            //             {
-            //             user_id: {
-            //                 [Op.iLike]: `%${search}%`
-            //             }
-            //         },
-            //         {
-            //             biodata_id: {
-            //                 [Op.iLike]: `%${search}%`
-            //             }
-
-            //         }
-            //     ]
-            //     }});
             let count = countTickets.length;
             let thisPageRows = tickets.length;
             let pagination ={}
@@ -66,8 +50,8 @@ module.exports = {
     },
     show: async (req, res, next) => {
         try {
-            const {ticketId} = req.params;
-            const ticket = await Ticket.findOne({where: {id: ticketId}});
+            const {id} = req.params;
+            const ticket = await Ticket.findOne({where: {id: id}});
             if(!ticket) {
                 return res.status(400).json({
                     status: false,
@@ -110,10 +94,10 @@ module.exports = {
     },
     update: async (req, res, next) => {
         try {
-            const {ticketId} = req.params;
+            const {id} = req.params;
             let {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
 
-            const ticket = await Ticket.findOne({where: {id: ticketId}});
+            const ticket = await Ticket.findOne({where: {id: id}});
             if(!ticket) {
                 return res.status(400).json({
                     status: false,
@@ -138,7 +122,7 @@ module.exports = {
                 checked_in: true,
                 qr_code
             }, {
-                where: {id: ticketId}
+                where: {id: id}
             });
 
             return res.status(200).json({
@@ -152,9 +136,9 @@ module.exports = {
     },
     update_checked_in: async (req, res, next) => {
         try {
-            const {ticketId} = req.params;
+            const {id} = req.params;
 
-            const ticket = await Ticket.findOne({where: {id: ticketId}});
+            const ticket = await Ticket.findOne({where: {id: id}});
             if(!ticket) {
                 return res.status(400).json({
                     status: false,
@@ -166,7 +150,7 @@ module.exports = {
             const isUpdated = await Ticket.update({
                 checked_in: true
             }, {
-                where: {id: ticketId}
+                where: {id: id}
             });
 
             // kirim email berhasil check in
@@ -182,9 +166,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         try {
-            const {ticketId} = req.params;
+            const {id} = req.params;
 
-            const ticket = await Ticket.findOne({where: {id: ticketId}});
+            const ticket = await Ticket.findOne({where: {id: id}});
             if(!ticket) {
                 return res.status(400).json({
                     status: false,
@@ -194,7 +178,7 @@ module.exports = {
             }
 
             const isDeleted = await Ticket.destroy({
-                where: {id: ticketId}
+                where: {id: id}
             });
 
             return res.status(201).json({
