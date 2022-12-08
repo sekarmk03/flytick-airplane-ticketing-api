@@ -7,9 +7,9 @@ const multer = require('multer');
 const upload = multer();
 
 // get all user
-router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
+router.get('/', authorize(), c.index);
 // get detail user
-router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize(), c.show);
 // create user
 router.post('/', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.create);
 // update user
