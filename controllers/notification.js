@@ -110,12 +110,12 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {
-                notificationId
+                id
             } = req.params;
 
             const notification = await Notification.findOne({
                 where: {
-                    id: notificationId
+                    id: id
                 }
             });
 
@@ -139,7 +139,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                notificationId
+                id
             } = req.params;
 
             let {
@@ -159,7 +159,7 @@ module.exports = {
 
             const notification = await Notification.findOne({
                 where: {
-                    id: notificationId
+                    id: id
                 }
             });
 
@@ -183,7 +183,7 @@ module.exports = {
                 is_read: is_read
             }, {
                 where: {
-                    id: notificationId
+                    id: id
                 }
             });
 
@@ -199,12 +199,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                notificationId
+                id
             } = req.params;
 
             const notification = await Notification.findOne({
                 where: {
-                    id: notificationId
+                    id: id
                 }
             });
             if (!notification) {
@@ -217,7 +217,7 @@ module.exports = {
 
             const deleted = await Notification.destroy({
                 where: {
-                    id: notificationId
+                    id: id
                 }
             });
 

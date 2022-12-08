@@ -69,11 +69,11 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {
-                transactionId
+                id
             } = req.params;
             const transaction = await Transaction.findOne({
                 where: {
-                    id: transactionId
+                    id: id
                 }
             });
             if (!transaction) {

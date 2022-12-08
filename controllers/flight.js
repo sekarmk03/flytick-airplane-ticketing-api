@@ -119,12 +119,12 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const {
-                flightId
+                id
             } = req.params;
 
             const flight = await Flight.findOne({
                 where: {
-                    id: flightId
+                    id: id
                 }
             });
 
@@ -148,7 +148,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                flightId
+                id
             } = req.params;
 
             let {
@@ -161,7 +161,7 @@ module.exports = {
 
             let flight = await Flight.findOne({
                 where: {
-                    id: flightId
+                    id: id
                 }
             });
 
@@ -189,7 +189,7 @@ module.exports = {
                 is_maintain: is_maintain
             }, {
                 where: {
-                    id: flightId
+                    id: id
                 }
             });
 
@@ -205,12 +205,12 @@ module.exports = {
     delete: async (req, res, next) => {
         try {
             const {
-                flightId
+                id
             } = req.params;
 
             const flight = await Flight.findOne({
                 where: {
-                    id: flightId
+                    id: id
                 }
             });
             if (!flight) {
@@ -223,7 +223,7 @@ module.exports = {
 
             const deleted = await Flight.destroy({
                 where: {
-                    id: flightId
+                    id: id
                 }
             });
 

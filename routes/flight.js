@@ -6,15 +6,13 @@ const roles = require('../utils/roles');
 
 // get all flight
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
-// get all flight sorted
-// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail flight
-router.get('/:flightId', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
 // create flight
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update flight
-router.put('/:flightId', authorize([roles.admin, roles.superadmin]), c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
 // delete flight
-router.delete('/:flightId', authorize([roles.admin, roles.superadmin]), c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

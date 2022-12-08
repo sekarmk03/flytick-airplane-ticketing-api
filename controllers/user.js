@@ -78,8 +78,8 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const { userId } = req.params;
-            const userData = await User.findOne({ where: { id: userId } });
+            const { id } = req.params;
+            const userData = await User.findOne({ where: { id: id } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -181,7 +181,7 @@ module.exports = {
     update: async (req, res, next) => {
         try {
             const {
-                userId
+                id
             } = req.params;
             let {
                 name,
@@ -209,7 +209,7 @@ module.exports = {
                 return res.status(409).json(validate)
             }
 
-            const userData = await User.findOne({ where: { id: userId } });
+            const userData = await User.findOne({ where: { id: id } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -268,7 +268,7 @@ module.exports = {
                 avatar: image,
                 role: role,
             }, {
-                where: { id: userId }
+                where: { id: id }
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
@@ -306,9 +306,9 @@ module.exports = {
     // admin
     delete: async (req, res, next) => {
         try {
-            const { userId } = req.params;
+            const { id } = req.params;
 
-            const userData = await User.findOne({ where: { id: userId } });
+            const userData = await User.findOne({ where: { id: id } });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -332,7 +332,7 @@ module.exports = {
             }
 
             const isDeleted = await User.destroy({
-                where: { id: userId }
+                where: { id: id }
             });
 
             return res.status(201).json({

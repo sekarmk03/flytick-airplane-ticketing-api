@@ -5,19 +5,17 @@ const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all ticket
-router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
-// get all ticket
-// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
+router.get('/', authorize(), c.index);
 // get detail ticket
-router.get('/:ticketId', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize(), c.show);
 // create ticket
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update ticket
-router.put('/:ticketId', authorize([roles.admin, roles.superadmin]), c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
 // scan ticket
-// router.put('/:ticketId', authorize([roles.admin, roles.superadmin]), c.update);
-router.put('/:ticketId', c.update_checked_in);
+// router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
+router.put('/:id', c.update_checked_in);
 // delete ticket
-router.delete('/:ticketId', authorize([roles.admin, roles.superadmin]), c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;

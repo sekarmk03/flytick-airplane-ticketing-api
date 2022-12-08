@@ -8,15 +8,13 @@ const upload = multer();
 
 // get all user
 router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
-// get all sorted
-// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
 // get detail user
-router.get('/:userId', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
 // create user
 router.post('/', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.create);
 // update user
-router.put('/:userId', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.update);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.update);
 // delete user
-router.delete('/:userId', authorize([roles.admin, roles.superadmin]), c.delete);
+router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
 module.exports = router;
