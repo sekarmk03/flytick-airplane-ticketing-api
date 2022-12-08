@@ -82,11 +82,6 @@ module.exports = {
                 qr_code
             });
 
-            /*return res.status(201).json({
-                status: true,
-                message: 'ticket created',
-                data: newTicket
-            });*/
             return newTicket;
         } catch (err) {
             next(err);

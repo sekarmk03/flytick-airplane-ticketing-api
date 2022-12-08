@@ -14,7 +14,20 @@ module.exports = {
    await queryInterface.bulkInsert('Transactions', [
     {
       transaction_time: new Date(),
-      invoice_number: 'DUMMY-010101',
+      invoice_number: 'DUMMY-001-01',
+      user_id: 1,
+      paid_time: new Date(),
+      paid_status: true,
+      adult: 2,
+      child: 1,
+      round_trip: true,
+      total_cost: 11200000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      transaction_time: new Date(),
+      invoice_number: 'DUMMY-001-02',
       user_id: 1,
       paid_time: new Date(),
       paid_status: true,
@@ -27,7 +40,7 @@ module.exports = {
     },
     {
       transaction_time: new Date(),
-      invoice_number: 'DUMMY-020202',
+      invoice_number: 'DUMMY-002-01',
       user_id: 2,
       paid_time: new Date(),
       paid_status: true,
