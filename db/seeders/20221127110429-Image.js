@@ -17,11 +17,11 @@ module.exports = {
     {
       filename: 'default.jpg',
       imagekit_id: 'default-image',
-      imagekit_url: BASE_URL + '/images/default.jpg',
+      imagekit_url: BASE_URL + '/api/images/default.jpg',
       imagekit_path: '',
       createdAt: new Date(),
       updatedAt: new Date()
-    }
+    },
    ], {});
   },
 

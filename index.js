@@ -4,11 +4,13 @@ const logger = require('morgan');
 const router = require('./routes/index');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./flytick-docs.json');
+const cors = require('cors');
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
