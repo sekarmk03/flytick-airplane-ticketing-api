@@ -33,11 +33,11 @@ module.exports = {
             let start = (page - 1) * limit;
             let end = page * limit;
 
-            const schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+            const schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND departure_time > now() AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
                 type: QueryTypes.SELECT
             })
 
-            const countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
+            const countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59'  AND departure_time > now() AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
                 type: QueryTypes.SELECT
             })
 
