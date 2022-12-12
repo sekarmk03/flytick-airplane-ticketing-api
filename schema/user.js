@@ -8,7 +8,7 @@ module.exports = {
     updateUser: {
         name: 'string',
         email: 'email',
-        role: { type: 'string', enum: ['user', 'admin'] },
-        balance: 'integer'
+        role: { type: 'string', enum: ['user', 'admin', 'superadmin'] },
+        balance: 'number'
     }
 }

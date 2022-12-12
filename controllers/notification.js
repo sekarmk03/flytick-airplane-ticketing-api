@@ -13,8 +13,7 @@ module.exports = {
             const {
                 user_id,
                 topic,
-                message,
-                is_read = false
+                message
             } = req.body;
 
             const body = req.body
@@ -29,7 +28,7 @@ module.exports = {
                 user_id: user_id,
                 topic: topic,
                 message: message,
-                is_read: is_read
+                is_read: false
             })
 
             return res.status(201).json({

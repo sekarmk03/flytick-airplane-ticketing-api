@@ -23,18 +23,35 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page -1) * limit;
             let end = page * limit;
-            const transactions = await Transaction.findAndCountAll({
-                order: [
-                    [sort, type]
-                ],
-                where: {
-                    invoice_number: {
-                        [Op.iLike]: `%${search}%`
-                    }
-                },
-                limit: limit,
-                offset: start
-            });
+            let transactions;
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                transactions = await Transaction.findAndCountAll({
+                    order: [
+                        [sort, type]
+                    ],
+                    where: {
+                        invoice_number: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    limit: limit,
+                    offset: start
+                });
+            } else if(req.user.role == 'user') {
+                transactions = await Transaction.findAndCountAll({
+                    order: [
+                        [sort, type]
+                    ],
+                    where: {
+                        user_id: req.user.id,
+                        invoice_number: {
+                            [Op.iLike]: `%${search}%`
+                        }
+                    },
+                    limit: limit,
+                    offset: start
+                });
+            }
             let count = transactions.count;
             let pagination ={}
             pagination.totalRows = count;

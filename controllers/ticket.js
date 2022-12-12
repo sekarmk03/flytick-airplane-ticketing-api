@@ -10,12 +10,25 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page -1) * limit;
             let end = page * limit;
-            const tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
-                type: QueryTypes.SELECT
-            })
-            const countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
-                type: QueryTypes.SELECT
-            })
+            let tickets;
+            let countTickets;
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                    type: QueryTypes.SELECT
+                })
+
+                countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
+                    type: QueryTypes.SELECT
+                })
+            } else if(req.user.role == 'user') {
+                tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%' AND id=${req.user.id}) OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%' AND email=${req.user.email}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                    type: QueryTypes.SELECT
+                })
+
+                countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%' AND id=${req.user.id}) OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%' AND email=${req.user.email})`, {
+                    type: QueryTypes.SELECT
+                })
+            }
 
             let count = countTickets.length;
             let thisPageRows = tickets.length;
