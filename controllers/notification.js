@@ -51,28 +51,55 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page - 1) * limit;
             let end = page * limit;
-            const notifications = await Notification.findAndCountAll({
-                order: [
-                    [sort, type]
-                ],
-                where: {
+            let notifications = {};
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                notifications = await Notification.findAndCountAll({
+                    order: [
+                        [sort, type]
+                    ],
+                    where: {
                         is_read: read,
-                    [Op.or]: [{
-                            topic: {
-                                [Op.iLike]: `%${search}%`
+                        [Op.or]: [{
+                                topic: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+                            },
+                            {
+                                message: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+    
                             }
-                        },
-                        {
-                            message: {
-                                [Op.iLike]: `%${search}%`
+                        ]
+                    },
+                    limit: limit,
+                    offset: start
+                });
+            } else if(req.user.role == 'user') {
+                notifications = await Notification.findAndCountAll({
+                    order: [
+                        [sort, type]
+                    ],
+                    where: {
+                        user_id: req.user.id,
+                        is_read: read,
+                        [Op.or]: [{
+                                topic: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+                            },
+                            {
+                                message: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+    
                             }
-
-                        }
-                    ]
-                },
-                limit: limit,
-                offset: start
-            });
+                        ]
+                    },
+                    limit: limit,
+                    offset: start
+                });
+            }
 
             let count = notifications.count;
             let pagination ={}
