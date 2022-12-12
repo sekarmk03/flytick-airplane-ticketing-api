@@ -84,6 +84,7 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
+            console.log(req.body);
 
             const newTicket = await Ticket.create({
                 type,
@@ -96,6 +97,9 @@ module.exports = {
             });
 
             return newTicket;
+            // return res.status(201).json({
+            //     data: newTicket
+            // });
         } catch (err) {
             next(err);
         }

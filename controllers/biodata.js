@@ -112,7 +112,7 @@ module.exports = {
                     }
                 });
                 if (exist) {
-                    return null;
+                    return exist;
                 }
             }
 

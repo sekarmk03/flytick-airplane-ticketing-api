@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       qr_code: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
