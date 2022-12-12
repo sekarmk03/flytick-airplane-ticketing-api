@@ -167,8 +167,7 @@ module.exports = {
             departure_time,
             arrival_time,
             from_airport,
-            to_airport,
-            passenger
+            to_airport
         } = req.body;
 
         const body = req.body
@@ -198,7 +197,6 @@ module.exports = {
         if (!arrival_time) arrival_time = scheduleData.arrival_time;
         if (!from_airport) from_airport = scheduleData.from_airport;
         if (!to_airport) to_airport = scheduleData.to_airport;
-        if (!passenger) passenger = scheduleData.passenger;
 
         const isUpdateSchedule = await Schedule.update({
             flight_id,
@@ -206,8 +204,7 @@ module.exports = {
             departure_time,
             arrival_time,
             from_airport,
-            to_airport,
-            passenger
+            to_airport
         }, {
             where: {
                 id: id

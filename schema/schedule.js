@@ -13,7 +13,6 @@ module.exports = {
         departure_time: 'string',
         arrival_time: 'string',
         from_airport: 'number',
-        to_airport: 'number',
-        passenger: 'number'
+        to_airport: 'number'
     },
 }
