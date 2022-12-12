@@ -65,6 +65,7 @@ module.exports = {
     // kalau user mau liat profile nya
     show: async (req, res, next) => {
         try {
+            const {param_id} = req.params;
             const userData = await User.findOne({where: {id: req.user.id}});
             const id = userData.biodata_id;
             const biodata = await Biodata.findOne({
