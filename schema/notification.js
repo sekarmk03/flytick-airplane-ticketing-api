@@ -1,8 +1,8 @@
 module.exports = {
     createNotif: {
-        user_id: 'integer',
+        user_id: 'number',
         topic: 'string',
         message: 'string',
-        is_read: 'boolean'
+        is_read: {type: 'boolean', optional: true}
     }
 }

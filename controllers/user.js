@@ -23,27 +23,34 @@ module.exports = {
             limit = parseInt(limit)
             let start = 0 + (page -1) * limit;
             let end = page * limit;
-            const usersData = await User.findAndCountAll({
-                order: [
-                    [sort, type]
-                ],
-                where: {
-                    [Op.or]: [{
-                            name: {
-                                [Op.iLike]: `%${search}%`
+            let usersData;
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                usersData = await User.findAndCountAll({
+                    order: [
+                        [sort, type]
+                    ],
+                    where: {
+                        [Op.or]: [{
+                                name: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+                            },
+                            {
+                                email: {
+                                    [Op.iLike]: `%${search}%`
+                                }
+    
                             }
-                        },
-                        {
-                            email: {
-                                [Op.iLike]: `%${search}%`
-                            }
-
-                        }
-                    ]
-                },
-                limit: limit,
-                offset: start
-            });
+                        ]
+                    },
+                    limit: limit,
+                    offset: start
+                });
+            } else if (req.user.role == 'user') {
+                usersData = await User.findOne({
+                    where: {id: req.user.id}
+                });
+            }
             let count = usersData.count;
             let pagination ={}
             pagination.totalRows = count;
@@ -188,16 +195,6 @@ module.exports = {
                 email,
                 role,
                 balance
-            } = req.body;
-            let {
-                nik,
-                birth_place,
-                birth_date,
-                telp,
-                nationality,
-                no_passport = null,
-                issue_date = null,
-                expire_date = null
             } = req.body;
             let image = req.file.buffer.toString('base64');
 

@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     biodata_id: DataTypes.INTEGER,
     transaction_id: DataTypes.INTEGER,
     checked_in: DataTypes.BOOLEAN,
-    qr_code: DataTypes.STRING
+    qr_code: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Ticket',
