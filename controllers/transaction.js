@@ -116,10 +116,13 @@ module.exports = {
                 schedule_id,
                 adult,
                 child,
-                round_trip
+                round_trip,
+                biodataList
             } = req.body;
             if (!adult) adult = req.query.adult;
             if (!child) child = req.query.child;
+
+            // console.log(biodataList);
 
             let data = [];
             let final_cost = 0;
@@ -156,29 +159,29 @@ module.exports = {
                 final_cost += total_cost;
                 t_data.transaction = newTransaction;
                 t_data.tickets = [];
-                req.ticket_schedule_id = schedule_id[i];
-                req.transaction_id = newTransaction.id;
+                req.body.ticket_schedule_id = schedule_id[i];
+                req.body.transaction_id = newTransaction.id;
 
                 // generate ticket adult
-                for (let j = 0; j < adult.length + child.length; j++) {
+                for (let j = 0; j < adult + child; j++) {
                     let ticket = {};
 
                     // new biodata
-                    const newBiodata = await c_biodata.create(req, res, next);
-                    if (newBiodata != null) {
-                        ticket.passenger_data = newBiodata;
-                    }
+                    const newBiodata = await c_biodata.create(biodataList[j], res, next);
+                    ticket.passenger_data = newBiodata;
 
-                    if (j < adult.length) req.type = 'Adult';
-                    else req.type = 'Children';
+                    if (j < adult) req.body.type = 'Adult';
+                    else req.body.type = 'Children';
 
-                    req.biodata_id = newBiodata.id;
+                    req.body.biodata_id = newBiodata.id;
 
                     // new ticket
                     const newTicket = await c_ticket.create(req, res, next);
 
                     // generate qr
                     const qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
+                    console.log(qr_code);
+                    console.log(newTicket.id);
 
                     // update qr_code ticket
                     await Ticket.update({
