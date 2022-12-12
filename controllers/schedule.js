@@ -21,29 +21,38 @@ module.exports = {
                 sort = "departure_time", type = "ASC", departure_time = "", from_airport = "", to_airport = "", adult = "0", child = "0", page = "1", limit = "10"
             } = req.query;
 
-            if (adult <= 0) {
-                return res.status(400).json({
-                    status: false,
-                    message: `You can't take flight without adult person`,
-                })
-            }
             let buyer = parseInt(adult) + parseInt(child);
             page = parseInt(page);
             limit = parseInt(limit)
             let start = (page - 1) * limit;
             let end = page * limit;
 
-            const schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
-                type: QueryTypes.SELECT
-            })
+            let schedules;
+            let countSchedules;
 
-            const countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
-                type: QueryTypes.SELECT
-            })
+            if(Object.keys(req.query).length !== 0) {
+                if (adult <= 0) {
+                    return res.status(400).json({
+                        status: false,
+                        message: `You can't take flight without adult person`,
+                    })
+                } // buat di transaction aja
+    
+                schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                    type: QueryTypes.SELECT
+                })
+    
+                countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
+                    type: QueryTypes.SELECT
+                })
+            } else {
+                schedules = await Schedule.findAll();
+                countSchedules = await Schedule.findAll();
+            }
 
             let count = countSchedules.length;
             let thisPageRows = schedules.length;
-                
+
             let pagination = {}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count / limit);

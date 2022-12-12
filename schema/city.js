@@ -1,6 +1,6 @@
 module.exports = {
     createCity: {
         name: 'string',
-        country_id: 'integer'
+        country_id: 'number'
     }
 }

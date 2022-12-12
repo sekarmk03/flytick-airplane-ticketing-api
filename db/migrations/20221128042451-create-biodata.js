@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       nationality: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       no_passport: {
         type: Sequelize.STRING
