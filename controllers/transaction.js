@@ -81,12 +81,7 @@ module.exports = {
                     page: page - 1
                 }
             }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
-            }
+            
             return res.status(200).json({
                 status: true,
                 message: 'get all transaction success',
@@ -204,8 +199,6 @@ module.exports = {
 
                     // generate qr
                     const qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
-                    console.log(qr_code);
-                    console.log(newTicket.id);
 
                     // update qr_code ticket
                     await Ticket.update({
