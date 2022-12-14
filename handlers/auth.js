@@ -5,7 +5,7 @@ const loginType = require('../utils/login_type');
 const schema = require('../schema')
 const validator = require('fastest-validator')
 const v = new validator
-// const mail = require('../utils/mailer')
+const mail = require('../utils/mailer')
 
 module.exports = {
     register: async (req, res, next) => {
