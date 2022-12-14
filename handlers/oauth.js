@@ -2,21 +2,16 @@ const jwt = require('jsonwebtoken');
 const googleOauth2 = require('../utils/google');
 const facebookOauth2 = require('../utils/facebook');
 const loginType = require('../utils/login_type');
-const { User, Image } = require('../models');
+const { User, Image, Biodata } = require('../models');
 const { JWT_SECRET_KEY } = process.env;
 const roles = require('../utils/roles');
 
 module.exports = {
     google: async (req, res, next) => {
         try {
-            const code = req.query.code;
+            const access_token = req.body.access_token;
 
-            if(!code) {
-                const url = googleOauth2.generateAuthURL();
-                return res.redirect(url);
-            }
-
-            await googleOauth2.setCredentials(code);
+            await googleOauth2.setCredentials(access_token);
 
             const userInfo = await googleOauth2.getUserData();
 
@@ -33,11 +28,31 @@ module.exports = {
                 user = await User.create({
                     name: userInfo.data.name,
                     email: userInfo.data.email,
+                    password: '',
                     avatar_id: newAvatar.id,
                     role: roles.user,
-                    balance: 10000000,
+                    balance: 50000000,
                     biodata_id: 0,
                     login_type: loginType.google
+                });
+
+                const newBiodata = await Biodata.create({
+                    email: user.email,
+                    name: user.name,
+                    nik: null,
+                    birth_place: null,
+                    birth_date: null,
+                    telp: null,
+                    nationality: null,
+                    no_passport: null,
+                    issue_date: null,
+                    expire_date: null
+                });
+    
+                await User.update({
+                    biodata_id: newBiodata.id
+                }, {
+                    where: { id: user.id }
                 });
             }
 
