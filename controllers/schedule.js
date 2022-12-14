@@ -38,15 +38,15 @@ module.exports = {
                     })
                 } // buat di transaction aja
     
-                schedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                schedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer}) ORDER BY sc."${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
                     type: QueryTypes.SELECT
                 })
     
-                countSchedules = await sequelize.query(`SELECT * FROM "Schedules" WHERE departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND from_airport = ${from_airport} AND to_airport = ${to_airport} AND flight_id IN (SELECT id FROM "Flights" WHERE is_ready = true AND capacity >= passenger + ${buyer})`, {
+                countSchedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer})`, {
                     type: QueryTypes.SELECT
                 })
             } else {
-                schedules = await Schedule.findAll();
+                schedules = await Schedule.findAll({include: {model: Flight, as: 'flight'}});
                 countSchedules = await Schedule.findAll();
             }
 

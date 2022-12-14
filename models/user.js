@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.belongsTo(models.Biodata, {foreignKey: 'biodata_id', as: 'biodata'});
+      User.belongsTo(models.Image, {foreignKey: 'avatar_id', as: 'avatar'});
+      User.hasMany(models.Transaction, {foreignKey: 'user_id', as: 'transactions'});
+      User.hasMany(models.Ticket, {foreignKey: 'user_id', as: 'tickets'});
     }
 
     async checkPassword(password) {

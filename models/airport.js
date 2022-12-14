@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Airport.belongsTo(models.City, {foreignKey: 'city_id', as: 'city'});
+      Airport.belongsTo(models.Country, {foreignKey: 'country_id', as: 'country'});
     }
   }
   Airport.init({
