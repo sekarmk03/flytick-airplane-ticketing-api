@@ -1,7 +1,7 @@
 const {
     Schedule,
     Flight,
-    Transaction,
+    Airport,
     sequelize
 } = require('../models');
 const {
@@ -45,8 +45,19 @@ module.exports = {
                 countSchedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer})`, {
                     type: QueryTypes.SELECT
                 })
+
+                const fromAirport = await Airport.findOne({where: {id: from_airport}});
+                const toAirport = await Airport.findOne({where: {id: to_airport}});
+
+                schedules = {schedules, fromAirport, toAirport};
             } else {
-                schedules = await Schedule.findAll({include: {model: Flight, as: 'flight'}});
+                schedules = await Schedule.findAll({
+                    include: [
+                        {model: Flight, as: 'flight'},
+                        {model: Airport, as: 'fromAirport'},
+                        {model: Airport, as: 'toAirport'}
+                    ]
+                });
                 countSchedules = await Schedule.findAll();
             }
 
@@ -92,6 +103,10 @@ module.exports = {
             const schedule = await Schedule.findOne({
                 where: {
                     id: id
+                },
+                include: {
+                    model: Flight,
+                    as: 'flight'
                 }
             });
             if (!schedule) {
@@ -136,7 +151,6 @@ module.exports = {
                     data: null
                 });
             }
-
 
             const newSchedule = await Schedule.create({
                 flight_id,

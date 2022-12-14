@@ -34,6 +34,16 @@ module.exports = {
                             [Op.iLike]: `%${search}%`
                         }
                     },
+                    include: [
+                        {
+                            model: User,
+                            as: 'user'
+                        },
+                        {
+                            model: Ticket,
+                            as: 'tickets'
+                        }
+                    ],
                     limit: limit,
                     offset: start
                 });
@@ -47,6 +57,10 @@ module.exports = {
                         invoice_number: {
                             [Op.iLike]: `%${search}%`
                         }
+                    },
+                    include: {
+                        model: Ticket,
+                        as: 'tickets'
                     },
                     limit: limit,
                     offset: start
@@ -91,7 +105,17 @@ module.exports = {
             const transaction = await Transaction.findOne({
                 where: {
                     id: id
-                }
+                },
+                include: [
+                    {
+                        model: User,
+                        as: 'user'
+                    },
+                    {
+                        model: Ticket,
+                        as: 'tickets'
+                    }
+                ]
             });
             if (!transaction) {
                 return res.status(400).json({
