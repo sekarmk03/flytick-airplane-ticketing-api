@@ -1,6 +1,6 @@
-require('dotenv').config()
 const nodemailer = require('nodemailer');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
+const ejs = require('ejs')
 
 const {
     GOOGLE_REFRESH_TOKEN,
@@ -15,14 +15,14 @@ const oauth2Client = new google.auth.OAuth2(
     GOOGLE_REDIRECT_URI
 );
 
-oauth2Client.setCredentials({refresh_token: GOOGLE_REFRESH_TOKEN});
+oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
 
 module.exports = {
     sendMail: (to, subject, html) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const accessToken = await oauth2Client.getAccessToken();
-            
+
                 const transport = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
@@ -46,6 +46,20 @@ module.exports = {
             } catch (err) {
                 reject(err);
             }
+        });
+    },
+
+    getHtml: (filename, data) => {
+        return new Promise((resolve, reject) => {
+            const path = __dirname + '/../views/' + filename;
+
+            ejs.renderFile(path, data, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
         });
     }
 }
