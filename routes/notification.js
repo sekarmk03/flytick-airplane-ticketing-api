@@ -12,6 +12,8 @@ router.get('/:id', authorize(), c.show);
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update notif
 router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
+router.put('/:id/read', authorize([roles.admin, roles.superadmin]), c.read_notification);
+router.put('/read-all', authorize([roles.admin, roles.superadmin]), c.read_all_notifications);
 // delete notif
 router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 
