@@ -59,22 +59,9 @@ module.exports = {
             let end = page * limit;
             const allFlight = await Flight.findAndCountAll({
                 where: {
-                    // [Op.or]: [
-                    // {
-                    //     id: {
-                    //         [Op.gt]: 0
-                    //     }
-                    // },
-                    // {
                     code: {
                         [Op.iLike]: `%${search}%`
                     }
-                    // }
-                    ,
-                    // {
-                    //     current_airport: parseInt(search)
-                    // }
-                    // ]
                 },
                 order: [
                     ['is_ready', 'desc'],
@@ -97,12 +84,6 @@ module.exports = {
                 pagination.prev = {
                     page: page - 1
                 }
-            }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
             }
 
             return res.status(200).json({

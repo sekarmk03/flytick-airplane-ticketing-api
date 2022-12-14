@@ -14,7 +14,7 @@ router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
 // scan ticket
 // router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
-router.put('/:id', c.update_checked_in);
+router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update_checked_in);
 // delete ticket
 router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 

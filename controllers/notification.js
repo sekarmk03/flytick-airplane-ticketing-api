@@ -113,12 +113,6 @@ module.exports = {
                     page: page - 1
                 }
             }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
-            }
 
             return res.status(200).json({
                 status: true,
