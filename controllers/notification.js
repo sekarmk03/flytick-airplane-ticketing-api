@@ -44,7 +44,7 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "createdAt", type = "DESC", search = "", read = "false", page = "1", limit = "10"
+                sort = "createdAt", type = "DESC", search = "", page = "1", limit = "10"
             } = req.query;
             page = parseInt(page);
             limit = parseInt(limit)
@@ -57,7 +57,6 @@ module.exports = {
                         [sort, type]
                     ],
                     where: {
-                        is_read: read,
                         [Op.or]: [{
                                 topic: {
                                     [Op.iLike]: `%${search}%`
@@ -81,7 +80,6 @@ module.exports = {
                     ],
                     where: {
                         user_id: req.user.id,
-                        is_read: read,
                         [Op.or]: [{
                                 topic: {
                                     [Op.iLike]: `%${search}%`
