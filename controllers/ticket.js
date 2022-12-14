@@ -1,4 +1,4 @@
-const {Ticket,sequelize} = require('../models');
+const {Ticket, Flight, Schedule, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const user = require('./user');
 
@@ -83,8 +83,23 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
+            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
             console.log(req.body);
+
+            // initialize ticket number
+            let ticket_number = '';
+
+            // generate seat
+            const flightData = await Flight.findOne({where: {id: flight_id}});
+            let fClass = '';
+            if (flightData.class === 'Economy') fClass = 'E';
+            else if (flightData.class === 'Business') fClass = 'B';
+            else fClass = 'F';
+            const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
+            const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
+
+            // generate pdf
+            // send pdf in transaction
 
             const newTicket = await Ticket.create({
                 type,
