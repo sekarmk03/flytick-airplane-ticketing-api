@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Biodata.hasOne(models.User, {foreignKey: 'biodata_id', as: 'user'});
     }
   }
   Biodata.init({

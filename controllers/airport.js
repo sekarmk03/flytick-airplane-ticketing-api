@@ -1,5 +1,7 @@
 const {
-    Airport
+    Airport,
+    City,
+    Country
 } = require('../models')
 const {
     Op
@@ -11,62 +13,87 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {
-                sort = "code", type = "ASC", search = "", page ="1", limit="10"
-            } = req.query;
-            page = parseInt(page);
-            limit = parseInt(limit)
-            let start = 0 + (page -1) * limit;
-            let end = page * limit;
-            const dataAirport = await Airport.findAndCountAll({
-                where: {
-                    [Op.or]: [{
-                        code: {
-                            [Op.iLike]: `%${search}%`
+            console.log(req.query);
+            console.log(req.user);
+            if(req.user) {
+                let {
+                    sort = "code", type = "ASC", search = "", page ="1", limit="10"
+                } = req.query;
+                page = parseInt(page);
+                limit = parseInt(limit)
+                let start = 0 + (page -1) * limit;
+                let end = page * limit;
+                const dataAirport = await Airport.findAndCountAll({
+                    where: {
+                        [Op.or]: [{
+                            code: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            name: {
+                                [Op.iLike]: `%${search}%`
+                            }
                         }
+                        ]
                     },
-                    {
-                        name: {
-                            [Op.iLike]: `%${search}%`
-                        }
-
-                    }
-                    ]
-                },
-                order: [
-                    [sort, type]
-                ],
-                limit: limit,
-                offset: start
-            })
-            let count = dataAirport.count;
-            let pagination ={}
-            pagination.totalRows = count;
-            pagination.totalPages = Math.ceil(count/limit);
-            pagination.thisPageRows = dataAirport.rows.length;
-            if (end<count){
-                pagination.next = {
-                    page: page + 1
-                }
-            }
-            if (start>0){
-                pagination.prev = {
-                    page: page - 1
-                }
-            }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
+                    order: [
+                        [sort, type]
+                    ],
+                    limit: limit,
+                    offset: start
                 })
-            }
+                let count = dataAirport.count;
+                let pagination ={}
+                pagination.totalRows = count;
+                pagination.totalPages = Math.ceil(count/limit);
+                pagination.thisPageRows = dataAirport.rows.length;
+                if (end<count){
+                    pagination.next = {
+                        page: page + 1
+                    }
+                }
+                if (start>0){
+                    pagination.prev = {
+                        page: page - 1
+                    }
+                }
+                if (page>pagination.totalPages){
+                    return res.status(404).json({
+                        status: false,
+                        message: 'DATA NOT FOUND',
+                    })
+                }
+    
+                return res.status(200).json({
+                    status: true,
+                    message: 'get all airport success',
+                    pagination,
+                    data: dataAirport.rows
+                })
+            } else {
+                const dataAirport = await Airport.findAll({
+                    include: [
+                        {
+                            model: City,
+                            as: 'city',
+                            attributes: ['name']
+                        },
+                        {
+                            model: Country,
+                            as: 'country',
+                            attributes: ['name']
+                        }
+                    ],
+                    raw: true
+                });
 
-            return res.status(200).json({
-                status: true,
-                message: 'get all airport success',
-                pagination,
-                data: dataAirport.rows
-            })
+                return res.status(200).json({
+                    status: true,
+                    message: 'get all airport success',
+                    data: dataAirport
+                });
+            }
         } catch (err) {
             next(err)
         }
@@ -90,10 +117,22 @@ module.exports = {
                     data: null
                 });
             }
+            const city = await City.findOne({where: {id: airport.city_id}});
+            const country = await Country.findOne({where: {id: airport.country_id}});
             return res.status(200).json({
                 status: true,
                 message: 'get airport success',
-                data: airport.get()
+                data: {
+                    id: airport.id,
+                    code: airport.code,
+                    name: airport.name,
+                    city_id: airport.city_id,
+                    city_name: city.name,
+                    country_id: airport.country_id,
+                    country_name: country.name,
+                    maps_link: airport.maps_link,
+                    maps_embed: airport.maps_embed,
+                }
             });
         } catch (err) {
             next(err);
