@@ -222,6 +222,39 @@ module.exports = {
             next(err);
         }
     },
+    read_notification: async (req, res, next) => {
+        try {
+            const {id} = req.params;
+            const notification = await Notification.update({
+                is_read: true
+            }, {
+                where: {id: id}
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'read notification success',
+                data: notification
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    read_all_notifications: async (req, res, next) => {
+        try {
+            const notification = await Notification.update({
+                is_read: true
+            }, {
+                where: {is_read: false}
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'read all notification success',
+                data: notification
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
     delete: async (req, res, next) => {
         try {
             const {
