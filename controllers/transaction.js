@@ -34,6 +34,16 @@ module.exports = {
                             [Op.iLike]: `%${search}%`
                         }
                     },
+                    include: [
+                        {
+                            model: User,
+                            as: 'user'
+                        },
+                        {
+                            model: Ticket,
+                            as: 'tickets'
+                        }
+                    ],
                     limit: limit,
                     offset: start
                 });
@@ -47,6 +57,10 @@ module.exports = {
                         invoice_number: {
                             [Op.iLike]: `%${search}%`
                         }
+                    },
+                    include: {
+                        model: Ticket,
+                        as: 'tickets'
                     },
                     limit: limit,
                     offset: start
@@ -67,12 +81,7 @@ module.exports = {
                     page: page - 1
                 }
             }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
-            }
+            
             return res.status(200).json({
                 status: true,
                 message: 'get all transaction success',
@@ -91,7 +100,17 @@ module.exports = {
             const transaction = await Transaction.findOne({
                 where: {
                     id: id
-                }
+                },
+                include: [
+                    {
+                        model: User,
+                        as: 'user'
+                    },
+                    {
+                        model: Ticket,
+                        as: 'tickets'
+                    }
+                ]
             });
             if (!transaction) {
                 return res.status(400).json({
@@ -180,8 +199,6 @@ module.exports = {
 
                     // generate qr
                     const qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
-                    console.log(qr_code);
-                    console.log(newTicket.id);
 
                     // update qr_code ticket
                     await Ticket.update({

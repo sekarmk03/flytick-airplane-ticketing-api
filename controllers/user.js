@@ -43,6 +43,17 @@ module.exports = {
                             }
                         ]
                     },
+                    include: [
+                        {
+                            model: Biodata,
+                            as: 'biodata'
+                        },
+                        {
+                            model: Image,
+                            as: 'avatar',
+                            attributes: ['filename', 'imagekit_url']
+                        }
+                    ],
                     limit: limit,
                     offset: start
                 });
@@ -66,12 +77,7 @@ module.exports = {
                     page: page - 1
                 }
             }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
-            }
+            
             return res.status(200).json({
                 status: true,
                 message: 'get all user success',
@@ -86,7 +92,20 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const { id } = req.params;
-            const userData = await User.findOne({ where: { id: id } });
+            const userData = await User.findOne({
+                where: { id: id },
+                include: [
+                    {
+                        model: Biodata,
+                        as: 'biodata'
+                    },
+                    {
+                        model: Image,
+                        as: 'avatar',
+                        attributes: ['filename', 'imagekit_url']
+                    }
+                ]
+            });
             if (!userData) {
                 return res.status(400).json({
                     status: false,
@@ -94,11 +113,12 @@ module.exports = {
                     data: null
                 });
             }
+            
             return res.status(200).json({
                 status: true,
                 message: 'get user success',
                 data: userData.get()
-            });
+                });
         } catch (err) {
             next(err);
         }

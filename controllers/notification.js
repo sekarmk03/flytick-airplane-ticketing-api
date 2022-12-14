@@ -44,7 +44,7 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "createdAt", type = "DESC", search = "", read = "false", page = "1", limit = "10"
+                sort = "createdAt", type = "DESC", search = "", page = "1", limit = "10"
             } = req.query;
             page = parseInt(page);
             limit = parseInt(limit)
@@ -57,7 +57,6 @@ module.exports = {
                         [sort, type]
                     ],
                     where: {
-                        is_read: read,
                         [Op.or]: [{
                                 topic: {
                                     [Op.iLike]: `%${search}%`
@@ -81,7 +80,6 @@ module.exports = {
                     ],
                     where: {
                         user_id: req.user.id,
-                        is_read: read,
                         [Op.or]: [{
                                 topic: {
                                     [Op.iLike]: `%${search}%`
@@ -114,12 +112,6 @@ module.exports = {
                 pagination.prev = {
                     page: page - 1
                 }
-            }
-            if (page>pagination.totalPages){
-                return res.status(404).json({
-                    status: false,
-                    message: 'DATA NOT FOUND',
-                })
             }
 
             return res.status(200).json({
@@ -217,6 +209,39 @@ module.exports = {
                 status: true,
                 message: 'update notification success',
                 data: updated
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    read_notification: async (req, res, next) => {
+        try {
+            const {id} = req.params;
+            const notification = await Notification.update({
+                is_read: true
+            }, {
+                where: {id: id}
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'read notification success',
+                data: notification
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+    read_all_notifications: async (req, res, next) => {
+        try {
+            const notification = await Notification.update({
+                is_read: true
+            }, {
+                where: {is_read: false}
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'read all notification success',
+                data: notification
             });
         } catch (err) {
             next(err);
