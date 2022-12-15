@@ -14,6 +14,9 @@ module.exports = {
       capacity: {
         type: Sequelize.INTEGER
       },
+      class: {
+        type: Sequelize.STRING
+      },
       current_airport: {
         type: Sequelize.INTEGER
       },

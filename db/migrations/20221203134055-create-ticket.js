@@ -8,7 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      ticket_number: {
+        type: Sequelize.STRING
+      },
       type: {
+        type: Sequelize.STRING
+      },
+      seat_number: {
         type: Sequelize.STRING
       },
       schedule_id: {
@@ -23,10 +29,16 @@ module.exports = {
       transaction_id: {
         type: Sequelize.INTEGER
       },
+      flight_id: {
+        type: Sequelize.INTEGER
+      },
       checked_in: {
         type: Sequelize.BOOLEAN
       },
       qr_code: {
+        type: Sequelize.TEXT
+      },
+      ticket_pdf: {
         type: Sequelize.TEXT
       },
       createdAt: {
