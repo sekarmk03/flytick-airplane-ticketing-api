@@ -1,50 +1,55 @@
-const {Ticket,sequelize} = require('../models');
+const {Ticket, Flight, Schedule, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const user = require('./user');
 
 module.exports = {
     index: async (req, res, next) => {
         try {
-            let {sort="createdAt", type="DESC", search="", page ="1", limit="10"} = req.query;
+            let {sort="createdAt", type="DESC", search="", page ="1", limit="10", checked_in = null} = req.query;
             page = parseInt(page);
-            limit = parseInt(limit)
+            limit = parseInt(limit);
             let start = 0 + (page -1) * limit;
             let end = page * limit;
             let tickets;
             let countTickets;
+            let querySelect = `SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`;
+            let queryOrder = `ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`;
+            if (checked_in !== null) {
+                querySelect = `${querySelect} AND checked_in=${checked_in}` ;
+            }
             if(req.user.role == 'admin' || req.user.role == 'superadmin') {
-                tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%') ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                tickets = await sequelize.query(`${querySelect} ${queryOrder}`, {
                     type: QueryTypes.SELECT
-                })
+                });
 
-                countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`, {
+                countTickets = await sequelize.query(`${querySelect}`, {
                     type: QueryTypes.SELECT
-                })
+                });
             } else if(req.user.role == 'user') {
-                tickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%' AND id=${req.user.id}) OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%' AND email=${req.user.email}) ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                tickets = await sequelize.query(`${querySelect} AND user_id=${req.user.id} ${queryOrder}`, {
                     type: QueryTypes.SELECT
-                })
+                });
 
-                countTickets = await sequelize.query(`SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%' AND id=${req.user.id}) OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%' AND email=${req.user.email})`, {
+                countTickets = await sequelize.query(`${querySelect} AND user_id=${req.user.id}`, {
                     type: QueryTypes.SELECT
-                })
+                });
             }
 
             let count = countTickets.length;
             let thisPageRows = tickets.length;
-            let pagination ={}
+            let pagination = {};
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count/limit);
             pagination.thisPageRows = thisPageRows;
             if (end<count){
                 pagination.next = {
                     page: page + 1
-                }
+                };
             }
             if (start>0){
                 pagination.prev = {
                     page: page - 1
-                }
+                };
             }
             
             return res.status(200).json({
@@ -78,8 +83,23 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, qr_code = null} = req.body;
+            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
             console.log(req.body);
+
+            // initialize ticket number
+            let ticket_number = '';
+
+            // generate seat
+            const flightData = await Flight.findOne({where: {id: flight_id}});
+            let fClass = '';
+            if (flightData.class === 'Economy') fClass = 'E';
+            else if (flightData.class === 'Business') fClass = 'B';
+            else fClass = 'F';
+            const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
+            const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
+
+            // generate pdf
+            // send pdf in transaction
 
             const newTicket = await Ticket.create({
                 type,
