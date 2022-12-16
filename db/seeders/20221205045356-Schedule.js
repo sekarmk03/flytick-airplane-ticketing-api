@@ -39,8 +39,8 @@ module.exports = {
       cost: 5500000,
       departure_time: "2022-12-10 20:00:00",
       arrival_time: "2022-12-11 01:15:00",
-      from_airport: 1,
-      to_airport: 4,
+      from_airport: 4,
+      to_airport: 1,
       passenger: 3,
       createdAt: new Date(),
       updatedAt: new Date()
