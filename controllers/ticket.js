@@ -1,4 +1,4 @@
-const {Ticket, Flight, Schedule, sequelize} = require('../models');
+const {Ticket, Flight, Schedule, Transaction, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const user = require('./user');
 
@@ -91,27 +91,35 @@ module.exports = {
 
             // generate seat
             const flightData = await Flight.findOne({where: {id: flight_id}});
-            let fClass = '';
-            if (flightData.class === 'Economy') fClass = 'E';
-            else if (flightData.class === 'Business') fClass = 'B';
-            else fClass = 'F';
+            let fClass = flightData.class[0];
             const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
             const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
 
             // generate pdf
+            let ticket_pdf = '';
             // send pdf in transaction
 
             const newTicket = await Ticket.create({
+                ticket_number,
                 type,
+                seat_number,
                 schedule_id: ticket_schedule_id,
                 user_id,
                 biodata_id,
                 transaction_id,
+                flight_id,
                 checked_in: false,
-                qr_code
+                qr_code,
+                ticket_pdf
             });
 
-            return newTicket;
+            // generate ticket number
+            const transactionData = await Transaction.findOne({where: {id: transaction_id}});
+            ticket_number = `${newTicket.id}/${type[0]}/${flightData.code}/${transactionData.invoice_number}`;
+
+            const updatedTicket = await Ticket.update({ticket_number: ticket_number}, {where: {id: newTicket.id}});
+
+            return updatedTicket;
             // return res.status(201).json({
             //     data: newTicket
             // });
@@ -134,7 +142,7 @@ module.exports = {
             }
 
             if(!type) type = ticket.type;
-            if(!schedule_id) schedule_id = ticket.schedule_id;
+            if(!ticket_schedule_id) ticket_schedule_id = ticket.ticket_schedule_id;
             if(!user_id) user_id = ticket.user_id;
             if(!biodata_id) biodata_id = ticket.biodata_id;
             if(!transaction_id) transaction_id = ticket.transaction_id;
@@ -142,7 +150,7 @@ module.exports = {
 
             const isUpdated = await Ticket.update({
                 type,
-                schedule_id,
+                schedule_id: ticket_schedule_id,
                 user_id,
                 biodata_id,
                 transaction_id,
