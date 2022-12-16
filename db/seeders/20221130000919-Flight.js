@@ -15,7 +15,7 @@ module.exports = {
     {
       code: "GA-123",
       capacity: 500,
-      class: "Economy",
+      fClass: "Economy",
       current_airport: 1,
       is_ready: true,
       is_maintain: false,
@@ -25,7 +25,7 @@ module.exports = {
     {
       code: "GA-456",
       capacity: 300,
-      class: "Business",
+      fClass: "Business",
       current_airport: 2,
       is_ready: true,
       is_maintain: false,
@@ -35,7 +35,7 @@ module.exports = {
     {
       code: "GA-789",
       capacity: 600,
-      class: "Economy",
+      fClass: "Economy",
       current_airport: 3,
       is_ready: true,
       is_maintain: false,

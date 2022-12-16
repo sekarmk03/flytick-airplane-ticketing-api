@@ -12,6 +12,7 @@ module.exports = {
             const {
                 code,
                 capacity,
+                fclass,
                 current_airport,
                 is_ready = true,
                 is_maintain = false
@@ -33,6 +34,7 @@ module.exports = {
             const flight = await Flight.create({
                 code: code,
                 capacity: capacity,
+                fclass: fclass,
                 current_airport: current_airport,
                 is_ready: is_ready,
                 is_maintain: is_maintain
@@ -135,6 +137,7 @@ module.exports = {
             let {
                 code,
                 capacity,
+                fClass,
                 current_airport,
                 is_ready,
                 is_maintain
@@ -156,6 +159,7 @@ module.exports = {
 
             if (!code) code = flight.code;
             if (!capacity) capacity = flight.capacity;
+            if (!fClass) fClass = flight.fClass;
             if (!current_airport) current_airport = flight.current_airport;
             if (!is_ready) is_ready = flight.is_ready;
             if (!is_maintain) is_maintain = flight.is_maintain;
@@ -165,6 +169,7 @@ module.exports = {
             const updated = await flight.update({
                 code: code,
                 capacity: capacity,
+                fClass: fClass,
                 current_airport: current_airport,
                 is_ready: is_ready,
                 is_maintain: is_maintain

@@ -91,7 +91,7 @@ module.exports = {
 
             // generate seat
             const flightData = await Flight.findOne({where: {id: flight_id}});
-            let fClass = flightData.class[0];
+            let fClass = flightData.fClass[0];
             const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
             const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
 
