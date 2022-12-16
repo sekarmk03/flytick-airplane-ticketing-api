@@ -10,6 +10,7 @@ module.exports = {
     google: async (req, res, next) => {
         try {
             const access_token = req.body.access_token;
+            console.log(access_token);
 
             await googleOauth2.setCredentials(access_token);
 
