@@ -1,6 +1,7 @@
 const {Ticket, Flight, Schedule, Transaction, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
-const user = require('./user');
+const generate_qr = require('../utils/generate_qr');
+const BASE_URL = process.env.BASE_URL;
 
 module.exports = {
     index: async (req, res, next) => {
@@ -83,8 +84,7 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
-            console.log(req.body);
+            let {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
 
             // initialize ticket number
             let ticket_number = '';
@@ -117,12 +117,20 @@ module.exports = {
             const transactionData = await Transaction.findOne({where: {id: transaction_id}});
             ticket_number = `${newTicket.id}/${type[0]}/${flightData.code}/${transactionData.invoice_number}`;
 
-            const updatedTicket = await Ticket.update({ticket_number: ticket_number}, {where: {id: newTicket.id}});
+            // generate qr
+            qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
 
-            return updatedTicket;
-            // return res.status(201).json({
-            //     data: newTicket
-            // });
+            // update qr_code ticket
+            await Ticket.update({
+                ticket_number: ticket_number,
+                qr_code: qr_code.url
+            }, {
+                where: {
+                    id: newTicket.id
+                }
+            });
+
+            return newTicket;
         } catch (err) {
             next(err);
         }

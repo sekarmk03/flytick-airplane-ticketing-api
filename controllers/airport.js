@@ -13,8 +13,6 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-            console.log(req.query);
-            console.log(req.user);
             if(req.user) {
                 let {
                     sort = "code", type = "ASC", search = "", page ="1", limit="10"
@@ -37,6 +35,18 @@ module.exports = {
                         }
                         ]
                     },
+                    include: [
+                        {
+                            model: City,
+                            as: 'city',
+                            attributes: ['name']
+                        },
+                        {
+                            model: Country,
+                            as: 'country',
+                            attributes: ['name']
+                        }
+                    ],
                     order: [
                         [sort, type]
                     ],

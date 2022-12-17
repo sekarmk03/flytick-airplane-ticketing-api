@@ -14,6 +14,6 @@ module.exports = {
         arrival_time: 'string',
         from_airport: { type: 'number', positive: true, integer: true },
         to_airport: { type: 'number', positive: true, integer: true },
-        passenger: { type: 'number', positive: true, integer: true }
+        passenger: { type: 'number', positive: true, integer: true, optional: true }
     },
 }
