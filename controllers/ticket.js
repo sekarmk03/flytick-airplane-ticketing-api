@@ -1,7 +1,7 @@
 const {Ticket, Flight, Schedule, Transaction, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
-const BASE_URL = process.env.BASE_URL;
+const {FE_BASE_URL} = process.env;
 
 module.exports = {
     index: async (req, res, next) => {
@@ -118,7 +118,7 @@ module.exports = {
             ticket_number = `${newTicket.id}/${type[0]}/${flightData.code}/${transactionData.invoice_number}`;
 
             // generate qr
-            qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
+            qr_code = await generate_qr(`${FE_BASE_URL}/admin/verification/${newTicket.id}`);
 
             // update qr_code ticket
             await Ticket.update({
