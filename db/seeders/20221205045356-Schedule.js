@@ -44,6 +44,17 @@ module.exports = {
       passenger: 3,
       createdAt: new Date(),
       updatedAt: new Date()
+    },
+    {
+      flight_id: 3,
+      cost: 5500000,
+      departure_time: "2022-12-20 20:00:00",
+      arrival_time: "2022-12-20 01:15:00",
+      from_airport: 4,
+      to_airport: 1,
+      passenger: 3,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
    ], {});
   },
