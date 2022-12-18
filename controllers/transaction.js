@@ -12,6 +12,7 @@ const {
 } = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
 const BASE_URL = process.env.BASE_URL;
+const mail = require('../utils/mailer')
 
 module.exports = {
     index: async (req, res, next) => {
@@ -21,10 +22,10 @@ module.exports = {
             } = req.query;
             page = parseInt(page);
             limit = parseInt(limit)
-            let start = 0 + (page -1) * limit;
+            let start = 0 + (page - 1) * limit;
             let end = page * limit;
             let transactions;
-            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+            if (req.user.role == 'admin' || req.user.role == 'superadmin') {
                 transactions = await Transaction.findAndCountAll({
                     order: [
                         [sort, type]
@@ -47,7 +48,7 @@ module.exports = {
                     limit: limit,
                     offset: start
                 });
-            } else if(req.user.role == 'user') {
+            } else if (req.user.role == 'user') {
                 transactions = await Transaction.findAndCountAll({
                     order: [
                         [sort, type]
@@ -67,21 +68,21 @@ module.exports = {
                 });
             }
             let count = transactions.count;
-            let pagination ={}
+            let pagination = {}
             pagination.totalRows = count;
-            pagination.totalPages = Math.ceil(count/limit);
+            pagination.totalPages = Math.ceil(count / limit);
             pagination.thisPageRows = transactions.rows.length;
-            if (end<count){
+            if (end < count) {
                 pagination.next = {
                     page: page + 1
                 }
             }
-            if (start>0){
+            if (start > 0) {
                 pagination.prev = {
                     page: page - 1
                 }
             }
-            
+
             return res.status(200).json({
                 status: true,
                 message: 'get all transaction success',
@@ -270,6 +271,10 @@ module.exports = {
                     id: user_id
                 }
             });
+
+            const htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
+
+            const sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
 
             return res.status(201).json({
                 status: true,

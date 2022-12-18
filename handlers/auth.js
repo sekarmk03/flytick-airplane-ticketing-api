@@ -5,12 +5,13 @@ const loginType = require('../utils/login_type');
 const schema = require('../schema')
 const validator = require('fastest-validator')
 const v = new validator
-// const mail = require('../utils/mailer')
+const mail = require('../utils/mailer')
 
 module.exports = {
     register: async (req, res, next) => {
         try {
             const { name, email, password, role = roles.user } = req.body;
+
 
             const exist = await User.findOne({ where: { email } });
             if (exist) {
@@ -41,6 +42,10 @@ module.exports = {
                 biodata_id: 0, // update biodata id when user complete their profile
                 login_type: loginType.basic
             });
+
+            const htmlEmail = await mail.getHtml('welcome.ejs', { name })
+
+            const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
 
             res.status(201).json({
                 status: true,
