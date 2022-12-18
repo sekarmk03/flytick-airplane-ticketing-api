@@ -11,12 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Flight.hasMany(models.Schedule, {foreignKey: 'flight_id', as: 'schedules'});
     }
   }
   Flight.init({
     code: DataTypes.STRING,
     capacity: DataTypes.INTEGER,
-    class: DataTypes.STRING,
+    fClass: DataTypes.STRING,
     current_airport: DataTypes.INTEGER,
     is_ready: DataTypes.BOOLEAN,
     is_maintain: DataTypes.BOOLEAN

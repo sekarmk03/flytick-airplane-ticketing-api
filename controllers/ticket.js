@@ -1,9 +1,7 @@
-const {Ticket, Flight, Schedule, Biodata, sequelize} = require('../models');
+const {Ticket, Flight, Schedule, Transaction, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
-const user = require('./user');
-let pdf = require("html-pdf");
-let path = require("path");
-let ejs = require("ejs");
+const generate_qr = require('../utils/generate_qr');
+const {FE_BASE_URL} = process.env;
 
 module.exports = {
     index: async (req, res, next) => {
@@ -86,31 +84,50 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
-            console.log(req.body);
+            let {type, ticket_schedule_id, user_id, biodata_id, transaction_id, flight_id, qr_code = null} = req.body;
 
             // initialize ticket number
             let ticket_number = '';
 
             // generate seat
             const flightData = await Flight.findOne({where: {id: flight_id}});
-            let fClass = '';
-            if (flightData.class === 'Economy') fClass = 'E';
-            else if (flightData.class === 'Business') fClass = 'B';
-            else fClass = 'F';
+            let fClass = flightData.fClass[0];
             const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
             const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
 
+            // generate pdf
+            let ticket_pdf = '';
             // send pdf in transaction
 
             const newTicket = await Ticket.create({
+                ticket_number,
                 type,
+                seat_number,
                 schedule_id: ticket_schedule_id,
                 user_id,
                 biodata_id,
                 transaction_id,
+                flight_id,
                 checked_in: false,
-                qr_code
+                qr_code,
+                ticket_pdf
+            });
+
+            // generate ticket number
+            const transactionData = await Transaction.findOne({where: {id: transaction_id}});
+            ticket_number = `${newTicket.id}/${type[0]}/${flightData.code}/${transactionData.invoice_number}`;
+
+            // generate qr
+            qr_code = await generate_qr(`${FE_BASE_URL}/admin/verification/${newTicket.id}`);
+
+            // update qr_code ticket
+            await Ticket.update({
+                ticket_number: ticket_number,
+                qr_code: qr_code.url
+            }, {
+                where: {
+                    id: newTicket.id
+                }
             });
 
             // generate pdf
@@ -140,9 +157,6 @@ module.exports = {
             });
 
             return newTicket;
-            // return res.status(201).json({
-            //     data: newTicket
-            // });
         } catch (err) {
             next(err);
         }
@@ -162,7 +176,7 @@ module.exports = {
             }
 
             if(!type) type = ticket.type;
-            if(!schedule_id) schedule_id = ticket.schedule_id;
+            if(!ticket_schedule_id) ticket_schedule_id = ticket.ticket_schedule_id;
             if(!user_id) user_id = ticket.user_id;
             if(!biodata_id) biodata_id = ticket.biodata_id;
             if(!transaction_id) transaction_id = ticket.transaction_id;
@@ -170,7 +184,7 @@ module.exports = {
 
             const isUpdated = await Ticket.update({
                 type,
-                schedule_id,
+                schedule_id: ticket_schedule_id,
                 user_id,
                 biodata_id,
                 transaction_id,
