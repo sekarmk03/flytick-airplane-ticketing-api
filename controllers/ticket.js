@@ -1,4 +1,4 @@
-const {Ticket, Flight, Schedule, Transaction, sequelize} = require('../models');
+const {Ticket, Flight, Schedule, Transaction, User, Biodata, Airport, Country, City, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
 const {FE_BASE_URL} = process.env;
@@ -73,10 +73,65 @@ module.exports = {
                     data: null
                 });
             }
+            const userData = await User.findOne({where: {id: ticket.user_id}});
+            const transactionData = await Transaction.findOne({where: {id: ticket.transaction_id}});
+            const passengerData = await Biodata.findOne({where: {id: ticket.biodata_id}});
+            const scheduleData = await Schedule.findOne({where: {id: ticket.schedule_id}});
+            const fromAirportData = await Airport.findOne({where: {id: scheduleData.from_airport}});
+            const toAirportData = await Airport.findOne({where: {id: scheduleData.to_airport}});
+            const flightData = await Flight.findOne({where: {id: ticket.flight_id}});
             return res.status(200).json({
                 status: true,
                 message: 'get ticket success',
-                data: ticket.get()
+                data: {
+                    ticketData: ticket,
+                    userData: {
+                        name: userData.name,
+                        email: userData.email,
+                        balance: userData.balance
+                    },
+                    transactionData: {
+                        transaction_time: transactionData.transaction_time,
+                        invoice_number: transactionData.invoice_number,
+                        paid_time: transactionData.paid_time,
+                        paid_status: transactionData.paid_status
+                    },
+                    passengerData: {
+                        email: passengerData.email,
+                        name: passengerData.name,
+                        nik: passengerData.nik,
+                        birth_place: passengerData.birth_place,
+                        birth_date: passengerData.birth_date,
+                        telp: passengerData.telp,
+                        nationality: await Country.findOne({where: {id: passengerData.nationality}}).name,
+                        no_passport: passengerData.no_passport,
+                        issue_date: passengerData.issue_date,
+                        expire_date: passengerData.expire_date,
+                    },
+                    scheduleData: {
+                        cost: scheduleData.cost,
+                        departure_time: scheduleData.departure_time,
+                        arrival_time: scheduleData.arrival_time,
+                    },
+                    fromAirportData: {
+                        code: fromAirportData.code,
+                        name: fromAirportData.name,
+                        city: await City.findOne({where: {id: fromAirportData.city_id}}).name,
+                        country: await Country.findOne({where: {id: fromAirportData.country_id}}).name,
+                        maps_link: fromAirportData.maps_link,
+                    },
+                    toAirportData: {
+                        code: toAirportData.code,
+                        name: toAirportData.name,
+                        city: await City.findOne({where: {id: toAirportData.city_id}}).name,
+                        country: await Country.findOne({where: {id: toAirportData.country_id}}).name,
+                        maps_link: toAirportData.maps_link,
+                    },
+                    flightData: {
+                        code: flightData.code,
+                        class: flightData.fClass
+                    }
+                }
             });
         } catch (err) {
             next(err);
