@@ -1,6 +1,9 @@
-const {Ticket, Flight, Schedule, sequelize} = require('../models');
+const {Ticket, Flight, Schedule, Biodata, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const user = require('./user');
+let pdf = require("html-pdf");
+let path = require("path");
+let ejs = require("ejs");
 
 module.exports = {
     index: async (req, res, next) => {
@@ -98,7 +101,6 @@ module.exports = {
             const scheduleData = await Schedule.findOne({where: {id: ticket_schedule_id}});
             const seat_number = `${fClass}/${String(scheduleData.passenger+1).padStart(3, '0')}`;
 
-            // generate pdf
             // send pdf in transaction
 
             const newTicket = await Ticket.create({
@@ -109,6 +111,32 @@ module.exports = {
                 transaction_id,
                 checked_in: false,
                 qr_code
+            });
+
+            // generate pdf
+            const biodata = await Biodata.findOne({where: {id: biodata_id}})
+            ejs.renderFile(path.join(__dirname, '.template/email/', "ticket.ejs"), {biodata: biodata, flight: flightData, schedule: scheduleData, ticket: newTicket}, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    let options = {
+                        "height": "11.25in",
+                        "width": "8.5in",
+                        "header": {
+                            "height": "20mm"
+                        },
+                        "footer": {
+                            "height": "20mm",
+                        },
+                    };
+                    pdf.create(data, options).toFile("ticket.pdf", function (err, data) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            res.send("File created successfully");
+                        }
+                    });
+                }
             });
 
             return newTicket;
