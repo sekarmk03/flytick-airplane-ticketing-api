@@ -1,6 +1,7 @@
 const {Ticket, Flight, Schedule, Transaction, User, Biodata, Airport, Country, City, sequelize} = require('../models');
 const {Op, QueryTypes} = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
+const generate_pdf = require('../utils/generate_pdf');
 const { FE_BASE_URL } = process.env;
 const mail = require('../utils/mailer')
 

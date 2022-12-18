@@ -6,7 +6,7 @@ const fs = require('fs');
 const compile = async function(template, data){
     const filePath = path.join(process.cwd(), './template/email', `${template}.ejs`);
     const html = await fs.readFile(filePath, 'utf-8');
-    return compile(html)(data)
+    return compile(html)(data);
 }
 
 function uploadPDF(file) {
