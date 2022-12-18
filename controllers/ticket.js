@@ -130,32 +130,6 @@ module.exports = {
                 }
             });
 
-            // generate pdf
-            const biodata = await Biodata.findOne({where: {id: biodata_id}})
-            ejs.renderFile(path.join(__dirname, '.template/email/', "ticket.ejs"), {biodata: biodata, flight: flightData, schedule: scheduleData, ticket: newTicket}, (err, data) => {
-                if (err) {
-                    res.send(err);
-                } else {
-                    let options = {
-                        "height": "11.25in",
-                        "width": "8.5in",
-                        "header": {
-                            "height": "20mm"
-                        },
-                        "footer": {
-                            "height": "20mm",
-                        },
-                    };
-                    pdf.create(data, options).toFile("ticket.pdf", function (err, data) {
-                        if (err) {
-                            res.send(err);
-                        } else {
-                            res.send("File created successfully");
-                        }
-                    });
-                }
-            });
-
             return newTicket;
         } catch (err) {
             next(err);
