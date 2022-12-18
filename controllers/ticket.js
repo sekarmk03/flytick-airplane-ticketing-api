@@ -145,15 +145,15 @@ module.exports = {
             // initialize ticket number
             let ticket_number = '';
 
+            // generate pdf
+            let ticket_pdf = '';
+            // send pdf in transaction
+
             // generate seat
             const flightData = await Flight.findOne({ where: { id: flight_id } });
             let fClass = flightData.fClass[0];
             const scheduleData = await Schedule.findOne({ where: { id: ticket_schedule_id } });
             const seat_number = `${fClass}/${String(scheduleData.passenger + 1).padStart(3, '0')}`;
-
-            // generate pdf
-            let ticket_pdf = '';
-            // send pdf in transaction
 
             const newTicket = await Ticket.create({
                 ticket_number,
@@ -180,6 +180,33 @@ module.exports = {
             await Ticket.update({
                 ticket_number: ticket_number,
                 qr_code: qr_code.url
+            }, {
+                where: {
+                    id: newTicket.id
+                }
+            });
+
+            // Generate PDF
+            const bio = await Biodata.findOne({where: {id: biodata_id}})
+            const ticket = {
+                number: ticket_number,
+                name: bio.name,
+                birth_place: bio.birth_place,
+                birth_date: bio.birth_date,
+                seat: seat_number,
+                from: scheduleData.from_airport,
+                to: scheduleData.to_airport,
+                departure_time: scheduleData.departure_time,
+                flight_code: flightData.code,
+                qr_code: qr_code.url
+            };
+
+            const pdf = await generate_pdf(ticketHtml, ticket);
+            ticket_pdf = pdf.url
+            
+            // update pdf ticket
+            await Ticket.update({
+                ticket_pdf: ticket_pdf
             }, {
                 where: {
                     id: newTicket.id

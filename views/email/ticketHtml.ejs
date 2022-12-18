@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ticket</title>
+  <script>
+    const qr = ticket.qr_code;
+    const image = document.getElementById("qr");
+    image.src = qr;
+ </script>
+</head>
+<body>
+<div style="display: flex; align-items: center;">
+  <img src="https://ik.imagekit.io/lflw4bvw1e/logo.png?ik-sdk-version=javascript-1.4.3&updatedAt=1671026089524" alt="Logo" style="width: 200px; display: block; margin: 0 auto;">
+</div>
+
+<p style="margin-left: 925px;">
+   Ticket Number: <strong><%= ticket.number %></strong>
+  </p>
+  <p style="margin-left: 450px;">
+    Welcome! Your ticket details are shown below.
+  </p>
+
+  <div style="display: flex;">
+    <p style="margin-left: 450px;">Name: <strong><%= ticket.name %></strong>
+      <br>Place of Birth: <strong><%= ticket.birth_place %></strong>
+      <br>Date of Birth: <strong><%= ticket.birth_date %></strong>
+    </p>
+    
+    <p style="margin-left: 180px;">
+  Flight Code: <strong><%= ticket.flight_code %></strong>
+  <br>From: <strong><%= ticket.from %></strong>
+  <br>To: <strong><%= ticket.to %></strong>
+  <br>Seat: <strong><%= ticket.seat %></strong>
+</p>
+
+    </div>
+    
+    <p style="font-size: 20px; text-align: center;">Departure Time: <strong><%= ticket.departure_time %></strong></p>
+      
+    
+    
+    <p style="margin-left: 450px;">
+      <br>
+        Show this QR-Code to the admin
+      </p>
+      <img src="" alt="QR Code" id="qr" style="display: block; margin: 0 auto;">
+    
+      <p style="margin-left: 450px;">
+        Thank you for using our services! Hope you have a nice trip! See ya next time!
+      </p>
+    </body>
+    </html>
+    
