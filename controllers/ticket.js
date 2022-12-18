@@ -202,8 +202,8 @@ module.exports = {
                 qr_code: qr_code.url
             };
 
-            const pdf = await generate_pdf(ticketHtml, ticket);
-            ticket_pdf = pdf.url
+            // const pdf = await generate_pdf(ticketHtml, ticket);
+            // ticket_pdf = pdf.url
             
             // update pdf ticket
             await Ticket.update({
