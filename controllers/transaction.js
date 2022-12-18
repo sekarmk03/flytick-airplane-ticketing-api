@@ -181,6 +181,7 @@ module.exports = {
                 t_data.tickets = [];
                 req.body.ticket_schedule_id = schedule_id[i];
                 req.body.transaction_id = newTransaction.id;
+                req.body.flight_id = schedule.flight_id;
 
                 // generate ticket adult
                 for (let j = 0; j < adult + child; j++) {
@@ -197,18 +198,6 @@ module.exports = {
 
                     // new ticket
                     const newTicket = await c_ticket.create(req, res, next);
-
-                    // generate qr
-                    const qr_code = await generate_qr(`${BASE_URL}/api/ticket/${newTicket.id}`);
-
-                    // update qr_code ticket
-                    await Ticket.update({
-                        qr_code: qr_code.url
-                    }, {
-                        where: {
-                            id: newTicket.id
-                        }
-                    });
 
                     const fixTicket = await Ticket.findOne({
                         where: {
