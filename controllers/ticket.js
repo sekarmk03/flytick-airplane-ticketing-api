@@ -188,19 +188,19 @@ module.exports = {
             });
 
             // Generate PDF
-            const bio = await Biodata.findOne({where: {id: biodata_id}})
-            const ticket = {
-                number: ticket_number,
-                name: bio.name,
-                birth_place: bio.birth_place,
-                birth_date: bio.birth_date,
-                seat: seat_number,
-                from: scheduleData.from_airport,
-                to: scheduleData.to_airport,
-                departure_time: scheduleData.departure_time,
-                flight_code: flightData.code,
-                qr_code: qr_code.url
-            };
+            // const bio = await Biodata.findOne({where: {id: biodata_id}})
+            // const ticket = {
+            //     number: ticket_number,
+            //     name: bio.name,
+            //     birth_place: bio.birth_place,
+            //     birth_date: bio.birth_date,
+            //     seat: seat_number,
+            //     from: scheduleData.from_airport,
+            //     to: scheduleData.to_airport,
+            //     departure_time: scheduleData.departure_time,
+            //     flight_code: flightData.code,
+            //     qr_code: qr_code.url
+            // };
 
             // const pdf = await generate_pdf(ticketHtml, ticket);
             // ticket_pdf = pdf.url
