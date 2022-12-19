@@ -152,8 +152,24 @@ module.exports = {
 
             // generate seat
             const flightData = await Flight.findOne({ where: { id: flight_id } });
+            if(!flightData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'flightData data not found',
+                    data: null
+                })
+            }
+
             let fClass = flightData.fClass[0];
             const scheduleData = await Schedule.findOne({ where: { id: ticket_schedule_id } });
+            if(!scheduleData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'scheduleData data not found',
+                    data: null
+                })
+            }
+
             const seat_number = `${fClass}/${String(scheduleData.passenger + 1).padStart(3, '0')}`;
 
             const newTicket = await Ticket.create({
@@ -172,6 +188,14 @@ module.exports = {
 
             // generate ticket number
             const transactionData = await Transaction.findOne({ where: { id: transaction_id } });
+            if(!transactionData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'transactionData data not found',
+                    data: null
+                })
+            }
+
             ticket_number = `${newTicket.id}/${type[0]}/${flightData.code}/${transactionData.invoice_number}`;
 
             // generate qr

@@ -161,6 +161,15 @@ module.exports = {
                         id: schedule_id[i]
                     }
                 });
+
+                if(!schedule) {
+                    return res.status(404).json({
+                        status: false,
+                        message: 'schedule data not found',
+                        data: null
+                    })
+                }
+
                 const total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
 
                 const newTransaction = await Transaction.create({
@@ -205,6 +214,14 @@ module.exports = {
                         }
                     });
 
+                    if(!fixTicket) {
+                        return res.status(404).json({
+                            status: false,
+                            message: 'fixTicket data not found',
+                            data: null
+                        })
+                    }
+
                     if (fixTicket) {
                         ticket.ticket_data = fixTicket;
                     }
@@ -230,11 +247,28 @@ module.exports = {
                         id: schedule_id[i]
                     }
                 });
+
+                if(!schedulePass) {
+                    return res.status(404).json({
+                        status: false,
+                        message: 'schedulePass data not found',
+                        data: null
+                    })
+                }
+
                 const flight = await Flight.findOne({
                     where: {
                         id: schedule.flight_id
                     }
                 });
+
+                if(!flight) {
+                    return res.status(404).json({
+                        status: false,
+                        message: 'flight data not found',
+                        data: null
+                    })
+                }
 
                 if (flight.capacity == schedulePass.passenger) {
                     await Flight.update({
@@ -253,6 +287,15 @@ module.exports = {
                     id: user_id
                 }
             });
+
+            if(!userData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'userData data not found',
+                    data: null
+                })
+            }
+
             await User.update({
                 balance: userData.balance - final_cost
             }, {
