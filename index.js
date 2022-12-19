@@ -18,6 +18,7 @@ app.use(cookieParser());
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/images', express.static('public/images'));
+// ERROR HANDLING HERE
 app.use('/api', router);
 
 module.exports = app;
