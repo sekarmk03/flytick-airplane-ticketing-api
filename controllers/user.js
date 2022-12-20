@@ -130,7 +130,8 @@ module.exports = {
                 name,
                 email,
                 password,
-                role = roles.user
+                role = roles.user,
+                balance = 50000000
             } = req.body;
             const image = req.file.buffer.toString('base64');
 
@@ -172,7 +173,7 @@ module.exports = {
                 password: hashed,
                 avatar_id: newAvatar.id,
                 role: role,
-                balance: 50000000,
+                balance: balance,
                 biodata_id: 0, // update biodata id when user complete their profile
                 login_type: loginType.basic
             });
