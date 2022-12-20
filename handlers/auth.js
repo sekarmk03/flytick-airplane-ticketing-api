@@ -12,8 +12,7 @@ module.exports = {
         try {
             const { name, email, password, role = roles.user } = req.body;
 
-
-            const exist = await User.findOne({ where: { email } });
+            const exist = await User.findOne({ where: { email: email } });
             if (exist) {
                 return res.status(400).json({
                     status: false,
