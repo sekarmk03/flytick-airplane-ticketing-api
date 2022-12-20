@@ -93,6 +93,7 @@ module.exports = {
             } = req.body;
 
             const body = req.body
+            req.body.nationality = parseInt(nationality);
 
             const validate = v.validate(body, schema.biodata.createBiodata)
 
@@ -148,6 +149,7 @@ module.exports = {
             } = req.body;
 
             const body = req.body
+            req.body.nationality = parseInt(nationality);
 
             const validate = v.validate(body, schema.biodata.createBiodata)
 
