@@ -42,9 +42,9 @@ module.exports = {
                 login_type: loginType.basic
             });
 
-            const htmlEmail = await mail.getHtml('welcome.ejs', { name })
+            // const htmlEmail = await mail.getHtml('welcome.ejs', { name })
 
-            const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
+            // const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
 
             res.status(201).json({
                 status: true,
