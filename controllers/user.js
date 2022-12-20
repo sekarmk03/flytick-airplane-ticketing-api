@@ -135,6 +135,7 @@ module.exports = {
             const image = req.file.buffer.toString('base64');
 
             const body = req.body
+            req.body.balance = parseInt(balance);
 
             const validate = v.validate(body, schema.user.createUser)
 
@@ -219,6 +220,7 @@ module.exports = {
             let image = req.file.buffer.toString('base64');
 
             const body = req.body
+            req.body.balance = parseInt(balance);
 
             const validate = v.validate(body, schema.user.updateUser)
 
