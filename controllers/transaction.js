@@ -131,7 +131,7 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {
+            let {
                 user_id,
                 schedule_id,
                 adult,
@@ -154,9 +154,9 @@ module.exports = {
                 // generate invoice number
                 let invoice_number = (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)).toUpperCase();
                 // set paid_status auto true
-                const paid_status = true;
+                let paid_status = true;
                 // search cost of the schedule
-                const schedule = await Schedule.findOne({
+                let schedule = await Schedule.findOne({
                     where: {
                         id: schedule_id[i]
                     }
@@ -170,9 +170,9 @@ module.exports = {
                     })
                 }
 
-                const total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
+                let total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
 
-                const newTransaction = await Transaction.create({
+                let newTransaction = await Transaction.create({
                     transaction_time: new Date(),
                     invoice_number,
                     user_id,
@@ -197,7 +197,7 @@ module.exports = {
                     let ticket = {};
 
                     // new biodata
-                    const newBiodata = await c_biodata.create(biodataList[j], res, next);
+                    let newBiodata = await c_biodata.create(biodataList[j], res, next);
                     ticket.passenger_data = newBiodata;
 
                     if (j < adult) req.body.type = 'Adult';
@@ -206,9 +206,9 @@ module.exports = {
                     req.body.biodata_id = newBiodata.id;
 
                     // new ticket
-                    const newTicket = await c_ticket.create(req, res, next);
+                    let newTicket = await c_ticket.create(req, res, next);
 
-                    const fixTicket = await Ticket.findOne({
+                    let fixTicket = await Ticket.findOne({
                         where: {
                             id: newTicket.id
                         }
@@ -242,7 +242,7 @@ module.exports = {
                 });
 
                 // update is_ready
-                const schedulePass = await Schedule.findOne({
+                let schedulePass = await Schedule.findOne({
                     where: {
                         id: schedule_id[i]
                     }
@@ -256,7 +256,7 @@ module.exports = {
                     })
                 }
 
-                const flight = await Flight.findOne({
+                let flight = await Flight.findOne({
                     where: {
                         id: schedule.flight_id
                     }
@@ -282,7 +282,7 @@ module.exports = {
             }
 
             // update user balance
-            const userData = await User.findOne({
+            let userData = await User.findOne({
                 where: {
                     id: user_id
                 }
@@ -304,9 +304,9 @@ module.exports = {
                 }
             });
 
-            // const htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
+            // let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
 
-            // const sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
+            // let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
 
             return res.status(201).json({
                 status: true,
