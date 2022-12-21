@@ -90,7 +90,7 @@ module.exports = {
                 data: transactions.rows
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     show: async (req, res, next) => {
@@ -126,7 +126,7 @@ module.exports = {
                 data: transaction.get()
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     create: async (req, res, next) => {
@@ -314,7 +314,7 @@ module.exports = {
                 data: data
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     }
 }

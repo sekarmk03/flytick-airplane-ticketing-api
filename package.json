@@ -8,6 +8,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@sentry/node": "^7.17.3",
+    "@sentry/tracing": "^7.17.3",
     "axios": "^1.2.0",
     "bcrypt": "^5.1.0",
     "cookie-parser": "~1.4.4",

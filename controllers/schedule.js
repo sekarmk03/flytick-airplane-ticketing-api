@@ -86,7 +86,7 @@ module.exports = {
                 data: schedules
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     show: async (req, res, next) => {
@@ -113,7 +113,7 @@ module.exports = {
                 data: {schedule, flight}
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     create: async (req, res, next) => {
@@ -159,7 +159,7 @@ module.exports = {
                 data: newSchedule
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     update: async (req, res, next) => {
@@ -253,7 +253,7 @@ module.exports = {
                 data: isDeleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     }
 }

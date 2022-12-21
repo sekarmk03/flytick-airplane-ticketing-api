@@ -53,7 +53,7 @@ module.exports = {
                 data: biodata.rows
             })
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -81,7 +81,7 @@ module.exports = {
                 data: biodata.get()
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -127,7 +127,7 @@ module.exports = {
 
             return newBiodata;
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -202,7 +202,7 @@ module.exports = {
 
             return isUpdated;
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -238,7 +238,7 @@ module.exports = {
                 data: isDeleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     }
 

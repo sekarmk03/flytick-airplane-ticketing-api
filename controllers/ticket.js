@@ -61,7 +61,7 @@ module.exports = {
                 data: tickets
             })
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     show: async (req, res, next) => {
@@ -136,7 +136,7 @@ module.exports = {
                 }
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     create: async (req, res, next) => {
@@ -240,7 +240,7 @@ module.exports = {
 
             return newTicket;
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     update: async (req, res, next) => {
@@ -282,7 +282,7 @@ module.exports = {
                 data: isUpdated
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     update_checked_in: async (req, res, next) => {
@@ -313,7 +313,7 @@ module.exports = {
                 data: isUpdated
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     delete: async (req, res, next) => {
@@ -339,7 +339,7 @@ module.exports = {
                 data: isDeleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     }
 }
