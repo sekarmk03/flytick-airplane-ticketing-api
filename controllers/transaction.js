@@ -3,7 +3,8 @@ const {
     Schedule,
     Ticket,
     User,
-    Flight
+    Flight,
+    sequelize
 } = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
@@ -139,14 +140,15 @@ module.exports = {
                 round_trip,
                 biodataList
             } = req.body;
-            if (!adult) adult = req.query.adult;
-            if (!child) child = req.query.child;
+            // if (!adult) adult = req.query.adult;
+            // if (!child) child = req.query.child;
 
             // console.log(biodataList);
 
             let data = [];
             let final_cost = 0;
 
+            // create transactions
             for (let i = 0; i < schedule_id.length; i++) {
                 let t_data = {};
                 let passenger = 0;
@@ -161,7 +163,6 @@ module.exports = {
                         id: schedule_id[i]
                     }
                 });
-
                 if(!schedule) {
                     return res.status(404).json({
                         status: false,
@@ -174,16 +175,17 @@ module.exports = {
 
                 let newTransaction = await Transaction.create({
                     transaction_time: new Date(),
-                    invoice_number,
-                    user_id,
-                    // schedule_id,
+                    invoice_number: invoice_number,
+                    user_id: user_id,
                     paid_time: new Date(),
-                    paid_status,
-                    adult,
-                    child,
-                    round_trip,
-                    total_cost
+                    paid_status: paid_status,
+                    adult: adult,
+                    child: child,
+                    round_trip: round_trip,
+                    total_cost: total_cost
                 });
+
+                // console.log(newTransaction);
 
                 final_cost += total_cost;
                 t_data.transaction = newTransaction;
@@ -193,7 +195,7 @@ module.exports = {
                 req.body.flight_id = schedule.flight_id;
 
                 // generate ticket adult
-                for (let j = 0; j < adult + child; j++) {
+                for (let j = 0; j < biodataList.length; j++) {
                     let ticket = {};
 
                     // new biodata
