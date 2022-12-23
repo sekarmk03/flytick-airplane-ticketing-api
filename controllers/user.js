@@ -88,7 +88,7 @@ module.exports = {
                 return res.status(200).json({
                     status: true,
                     message: 'get user success',
-                    data: usersData.rows
+                    data: usersData
                 })
             }
             
