@@ -57,33 +57,41 @@ module.exports = {
                     limit: limit,
                     offset: start
                 });
+                
+                let count = usersData.count;
+                let pagination = {}
+                pagination.totalRows = count;
+                pagination.totalPages = Math.ceil(count/limit);
+                pagination.thisPageRows = usersData.rows.length;
+                if (end<count){
+                    pagination.next = {
+                        page: page + 1
+                    }
+                }
+                if (start>0){
+                    pagination.prev = {
+                        page: page - 1
+                    }
+                }
+                
+                return res.status(200).json({
+                    status: true,
+                    message: 'get all user success',
+                    pagination,
+                    data: usersData.rows
+                })
             } else if (req.user.role == 'user') {
                 usersData = await User.findOne({
                     where: {id: req.user.id}
                 });
-            }
-            let count = usersData.count;
-            let pagination ={}
-            pagination.totalRows = count;
-            pagination.totalPages = Math.ceil(count/limit);
-            pagination.thisPageRows = usersData.rows.length;
-            if (end<count){
-                pagination.next = {
-                    page: page + 1
-                }
-            }
-            if (start>0){
-                pagination.prev = {
-                    page: page - 1
-                }
+
+                return res.status(200).json({
+                    status: true,
+                    message: 'get user success',
+                    data: usersData.rows
+                })
             }
             
-            return res.status(200).json({
-                status: true,
-                message: 'get all user success',
-                pagination,
-                data: usersData.rows
-            })
         } catch (err) {
             next(err);
         }
