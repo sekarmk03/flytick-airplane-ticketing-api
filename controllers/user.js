@@ -99,18 +99,24 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            // const { id } = req.params;
-            const { id } = req.user;
-            if(!id) {
-                return res.status(404).json({
-                    status: false,
-                    message: 'login first',
-                    data: null
-                });
+            let userId;
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                const { id } = req.params;
+                userId = id;
+            } else if (req.user.role == 'user') {
+                const { id } = req.user;
+                if(!id) {
+                    return res.status(404).json({
+                        status: false,
+                        message: 'login first',
+                        data: null
+                    });
+                }
+                userId = id;
             }
 
             const userData = await User.findOne({
-                where: { id: id },
+                where: { id: userId },
                 include: [
                     {
                         model: Biodata,
