@@ -267,7 +267,7 @@ module.exports = {
                 });
             }
 
-            const biodata = await Biodata.findOne({ where: { id: userData.biodata_id } });
+            const biodata = await Biodata.findOne({ where: { email: userData.email } });
             if (!biodata) {
                 return res.status(400).json({
                     status: false,
