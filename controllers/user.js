@@ -99,7 +99,16 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const { id } = req.params;
+            // const { id } = req.params;
+            const { id } = req.user;
+            if(!id) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'login first',
+                    data: null
+                });
+            }
+
             const userData = await User.findOne({
                 where: { id: id },
                 include: [
@@ -189,14 +198,14 @@ module.exports = {
             const newBiodata = await Biodata.create({
                 email: newUser.email,
                 name: newUser.name,
-                nik: null,
-                birth_place: null,
-                birth_date: null,
-                telp: null,
-                nationality: null,
-                no_passport: null,
-                issue_date: null,
-                expire_date: null
+                nik: '',
+                birth_place: '',
+                birth_date: '',
+                telp: '',
+                nationality: '',
+                no_passport: '',
+                issue_date: '',
+                expire_date: ''
             });
 
             await User.update({
