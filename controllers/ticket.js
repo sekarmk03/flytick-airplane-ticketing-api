@@ -309,7 +309,7 @@ const update_checked_in = async (req, res, next) => {
         });
 
         // kirim email berhasil check in
-        const htmlEmail = await mail.getHtml('enjoyYourTrip.ejs')
+        // const htmlEmail = await mail.getHtml('enjoyYourTrip.ejs')
 
         return res.status(200).json({
             status: true,
