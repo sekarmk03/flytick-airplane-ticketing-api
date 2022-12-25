@@ -37,7 +37,7 @@ module.exports = {
                 password: hashed,
                 avatar_id: 1, // default avatar
                 role: role,
-                balance: 10000000,
+                balance: 50000000,
                 biodata_id: 0, // update biodata id when user complete their profile
                 login_type: loginType.basic
             });
