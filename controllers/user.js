@@ -140,8 +140,8 @@ module.exports = {
 
             let data = userData.get();
             const country = await Country.findOne({where: {id: userData.biodata.nationality}})
-            if(!country) data.country_name = '';
-            else data.country_name = country.name;
+            if(!country) data.biodata.country_name = '';
+            else data.biodata.country_name = country.name;
             
             return res.status(200).json({
                 status: true,
