@@ -1,7 +1,8 @@
 const {
     User,
     Biodata,
-    Image
+    Image,
+    Country
 } = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
@@ -57,33 +58,41 @@ module.exports = {
                     limit: limit,
                     offset: start
                 });
+                
+                let count = usersData.count;
+                let pagination = {}
+                pagination.totalRows = count;
+                pagination.totalPages = Math.ceil(count/limit);
+                pagination.thisPageRows = usersData.rows.length;
+                if (end<count){
+                    pagination.next = {
+                        page: page + 1
+                    }
+                }
+                if (start>0){
+                    pagination.prev = {
+                        page: page - 1
+                    }
+                }
+                
+                return res.status(200).json({
+                    status: true,
+                    message: 'get all user success',
+                    pagination,
+                    data: usersData.rows
+                })
             } else if (req.user.role == 'user') {
                 usersData = await User.findOne({
                     where: {id: req.user.id}
                 });
-            }
-            let count = usersData.count;
-            let pagination ={}
-            pagination.totalRows = count;
-            pagination.totalPages = Math.ceil(count/limit);
-            pagination.thisPageRows = usersData.rows.length;
-            if (end<count){
-                pagination.next = {
-                    page: page + 1
-                }
-            }
-            if (start>0){
-                pagination.prev = {
-                    page: page - 1
-                }
+
+                return res.status(200).json({
+                    status: true,
+                    message: 'get user success',
+                    data: usersData
+                })
             }
             
-            return res.status(200).json({
-                status: true,
-                message: 'get all user success',
-                pagination,
-                data: usersData.rows
-            })
         } catch (err) {
             next(err);
         }
@@ -91,9 +100,24 @@ module.exports = {
 
     show: async (req, res, next) => {
         try {
-            const { id } = req.params;
+            let userId;
+            if(req.user.role == 'admin' || req.user.role == 'superadmin') {
+                const { id } = req.params;
+                userId = id;
+            } else if (req.user.role == 'user') {
+                const { id } = req.user;
+                if(!id) {
+                    return res.status(404).json({
+                        status: false,
+                        message: 'login first',
+                        data: null
+                    });
+                }
+                userId = id;
+            }
+
             const userData = await User.findOne({
-                where: { id: id },
+                where: { id: userId },
                 include: [
                     {
                         model: Biodata,
@@ -113,12 +137,17 @@ module.exports = {
                     data: null
                 });
             }
+
+            // let data = userData.get();
+            const country = await Country.findOne({where: {id: userData.biodata.nationality}})
+            if(!country) userData.biodata.nationality = '';
+            else userData.biodata.nationality = country.name;
             
             return res.status(200).json({
                 status: true,
                 message: 'get user success',
                 data: userData.get()
-                });
+            });
         } catch (err) {
             next(err);
         }
@@ -181,12 +210,12 @@ module.exports = {
             const newBiodata = await Biodata.create({
                 email: newUser.email,
                 name: newUser.name,
-                nik: null,
-                birth_place: null,
-                birth_date: null,
-                telp: null,
-                nationality: null,
-                no_passport: null,
+                nik: '',
+                birth_place: '',
+                birth_date: new Date(),
+                telp: '',
+                nationality: 0,
+                no_passport: '',
                 issue_date: null,
                 expire_date: null
             });
@@ -238,7 +267,7 @@ module.exports = {
                 });
             }
 
-            const biodata = await Biodata.findOne({ where: { id: userData.biodata_id } });
+            const biodata = await Biodata.findOne({ where: { email: userData.email } });
             if (!biodata) {
                 return res.status(400).json({
                     status: false,
@@ -271,17 +300,6 @@ module.exports = {
             if (!role) role = userData.role;
             if (!balance) balance = userData.balance;
 
-            /*
-            if(!nik) nik = biodata.nik;
-            if(!birth_place) birth_place = biodata.birth_place;
-            if(!birth_date) birth_date = biodata.birth_date;
-            if(!telp) telp = biodata.telp;
-            if(!nationality) nationality = biodata.nationality;
-            if(!no_passport) no_passport = biodata.no_passport;
-            if(!issue_date) issue_date = biodata.issue_date;
-            if(!expire_date) expire_date = biodata.expire_date;
-            */
-
             const isUpdatedUser = await User.update({
                 name: name,
                 email: email,
@@ -292,23 +310,6 @@ module.exports = {
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
-
-            /*
-            const isUpdatedBiodata = await Biodata.update({
-                email: email,
-                name: name,
-                nik: nik,
-                birth_place: birth_place,
-                birth_date: birth_date,
-                telp: telp,
-                nationality: nationality,
-                no_passport: no_passport,
-                issue_date: issue_date,
-                expire_date: expire_date,
-            }, {
-                where: {id: userData.biodata_id}
-            });
-            */
 
             return res.status(200).json({
                 status: true,

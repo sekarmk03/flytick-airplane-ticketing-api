@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
-const { User } = require('../models');
+const { User, Biodata } = require('../models');
 const loginType = require('../utils/login_type');
 const schema = require('../schema')
 const validator = require('fastest-validator')
@@ -37,9 +37,28 @@ module.exports = {
                 password: hashed,
                 avatar_id: 1, // default avatar
                 role: role,
-                balance: 10000000,
+                balance: 50000000,
                 biodata_id: 0, // update biodata id when user complete their profile
                 login_type: loginType.basic
+            });
+
+            const newBiodata = await Biodata.create({
+                email: newUser.email,
+                name: newUser.name,
+                nik: '',
+                birth_place: '',
+                birth_date: new Date(),
+                telp: '',
+                nationality: 0,
+                no_passport: '',
+                issue_date: null,
+                expire_date: null
+            });
+
+            await User.update({
+                biodata_id: newBiodata.id
+            }, {
+                where: { id: newUser.id }
             });
 
             // const htmlEmail = await mail.getHtml('welcome.ejs', { name })

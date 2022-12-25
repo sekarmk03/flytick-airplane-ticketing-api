@@ -15,8 +15,8 @@ module.exports = {
     {
       flight_id: 1,
       cost: 4000000,
-      departure_time: "2022-12-05 15:00:00",
-      arrival_time: "2022-12-05 19:00:00",
+      departure_time: "2023-01-15 15:00:00",
+      arrival_time: "2023-01-15 19:00:00",
       from_airport: 1,
       to_airport: 4,
       passenger: 3,
@@ -26,8 +26,8 @@ module.exports = {
     {
       flight_id: 2,
       cost: 6000000,
-      departure_time: "2022-12-06 06:30:00",
-      arrival_time: "2022-12-06 10:30:00",
+      departure_time: "2023-01-16 06:30:00",
+      arrival_time: "2023-01-16 10:30:00",
       from_airport: 2,
       to_airport: 3,
       passenger: 2,
@@ -37,8 +37,8 @@ module.exports = {
     {
       flight_id: 3,
       cost: 5500000,
-      departure_time: "2022-12-10 20:00:00",
-      arrival_time: "2022-12-11 01:15:00",
+      departure_time: "2023-01-20 20:00:00",
+      arrival_time: "2023-01-21 01:15:00",
       from_airport: 4,
       to_airport: 1,
       passenger: 3,
@@ -48,8 +48,8 @@ module.exports = {
     {
       flight_id: 3,
       cost: 5500000,
-      departure_time: "2022-12-20 20:00:00",
-      arrival_time: "2022-12-20 01:15:00",
+      departure_time: "2023-01-20 20:00:00",
+      arrival_time: "2023-01-20 01:15:00",
       from_airport: 4,
       to_airport: 1,
       passenger: 3,

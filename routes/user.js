@@ -13,7 +13,7 @@ router.get('/:id', authorize(), c.show);
 // create user
 router.post('/', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.create);
 // update user
-router.put('/:id', authorize([roles.admin, roles.superadmin]), upload.single('image'), c.update);
+router.put('/:id', authorize(), upload.single('image'), c.update);
 // delete user
 router.delete('/:id', authorize([roles.admin, roles.superadmin]), c.delete);
 

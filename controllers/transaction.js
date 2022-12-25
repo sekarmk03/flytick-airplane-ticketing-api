@@ -10,8 +10,6 @@ const c_biodata = require('./biodata');
 const {
     Op
 } = require('sequelize');
-const generate_qr = require('../utils/generate_qr');
-const BASE_URL = process.env.BASE_URL;
 const mail = require('../utils/mailer')
 
 module.exports = {
@@ -131,7 +129,7 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            const {
+            let {
                 user_id,
                 schedule_id,
                 adult,
@@ -139,14 +137,25 @@ module.exports = {
                 round_trip,
                 biodataList
             } = req.body;
-            if (!adult) adult = req.query.adult;
-            if (!child) child = req.query.child;
 
-            // console.log(biodataList);
+            let userData = await User.findOne({
+                where: {
+                    id: user_id
+                }
+            });
+
+            if(!userData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'userData data not found',
+                    data: null
+                })
+            }
 
             let data = [];
             let final_cost = 0;
 
+            // create transactions
             for (let i = 0; i < schedule_id.length; i++) {
                 let t_data = {};
                 let passenger = 0;
@@ -154,14 +163,13 @@ module.exports = {
                 // generate invoice number
                 let invoice_number = (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)).toUpperCase();
                 // set paid_status auto true
-                const paid_status = true;
+                let paid_status = true;
                 // search cost of the schedule
-                const schedule = await Schedule.findOne({
+                let schedule = await Schedule.findOne({
                     where: {
                         id: schedule_id[i]
                     }
                 });
-
                 if(!schedule) {
                     return res.status(404).json({
                         status: false,
@@ -170,20 +178,32 @@ module.exports = {
                     })
                 }
 
-                const total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
+                let total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
 
-                const newTransaction = await Transaction.create({
+                if(userData.balance - total_cost < 0) {
+                    return res.status(400).json({
+                        status: false,
+                        message: "user's balance not enough for buy this schedule",
+                        data: {
+                            user_balance: userData.balance,
+                            cost: total_cost
+                        }
+                    })
+                }
+
+                let newTransaction = await Transaction.create({
                     transaction_time: new Date(),
-                    invoice_number,
-                    user_id,
-                    // schedule_id,
+                    invoice_number: invoice_number,
+                    user_id: user_id,
                     paid_time: new Date(),
-                    paid_status,
-                    adult,
-                    child,
-                    round_trip,
-                    total_cost
+                    paid_status: paid_status,
+                    adult: adult,
+                    child: child,
+                    round_trip: round_trip,
+                    total_cost: total_cost
                 });
+
+                // console.log(newTransaction);
 
                 final_cost += total_cost;
                 t_data.transaction = newTransaction;
@@ -193,11 +213,11 @@ module.exports = {
                 req.body.flight_id = schedule.flight_id;
 
                 // generate ticket adult
-                for (let j = 0; j < adult + child; j++) {
+                for (let j = 0; j < biodataList.length; j++) {
                     let ticket = {};
 
                     // new biodata
-                    const newBiodata = await c_biodata.create(biodataList[j], res, next);
+                    let newBiodata = await c_biodata.create(biodataList[j], res, next);
                     ticket.passenger_data = newBiodata;
 
                     if (j < adult) req.body.type = 'Adult';
@@ -206,9 +226,9 @@ module.exports = {
                     req.body.biodata_id = newBiodata.id;
 
                     // new ticket
-                    const newTicket = await c_ticket.create(req, res, next);
+                    let newTicket = await c_ticket.create(req, res, next);
 
-                    const fixTicket = await Ticket.findOne({
+                    let fixTicket = await Ticket.findOne({
                         where: {
                             id: newTicket.id
                         }
@@ -242,7 +262,7 @@ module.exports = {
                 });
 
                 // update is_ready
-                const schedulePass = await Schedule.findOne({
+                let schedulePass = await Schedule.findOne({
                     where: {
                         id: schedule_id[i]
                     }
@@ -256,7 +276,7 @@ module.exports = {
                     })
                 }
 
-                const flight = await Flight.findOne({
+                let flight = await Flight.findOne({
                     where: {
                         id: schedule.flight_id
                     }
@@ -282,20 +302,6 @@ module.exports = {
             }
 
             // update user balance
-            const userData = await User.findOne({
-                where: {
-                    id: user_id
-                }
-            });
-
-            if(!userData) {
-                return res.status(404).json({
-                    status: false,
-                    message: 'userData data not found',
-                    data: null
-                })
-            }
-
             await User.update({
                 balance: userData.balance - final_cost
             }, {
@@ -304,9 +310,9 @@ module.exports = {
                 }
             });
 
-            // const htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
+            // let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
 
-            // const sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
+            // let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
 
             return res.status(201).json({
                 status: true,
