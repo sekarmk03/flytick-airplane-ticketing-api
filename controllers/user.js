@@ -294,17 +294,6 @@ module.exports = {
             if (!role) role = userData.role;
             if (!balance) balance = userData.balance;
 
-            /*
-            if(!nik) nik = biodata.nik;
-            if(!birth_place) birth_place = biodata.birth_place;
-            if(!birth_date) birth_date = biodata.birth_date;
-            if(!telp) telp = biodata.telp;
-            if(!nationality) nationality = biodata.nationality;
-            if(!no_passport) no_passport = biodata.no_passport;
-            if(!issue_date) issue_date = biodata.issue_date;
-            if(!expire_date) expire_date = biodata.expire_date;
-            */
-
             const isUpdatedUser = await User.update({
                 name: name,
                 email: email,
@@ -315,23 +304,6 @@ module.exports = {
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
-
-            /*
-            const isUpdatedBiodata = await Biodata.update({
-                email: email,
-                name: name,
-                nik: nik,
-                birth_place: birth_place,
-                birth_date: birth_date,
-                telp: telp,
-                nationality: nationality,
-                no_passport: no_passport,
-                issue_date: issue_date,
-                expire_date: expire_date,
-            }, {
-                where: {id: userData.biodata_id}
-            });
-            */
 
             return res.status(200).json({
                 status: true,
