@@ -143,7 +143,19 @@ module.exports = {
             // if (!adult) adult = req.query.adult;
             // if (!child) child = req.query.child;
 
-            // console.log(biodataList);
+            let userData = await User.findOne({
+                where: {
+                    id: user_id
+                }
+            });
+
+            if(!userData) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'userData data not found',
+                    data: null
+                })
+            }
 
             let data = [];
             let final_cost = 0;
@@ -172,6 +184,17 @@ module.exports = {
                 }
 
                 let total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
+
+                if(userData.balance - total_cost < 0) {
+                    return res.status(400).json({
+                        status: false,
+                        message: "user's balance not enough for buy this schedule",
+                        data: {
+                            user_balance: userData.balance,
+                            cost: total_cost
+                        }
+                    })
+                }
 
                 let newTransaction = await Transaction.create({
                     transaction_time: new Date(),
@@ -284,20 +307,6 @@ module.exports = {
             }
 
             // update user balance
-            let userData = await User.findOne({
-                where: {
-                    id: user_id
-                }
-            });
-
-            if(!userData) {
-                return res.status(404).json({
-                    status: false,
-                    message: 'userData data not found',
-                    data: null
-                })
-            }
-
             await User.update({
                 balance: userData.balance - final_cost
             }, {
