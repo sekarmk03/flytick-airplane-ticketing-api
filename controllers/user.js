@@ -1,7 +1,8 @@
 const {
     User,
     Biodata,
-    Image
+    Image,
+    Country
 } = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
@@ -136,12 +137,17 @@ module.exports = {
                     data: null
                 });
             }
+
+            let data = userData.get();
+            const country = await Country.findOne({where: {id: userData.biodata.nationality}})
+            if(!country) data.country_name = '';
+            else data.country_name = country.name;
             
             return res.status(200).json({
                 status: true,
                 message: 'get user success',
-                data: userData.get()
-                });
+                data: data
+            });
         } catch (err) {
             next(err);
         }
@@ -206,12 +212,12 @@ module.exports = {
                 name: newUser.name,
                 nik: '',
                 birth_place: '',
-                birth_date: '',
+                birth_date: new Date(),
                 telp: '',
-                nationality: '',
+                nationality: 0,
                 no_passport: '',
-                issue_date: '',
-                expire_date: ''
+                issue_date: null,
+                expire_date: null
             });
 
             await User.update({

@@ -47,12 +47,12 @@ module.exports = {
                 name: newUser.name,
                 nik: '',
                 birth_place: '',
-                birth_date: '',
+                birth_date: new Date(),
                 telp: '',
-                nationality: '',
+                nationality: 0,
                 no_passport: '',
-                issue_date: '',
-                expire_date: ''
+                issue_date: null,
+                expire_date: null
             });
 
             await User.update({
