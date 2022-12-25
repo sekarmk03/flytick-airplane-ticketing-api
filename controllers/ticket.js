@@ -67,13 +67,14 @@ const index = async (req, res, next) => {
 
 const show = async (req, res, next) => {
     try {
-        console.log(req.params);
+        let ticketId;
         if(!req.params.id) {
-            return res.status.json({message: 'no params'});
+            ticketId = req.body.ticket_id;
         } else {
             const { id } = req.params;
+            ticketId = id;
         }
-        const ticket = await Ticket.findOne({ where: { id: id } });
+        const ticket = await Ticket.findOne({ where: { id: ticketId } });
         if (!ticket) {
             return res.status(400).json({
                 status: false,
@@ -88,59 +89,65 @@ const show = async (req, res, next) => {
         const fromAirportData = await Airport.findOne({where: {id: scheduleData.from_airport}});
         const toAirportData = await Airport.findOne({where: {id: scheduleData.to_airport}});
         const flightData = await Flight.findOne({where: {id: ticket.flight_id}});
-        return res.status(200).json({
-            status: true,
-            message: 'get ticket success',
-            data: {
-                ticketData: ticket,
-                userData: {
-                    name: userData.name,
-                    email: userData.email,
-                    balance: userData.balance
-                },
-                transactionData: {
-                    transaction_time: transactionData.transaction_time,
-                    invoice_number: transactionData.invoice_number,
-                    paid_time: transactionData.paid_time,
-                    paid_status: transactionData.paid_status
-                },
-                passengerData: {
-                    email: passengerData.email,
-                    name: passengerData.name,
-                    nik: passengerData.nik,
-                    birth_place: passengerData.birth_place,
-                    birth_date: passengerData.birth_date,
-                    telp: passengerData.telp,
-                    nationality: await Country.findOne({where: {id: passengerData.nationality}}).name,
-                    no_passport: passengerData.no_passport,
-                    issue_date: passengerData.issue_date,
-                    expire_date: passengerData.expire_date,
-                },
-                scheduleData: {
-                    cost: scheduleData.cost,
-                    departure_time: scheduleData.departure_time,
-                    arrival_time: scheduleData.arrival_time,
-                },
-                fromAirportData: {
-                    code: fromAirportData.code,
-                    name: fromAirportData.name,
-                    city: await City.findOne({where: {id: fromAirportData.city_id}}).name,
-                    country: await Country.findOne({where: {id: fromAirportData.country_id}}).name,
-                    maps_link: fromAirportData.maps_link,
-                },
-                toAirportData: {
-                    code: toAirportData.code,
-                    name: toAirportData.name,
-                    city: await City.findOne({where: {id: toAirportData.city_id}}).name,
-                    country: await Country.findOne({where: {id: toAirportData.country_id}}).name,
-                    maps_link: toAirportData.maps_link,
-                },
-                flightData: {
-                    code: flightData.code,
-                    class: flightData.fClass
-                }
+        const data = {
+            ticketData: ticket.get(),
+            userData: {
+                name: userData.name,
+                email: userData.email,
+                balance: userData.balance
+            },
+            transactionData: {
+                transaction_time: transactionData.transaction_time,
+                invoice_number: transactionData.invoice_number,
+                paid_time: transactionData.paid_time,
+                paid_status: transactionData.paid_status
+            },
+            passengerData: {
+                email: passengerData.email,
+                name: passengerData.name,
+                nik: passengerData.nik,
+                birth_place: passengerData.birth_place,
+                birth_date: passengerData.birth_date,
+                telp: passengerData.telp,
+                nationality: await Country.findOne({where: {id: passengerData.nationality}}).name,
+                no_passport: passengerData.no_passport,
+                issue_date: passengerData.issue_date,
+                expire_date: passengerData.expire_date,
+            },
+            scheduleData: {
+                cost: scheduleData.cost,
+                departure_time: scheduleData.departure_time,
+                arrival_time: scheduleData.arrival_time,
+            },
+            fromAirportData: {
+                code: fromAirportData.code,
+                name: fromAirportData.name,
+                city: await City.findOne({where: {id: fromAirportData.city_id}}).name,
+                country: await Country.findOne({where: {id: fromAirportData.country_id}}).name,
+                maps_link: fromAirportData.maps_link,
+            },
+            toAirportData: {
+                code: toAirportData.code,
+                name: toAirportData.name,
+                city: await City.findOne({where: {id: toAirportData.city_id}}).name,
+                country: await Country.findOne({where: {id: toAirportData.country_id}}).name,
+                maps_link: toAirportData.maps_link,
+            },
+            flightData: {
+                code: flightData.code,
+                class: flightData.fClass
             }
-        });
+        };
+
+        if(!req.params.id) {
+            return data;
+        } else {
+            return res.status(200).json({
+                status: true,
+                message: 'get ticket success',
+                data: data
+            });
+        }
     } catch (err) {
         next(err);
     }
@@ -219,9 +226,10 @@ const create = async (req, res, next) => {
         });
 
         // Generate PDF
-        // const dataToGenerate = await show(req, res, next);
-        // const pdf = await generate;
-        // ticket_pdf = pdf.url
+        req.body.ticket_id = newTicket.id;
+        const dataToGenerate = await show(req, res, next);
+        const pdf = await generatePDF(dataToGenerate);
+        ticket_pdf = pdf.url;
         
         // update pdf ticket
         await Ticket.update({

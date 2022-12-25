@@ -82,12 +82,12 @@ const generateContent = (data) => {
             pdfDoc.font(fontBold).fontSize(fSize.p).text('FlyTick App', left.start, 100);
     
             pdfDoc.font(fontRegular).text("Ticket Number", right.start, 65, {width: right.width, align: 'right'});
-            pdfDoc.fontSize(fSize.h).text(data.ticketData.ticket_number, right.start, 80, {width: right.width, align: 'right'});
+            pdfDoc.fontSize(fSize.h).text(data.ticketData.ticket_number, right.width, 80, {width: right.start, align: 'right'});
             pdfDoc.text(data.flightData.class, right.start, 95, {width: right.width, align: 'right'});
     
             pdfDoc.font(fontBold).fontSize(fSize.p).text("Order Detail", left.start, 140, {width: left.width});
             pdfDoc.font(fontRegular).text(`Payment date: ${data.transactionData.paid_time}`, left.start, 155, {width: left.width});
-            pdfDoc.text(`Invoice number: ${data.transactionData.invoice_number}`, left.start, 180, {width: left.width});
+            pdfDoc.text(`Invoice number: ${data.transactionData.invoice_number}`, left.start, 180);
             pdfDoc.text(`Total payment: ${data.scheduleData.cost}`, left.start, 195, {width: left.width});
     
             pdfDoc.font(fontBold).text("Buyer Detail", right.start, 140, {width: right.width});
@@ -161,7 +161,7 @@ const toBase64 = (doc) => {
 
 const generatePDF = async (datatogenerate) => {
     try {
-        const data = JSON.parse(datatogenerate);
+        const data = datatogenerate;
         const fileName = data.ticketData.ticket_number;
         const file = await generateContent(data);
         const dataupload = await uploadPdf(file, fileName);
