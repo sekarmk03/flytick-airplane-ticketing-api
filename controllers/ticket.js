@@ -1,5 +1,5 @@
-const {Ticket, Flight, Schedule, Transaction, User, Biodata, Airport, Country, City, sequelize} = require('../models');
-const {Op, QueryTypes} = require('sequelize');
+const { Ticket, Flight, Schedule, Transaction, User, Biodata, Airport, Country, City, sequelize } = require('../models');
+const { Op, QueryTypes } = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
 const generate_pdf = require('../utils/generate_pdf');
 const { FE_BASE_URL } = process.env;
@@ -75,13 +75,13 @@ module.exports = {
                     data: null
                 });
             }
-            const userData = await User.findOne({where: {id: ticket.user_id}});
-            const transactionData = await Transaction.findOne({where: {id: ticket.transaction_id}});
-            const passengerData = await Biodata.findOne({where: {id: ticket.biodata_id}});
-            const scheduleData = await Schedule.findOne({where: {id: ticket.schedule_id}});
-            const fromAirportData = await Airport.findOne({where: {id: scheduleData.from_airport}});
-            const toAirportData = await Airport.findOne({where: {id: scheduleData.to_airport}});
-            const flightData = await Flight.findOne({where: {id: ticket.flight_id}});
+            const userData = await User.findOne({ where: { id: ticket.user_id } });
+            const transactionData = await Transaction.findOne({ where: { id: ticket.transaction_id } });
+            const passengerData = await Biodata.findOne({ where: { id: ticket.biodata_id } });
+            const scheduleData = await Schedule.findOne({ where: { id: ticket.schedule_id } });
+            const fromAirportData = await Airport.findOne({ where: { id: scheduleData.from_airport } });
+            const toAirportData = await Airport.findOne({ where: { id: scheduleData.to_airport } });
+            const flightData = await Flight.findOne({ where: { id: ticket.flight_id } });
             return res.status(200).json({
                 status: true,
                 message: 'get ticket success',
@@ -105,7 +105,7 @@ module.exports = {
                         birth_place: passengerData.birth_place,
                         birth_date: passengerData.birth_date,
                         telp: passengerData.telp,
-                        nationality: await Country.findOne({where: {id: passengerData.nationality}}).name,
+                        nationality: await Country.findOne({ where: { id: passengerData.nationality } }).name,
                         no_passport: passengerData.no_passport,
                         issue_date: passengerData.issue_date,
                         expire_date: passengerData.expire_date,
@@ -118,15 +118,15 @@ module.exports = {
                     fromAirportData: {
                         code: fromAirportData.code,
                         name: fromAirportData.name,
-                        city: await City.findOne({where: {id: fromAirportData.city_id}}).name,
-                        country: await Country.findOne({where: {id: fromAirportData.country_id}}).name,
+                        city: await City.findOne({ where: { id: fromAirportData.city_id } }).name,
+                        country: await Country.findOne({ where: { id: fromAirportData.country_id } }).name,
                         maps_link: fromAirportData.maps_link,
                     },
                     toAirportData: {
                         code: toAirportData.code,
                         name: toAirportData.name,
-                        city: await City.findOne({where: {id: toAirportData.city_id}}).name,
-                        country: await Country.findOne({where: {id: toAirportData.country_id}}).name,
+                        city: await City.findOne({ where: { id: toAirportData.city_id } }).name,
+                        country: await Country.findOne({ where: { id: toAirportData.country_id } }).name,
                         maps_link: toAirportData.maps_link,
                     },
                     flightData: {
@@ -152,7 +152,7 @@ module.exports = {
 
             // generate seat
             const flightData = await Flight.findOne({ where: { id: flight_id } });
-            if(!flightData) {
+            if (!flightData) {
                 return res.status(404).json({
                     status: false,
                     message: 'flightData data not found',
@@ -162,7 +162,7 @@ module.exports = {
 
             let fClass = flightData.fClass[0];
             const scheduleData = await Schedule.findOne({ where: { id: ticket_schedule_id } });
-            if(!scheduleData) {
+            if (!scheduleData) {
                 return res.status(404).json({
                     status: false,
                     message: 'scheduleData data not found',
@@ -188,7 +188,7 @@ module.exports = {
 
             // generate ticket number
             const transactionData = await Transaction.findOne({ where: { id: transaction_id } });
-            if(!transactionData) {
+            if (!transactionData) {
                 return res.status(404).json({
                     status: false,
                     message: 'transactionData data not found',
@@ -228,7 +228,7 @@ module.exports = {
 
             // const pdf = await generate_pdf(ticketHtml, ticket);
             // ticket_pdf = pdf.url
-            
+
             // update pdf ticket
             await Ticket.update({
                 ticket_pdf: ticket_pdf
@@ -304,8 +304,12 @@ module.exports = {
                 where: { id: id }
             });
 
+            const userData = await User.findOne({ where: { id: ticket.user_id } })
+
             // kirim email berhasil check in
-            const htmlEmail = await mail.getHtml('enjoyYourTrip.ejs')
+            const htmlEmail = await mail.getHtml('enjoyYourTrip.ejs', { name: userData.name })
+
+            const sendEmail = await mail.sendMail(userData.email, 'Enjoy Your Trip!', htmlEmail)
 
             return res.status(200).json({
                 status: true,
