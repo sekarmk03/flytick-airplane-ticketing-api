@@ -3,16 +3,13 @@ const {
     Schedule,
     Ticket,
     User,
-    Flight,
-    sequelize
+    Flight
 } = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
 const {
     Op
 } = require('sequelize');
-const generate_qr = require('../utils/generate_qr');
-const BASE_URL = process.env.BASE_URL;
 const mail = require('../utils/mailer')
 
 module.exports = {
@@ -140,8 +137,6 @@ module.exports = {
                 round_trip,
                 biodataList
             } = req.body;
-            // if (!adult) adult = req.query.adult;
-            // if (!child) child = req.query.child;
 
             let userData = await User.findOne({
                 where: {
