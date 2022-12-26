@@ -9,7 +9,7 @@ router.get('/', authorize(), c.index);
 // get detail ticket
 router.get('/:id', authorize(), c.show);
 // create ticket
-router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
+router.post('/', authorize(), c.create);
 // update ticket
 router.put('/:id', authorize([roles.admin, roles.superadmin]), c.update);
 // scan ticket
