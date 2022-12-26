@@ -5,10 +5,10 @@ const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all data city
-router.get('/', authorize([roles.admin, roles.superadmin]), c.city.index)
+router.get('/', authorize(), c.city.index)
 
 // get detail data city
-router.get('/:id', authorize([roles.admin, roles.superadmin]), c.city.show)
+router.get('/:id', authorize(), c.city.show)
 
 // create data city
 router.post('/', authorize([roles.admin, roles.superadmin]), c.city.create)

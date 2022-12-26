@@ -5,11 +5,9 @@ const authorize = require('../middleware/authorize');
 const roles = require('../utils/roles');
 
 // get all country
-router.get('/', authorize([roles.admin, roles.superadmin]), c.index);
-// get all country sorted
-// router.get('/?sort=&type=&search=', authorize([roles.admin, roles.superadmin]), c.index);
+router.get('/', authorize(), c.index);
 // get detail country
-router.get('/:id', authorize([roles.admin, roles.superadmin]), c.show);
+router.get('/:id', authorize(), c.show);
 // create country
 router.post('/', authorize([roles.admin, roles.superadmin]), c.create);
 // update country
