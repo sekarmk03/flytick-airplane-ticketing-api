@@ -243,7 +243,6 @@ module.exports = {
             } = req.params;
             let {
                 name,
-                email,
                 role,
                 balance
             } = req.body;
@@ -301,13 +300,11 @@ module.exports = {
             }
 
             if (!name) name = userData.name;
-            if (!email) email = userData.email;
             if (!role) role = userData.role;
             if (!balance) balance = userData.balance;
 
             const isUpdatedUser = await User.update({
                 name: name,
-                email: email,
                 avatar_id: image,
                 role: role,
                 balance: balance
