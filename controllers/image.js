@@ -12,7 +12,7 @@ module.exports = {
                 data: image
             })
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -33,7 +33,7 @@ module.exports = {
                 data: image.get()
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -59,7 +59,7 @@ module.exports = {
                 data: newImage
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -100,7 +100,7 @@ module.exports = {
                 data: isUpdated
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -132,7 +132,7 @@ module.exports = {
                 data: isDeleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     }
 

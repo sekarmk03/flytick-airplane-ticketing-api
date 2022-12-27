@@ -94,7 +94,7 @@ module.exports = {
             }
             
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -149,7 +149,7 @@ module.exports = {
                 data: userData.get()
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -232,7 +232,7 @@ module.exports = {
                 data: newUser
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -325,7 +325,7 @@ module.exports = {
                 }
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -367,7 +367,7 @@ module.exports = {
                 data: isDeleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 

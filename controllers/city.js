@@ -49,7 +49,7 @@ module.exports = {
                 data: dataCity.rows
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 
@@ -70,7 +70,7 @@ module.exports = {
                 data: city.get()
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 

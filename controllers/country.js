@@ -62,7 +62,7 @@ module.exports = {
             });
 
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     index: async (req, res, next) => {
@@ -119,7 +119,7 @@ module.exports = {
             });
 
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     show: async (req, res, next) => {
@@ -143,7 +143,7 @@ module.exports = {
                 data: country
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     update: async (req, res, next) => {
@@ -221,7 +221,7 @@ module.exports = {
                 data: updated
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
     delete: async (req, res, next) => {
@@ -245,7 +245,7 @@ module.exports = {
                 data: deleted
             });
         } catch (err) {
-            next(err);
+            next(err)
         }
     },
 }
