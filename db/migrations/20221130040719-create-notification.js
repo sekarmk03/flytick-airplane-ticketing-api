@@ -14,6 +14,9 @@ module.exports = {
       topic: {
         type: Sequelize.STRING
       },
+      title: {
+        type: Sequelize.STRING
+      },
       message: {
         type: Sequelize.TEXT
       },

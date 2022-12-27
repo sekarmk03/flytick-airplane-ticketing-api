@@ -13,6 +13,7 @@ module.exports = {
             const {
                 user_id,
                 topic,
+                title,
                 message
             } = req.body;
 
@@ -27,6 +28,7 @@ module.exports = {
             const notification = await Notification.create({
                 user_id: user_id,
                 topic: topic,
+                title: title,
                 message: message,
                 is_read: false
             })
@@ -163,6 +165,7 @@ module.exports = {
             let {
                 user_id,
                 topic,
+                title,
                 message,
                 is_read
             } = req.body;
@@ -191,12 +194,14 @@ module.exports = {
 
             if (!user_id) user_id = notification.user_id;
             if (!topic) topic = notification.topic;
+            if (!title) title = notification.title;
             if (!message) message = notification.message;
             if (!is_read) is_read = notification.is_read;
 
             const updated = await notification.update({
                 user_id: user_id,
                 topic: topic,
+                title: title,
                 message: message,
                 is_read: is_read
             }, {
