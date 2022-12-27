@@ -247,17 +247,16 @@ module.exports = {
                 role,
                 balance
             } = req.body;
-            let image = req.file.buffer.toString('base64');
 
             const body = req.body
             req.body.balance = parseInt(balance);
-
+            
             const validate = v.validate(body, schema.user.updateUser)
-
+            
             if (validate.length) {
                 return res.status(409).json(validate)
             }
-
+            
             const userData = await User.findOne({ where: { id: id } });
             if (!userData) {
                 return res.status(400).json({
@@ -266,7 +265,7 @@ module.exports = {
                     data: null
                 });
             }
-
+            
             const biodata = await Biodata.findOne({ where: { email: userData.email } });
             if (!biodata) {
                 return res.status(400).json({
@@ -276,24 +275,30 @@ module.exports = {
                 });
             }
 
-            const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
-
-            if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
-                await imagekit.deleteFile(imageData.imagekit_id);
+            let image;
+            if (!req.file) {
+                image = userData.avatar_id;
+            } else {
+                image = req.file.buffer.toString('base64');
+                const imageData = await Image.findOne({ where: { id: userData.avatar_id } });
+    
+                if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
+                    await imagekit.deleteFile(imageData.imagekit_id);
+                }
+    
+                const uploadNewImage = await imagekit.upload({
+                    file: image,
+                    fileName: req.file.originalname
+                });
+    
+                await Image.update({
+                    imagekit_id: uploadNewImage.fileId,
+                    imagekit_url: uploadNewImage.url,
+                    imagekit_path: uploadNewImage.filePath
+                }, {
+                    where: { id: imageData.id }
+                });
             }
-
-            const uploadNewImage = await imagekit.upload({
-                file: image,
-                fileName: req.file.originalname
-            });
-
-            await Image.update({
-                imagekit_id: uploadNewImage.fileId,
-                imagekit_url: uploadNewImage.url,
-                imagekit_path: uploadNewImage.filePath
-            }, {
-                where: { id: imageData.id }
-            });
 
             if (!name) name = userData.name;
             if (!email) email = userData.email;
@@ -303,8 +308,9 @@ module.exports = {
             const isUpdatedUser = await User.update({
                 name: name,
                 email: email,
-                avatar: image,
+                avatar_id: image,
                 role: role,
+                balance: balance
             }, {
                 where: { id: id }
             });
