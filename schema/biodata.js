@@ -1,6 +1,6 @@
 module.exports = {
     createBiodata: {
-        email: 'email',
+        email: {type: 'email', optional: true},
         name: 'string',
         nik: { type: 'string', nullable: true, optional: true },
         birth_place: { type: 'string', nullable: true, optional: true },
