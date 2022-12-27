@@ -264,6 +264,8 @@ module.exports = {
                     data: null
                 });
             }
+
+            req.body.email = userData.email;
             
             const biodata = await Biodata.findOne({ where: { email: userData.email } });
             if (!biodata) {
