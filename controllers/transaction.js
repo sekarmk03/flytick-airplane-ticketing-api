@@ -319,6 +319,20 @@ module.exports = {
                     message: `Thank you. Payment of IDR ${total_cost} for transaction ${newTransaction.invoice_number} via BNI has been successful.`,
                     is_read: false
                 });
+
+                let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
+
+                let attachments = []
+                t_data.tickets.forEach((ticket) => {
+                    attachments.push({
+                        fileName: ticket.ticket_data.ticket_number,
+                        path: ticket.ticket_data.ticket_pdf,
+                        contentType: 'application/pdf'
+                    })
+                });
+                console.log(attachments);
+                
+                let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail, attachments);
             }
 
             // update user balance
@@ -330,10 +344,6 @@ module.exports = {
                 }
             });
 
-            // let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
-
-            // let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
-            
             return res.status(201).json({
                 status: true,
                 message: 'transaction created',

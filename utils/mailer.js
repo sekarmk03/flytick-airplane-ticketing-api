@@ -18,7 +18,7 @@ const oauth2Client = new google.auth.OAuth2(
 oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
 
 module.exports = {
-    sendMail: (to, subject, html) => {
+    sendMail: (to, subject, html, attachments) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const accessToken = await oauth2Client.getAccessToken();
@@ -38,7 +38,8 @@ module.exports = {
                 const mailOptions = {
                     to,
                     subject,
-                    html
+                    html,
+                    attachments: attachments
                 };
 
                 const response = await transport.sendMail(mailOptions);
