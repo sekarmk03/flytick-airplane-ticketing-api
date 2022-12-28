@@ -1,4 +1,3 @@
-require('dotenv').config()
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const ejs = require('ejs')
@@ -19,7 +18,7 @@ const oauth2Client = new google.auth.OAuth2(
 oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
 
 module.exports = {
-    sendMail: (to, subject, html, filename, path) => {
+    sendMail: (to, subject, html, attachments) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const accessToken = await oauth2Client.getAccessToken();
@@ -40,10 +39,7 @@ module.exports = {
                     to,
                     subject,
                     html,
-                    attachments: [{
-                        filename,
-                        path
-                    }]
+                    attachments: attachments
                 };
 
                 const response = await transport.sendMail(mailOptions);

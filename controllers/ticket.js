@@ -301,6 +301,14 @@ const update_checked_in = async (req, res, next) => {
             });
         }
 
+        if(ticket.checked_in == true) {
+            return res.status(400).json({
+                status: false,
+                message: 'ticket already used',
+                data: null
+            });
+        }
+
         const isUpdated = await Ticket.update({
             checked_in: true
         }, {
