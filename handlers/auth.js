@@ -90,7 +90,7 @@ module.exports = {
             const user = await User.authenticate(req.body);
             const accessToken = user.generateToken();
 
-            res.status(200).json({
+            return res.status(200).json({
                 status: true,
                 message: 'success login',
                 data: {
