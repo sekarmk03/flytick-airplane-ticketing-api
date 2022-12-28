@@ -6,6 +6,14 @@ const roles = require('../utils/roles');
 const multer = require('multer');
 const upload = multer();
 
+// forgot password view
+router.get('/forgot-password', c.forgotPasswordView);
+// forgot password
+router.post('/forgot-password', c.forgotPassword);
+// reset password view
+router.get('/reset-password', c.resetPasswordView);
+// reset password
+router.post('/reset-password', c.resetPassword)
 // get all user
 router.get('/', authorize(), c.index);
 // get detail user
