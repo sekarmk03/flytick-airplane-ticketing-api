@@ -2,7 +2,8 @@ const {
     User,
     Biodata,
     Image,
-    Country
+    Country,
+    Notification
 } = require('../models');
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
@@ -226,6 +227,15 @@ module.exports = {
                 where: { id: newUser.id }
             });
 
+            // create notification
+            await Notification.create({
+                user_id: req.user.id,
+                topic: 'account',
+                title: 'Account Created!',
+                message: 'Welcome to FlyTick App! Here you can book ticket for your travel plan easily. Fly The Best Part Of The Day.',
+                is_read: false
+            });
+
             return res.status(201).json({
                 status: true,
                 message: 'user created',
@@ -315,6 +325,15 @@ module.exports = {
             });
 
             const isUpdatedBiodata = await c_biodata.update(req, res, next);
+
+            // create notification
+            await Notification.create({
+                user_id: req.user.id,
+                topic: 'account',
+                title: 'Profile has been updated!',
+                message: 'Your profile has been successfully updated. Keep your biodata always up-to-date.',
+                is_read: false
+            });
 
             return res.status(200).json({
                 status: true,

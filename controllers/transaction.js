@@ -4,7 +4,8 @@ const {
     Ticket,
     User,
     Airport,
-    Flight
+    Flight,
+    Notification
 } = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
@@ -218,7 +219,7 @@ module.exports = {
                 req.body.transaction_id = newTransaction.id;
                 req.body.flight_id = schedule.flight_id;
 
-                // generate ticket adult
+                // generate ticket
                 for (let j = 0; j < biodataList.length; j++) {
                     let ticket = {};
 
@@ -305,6 +306,15 @@ module.exports = {
                         }
                     });
                 }
+
+                // create notification
+                await Notification.create({
+                    user_id: req.user.id,
+                    topic: 'payment',
+                    title: 'Payment successful!',
+                    message: `Thank you. Payment of IDR ${total_cost} for transaction ${newTransaction.invoice_number} via BNI has been successful.`,
+                    is_read: false
+                });
             }
 
             // update user balance
@@ -319,7 +329,7 @@ module.exports = {
             // let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
 
             // let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
-
+            
             return res.status(201).json({
                 status: true,
                 message: 'transaction created',
