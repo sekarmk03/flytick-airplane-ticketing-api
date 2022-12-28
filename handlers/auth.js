@@ -65,6 +65,15 @@ module.exports = {
 
             const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
 
+            // create notification
+            await Notification.create({
+                user_id: req.user.id,
+                topic: 'account',
+                title: 'Account Created!',
+                message: 'Welcome to FlyTick App! Here you can book ticket for your travel plan easily. Fly The Best Part Of The Day.',
+                is_read: false
+            });
+
             res.status(201).json({
                 status: true,
                 message: 'user registered',
