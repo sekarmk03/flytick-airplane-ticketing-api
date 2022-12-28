@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const roles = require('../utils/roles');
-const { User, Biodata } = require('../models');
+const { User, Biodata, Notification } = require('../models');
 const loginType = require('../utils/login_type');
 const schema = require('../schema')
 const validator = require('fastest-validator')
@@ -13,6 +13,7 @@ module.exports = {
             const { name, email, password, role = roles.user } = req.body;
 
             const exist = await User.findOne({ where: { email: email } });
+            console.log(exist);
             if (exist) {
                 return res.status(400).json({
                     status: false,
@@ -67,14 +68,14 @@ module.exports = {
 
             // create notification
             await Notification.create({
-                user_id: req.user.id,
+                user_id: newUser.id,
                 topic: 'account',
                 title: 'Account Created!',
                 message: 'Welcome to FlyTick App! Here you can book ticket for your travel plan easily. Fly The Best Part Of The Day.',
                 is_read: false
             });
 
-            res.status(201).json({
+            return res.status(201).json({
                 status: true,
                 message: 'user registered',
                 data: newUser
