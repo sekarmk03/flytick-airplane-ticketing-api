@@ -1,7 +1,6 @@
 const { Ticket, Flight, Schedule, Transaction, User, Biodata, Airport, Country, City, sequelize } = require('../models');
 const { Op, QueryTypes } = require('sequelize');
 const generate_qr = require('../utils/generate_qr');
-const generate_pdf = require('../utils/generate_pdf');
 const generatePDF = require('../utils/generatePDF');
 const { FE_BASE_URL = 'https://flytick.km3ggwp.com' } = process.env;
 const mail = require('../utils/mailer')

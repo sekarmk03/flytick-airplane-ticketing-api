@@ -316,9 +316,9 @@ module.exports = {
                 }
             });
 
-            // let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
+            let htmlEmail = await mail.getHtml('ticket.ejs', { data: null })
 
-            // let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail)
+            let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail, data.forEach(function (ticket){[ticket.tickets.ticket_number, ticket.tickets.ticket_pdf]}))
 
             return res.status(201).json({
                 status: true,
