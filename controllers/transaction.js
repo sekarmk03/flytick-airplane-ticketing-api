@@ -177,6 +177,7 @@ module.exports = {
                         id: schedule_id[i]
                     }
                 });
+
                 if(!schedule) {
                     return res.status(404).json({
                         status: false,
@@ -184,6 +185,8 @@ module.exports = {
                         data: null
                     })
                 }
+
+                passenger += schedule.passenger;
 
                 let total_cost = (adult * schedule.cost) + (child * (schedule.cost * 0.2)); // child 80%
 
@@ -254,19 +257,20 @@ module.exports = {
                     }
 
                     t_data.tickets.push(ticket);
+
                     passenger++;
+                    
+                    // update passenger
+                    await Schedule.update({
+                        passenger
+                    }, {
+                        where: {
+                            id: schedule_id[i]
+                        }
+                    });
                 }
 
                 data.push(t_data);
-
-                // update passenger
-                await Schedule.update({
-                    passenger
-                }, {
-                    where: {
-                        id: schedule_id[i]
-                    }
-                });
 
                 // update is_ready
                 let schedulePass = await Schedule.findOne({
