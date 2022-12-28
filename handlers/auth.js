@@ -61,9 +61,9 @@ module.exports = {
                 where: { id: newUser.id }
             });
 
-            // const htmlEmail = await mail.getHtml('welcome.ejs', { name })
+            const htmlEmail = await mail.getHtml('welcome.ejs', { name })
 
-            // const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
+            const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
 
             res.status(201).json({
                 status: true,
