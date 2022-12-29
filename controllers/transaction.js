@@ -66,7 +66,12 @@ module.exports = {
                     },
                     include: {
                         model: Ticket,
-                        as: 'tickets'
+                        as: 'tickets',
+                        include: { model: Schedule, as: 'schedule', include: [
+                            {model: Flight, as: 'flight'},
+                            {model: Airport, as: 'fromAirport'},
+                            {model: Airport, as: 'toAirport'}
+                        ] }
                     },
                     limit: limit,
                     offset: start
@@ -114,7 +119,12 @@ module.exports = {
                     },
                     {
                         model: Ticket,
-                        as: 'tickets'
+                        as: 'tickets',
+                        include: { model: Schedule, as: 'schedule', include: [
+                            {model: Flight, as: 'flight'},
+                            {model: Airport, as: 'fromAirport'},
+                            {model: Airport, as: 'toAirport'}
+                        ] }
                     }
                 ]
             });

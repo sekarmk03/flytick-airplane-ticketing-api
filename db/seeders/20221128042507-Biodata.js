@@ -40,20 +40,6 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     },
-    {
-      email: "sekarmadu@upi.edu",
-      name: "Madu Kusumawardani",
-      nik: "3175064307020014",
-      birth_place: "Banjarnegara",
-      birth_date: "2002-07-03",
-      telp: "089691798633",
-      nationality: 1,
-      no_passport: null,
-      issue_date: null,
-      expire_date: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
    ], {});
   },
 

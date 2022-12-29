@@ -38,18 +38,6 @@ module.exports = {
         login_type: loginType.basic,
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      {
-        name: 'Madu Kusumawardani',
-        email: 'sekarmadu@upi.edu',
-        password: await bcrypt.hash('secret789', 10),
-        avatar_id: 1,
-        role: roles.user,
-        balance: 10000000,
-        biodata_id: 3,
-        login_type: loginType.basic,
-        createdAt: new Date(),
-        updatedAt: new Date()
       }
     ], {});
   },
