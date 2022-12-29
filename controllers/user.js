@@ -166,7 +166,6 @@ module.exports = {
                 role = roles.user,
                 balance = 50000000
             } = req.body;
-            const image = req.file.buffer.toString('base64');
 
             const body = req.body
             req.body.balance = parseInt(balance);
@@ -186,17 +185,26 @@ module.exports = {
                 });
             }
 
-            const uploadImage = await imagekit.upload({
-                file: image,
-                fileName: req.file.originalname
-            });
+            let image;
+            if (!req.file) {
+                image = 1;
+            } else {
+                image = req.file.buffer.toString('base64');
+    
+                const uploadImage = await imagekit.upload({
+                    file: image,
+                    fileName: req.file.originalname
+                });
+    
+                const newAvatar = await Image.create({
+                    filename: uploadImage.name,
+                    imagekit_id: uploadImage.fileId,
+                    imagekit_url: uploadImage.url,
+                    imagekit_path: uploadImage.filePath
+                });
 
-            const newAvatar = await Image.create({
-                filename: uploadImage.name,
-                imagekit_id: uploadImage.fileId,
-                imagekit_url: uploadImage.url,
-                imagekit_path: uploadImage.filePath
-            });
+                image = newAvatar.id;
+            }
 
             const hashed = await bcrypt.hash(password, 10);
 
@@ -204,7 +212,7 @@ module.exports = {
                 name: name,
                 email: email,
                 password: hashed,
-                avatar_id: newAvatar.id,
+                avatar_id: image,
                 role: role,
                 balance: balance,
                 biodata_id: 0, // update biodata id when user complete their profile

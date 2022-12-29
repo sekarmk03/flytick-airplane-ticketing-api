@@ -16,6 +16,13 @@ const index = async (req, res, next) => {
         let countTickets;
         let querySelect = `SELECT * FROM "Tickets" WHERE user_id IN (SELECT id FROM "Users" WHERE name ILIKE '%${search}%') OR biodata_id IN (SELECT id FROM "Biodata" WHERE name LIKE '%${search}%')`;
         let queryOrder = `ORDER BY "${sort}" ${type} LIMIT ${limit} OFFSET ${start}`;
+        // let querySeqSelect = await Ticket.findAll({
+        //     include: { model: Schedule, as: 'schedule', include: [
+        //         {model: Flight, as: 'flight'},
+        //         {model: Airport, as: 'fromAirport'},
+        //         {model: Airport, as: 'toAirport'}
+        //     ] }
+        // })
         if (checked_in !== null) {
             querySelect = `${querySelect} AND checked_in=${checked_in}`;
         }

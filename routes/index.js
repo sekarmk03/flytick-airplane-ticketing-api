@@ -13,6 +13,7 @@ const image = require('./image');
 const schedule = require('./schedule');
 const ticket = require('./ticket');
 const transaction = require('./transaction');
+const summary = require('./summary');
 
 router.use('/auth', auth);
 router.use('/oauth', oauth);
@@ -27,5 +28,6 @@ router.use('/image', image);
 router.use('/schedule', schedule);
 router.use('/ticket', ticket);
 router.use('/transaction', transaction);
+router.use('/summary', summary);
 
 module.exports = router;
