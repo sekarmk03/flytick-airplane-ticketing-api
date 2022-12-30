@@ -38,6 +38,18 @@ module.exports = {
         login_type: loginType.basic,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        name: 'Charles Gunawan',
+        email: 'charlesgunawan32@gmail.com',
+        password: await bcrypt.hash('charlesggwp', 10),
+        avatar_id: 1,
+        role: roles.user,
+        balance: 100000000000,
+        biodata_id: 3,
+        login_type: loginType.basic,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },
