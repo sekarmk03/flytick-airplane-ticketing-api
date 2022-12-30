@@ -269,7 +269,10 @@ module.exports = {
             } = req.body;
 
             const body = req.body
-            req.body.balance = parseInt(balance);
+            if(balance != null) {
+                req.body.balance = parseInt(balance);
+                balance = req.body.balance;
+            }
 
             const validate = v.validate(body, schema.user.updateUser)
 

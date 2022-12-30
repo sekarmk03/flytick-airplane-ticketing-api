@@ -11,6 +11,6 @@ module.exports = {
         name: {type: 'string', optional: true},
         email: {type: 'email', optional: true},
         role: { type: 'string', enum: ['user', 'admin', 'superadmin'], optional: true},
-        balance: {type: 'number', optional: true}
+        balance: {type: 'number', optional: true, nullable: true}
     }
 }
