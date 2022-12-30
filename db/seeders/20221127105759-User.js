@@ -4,7 +4,7 @@ const loginType = require('../../utils/login_type');
 const bcrypt = require('bcrypt');
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -14,7 +14,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     await queryInterface.bulkInsert('Users', [
+    await queryInterface.bulkInsert('Users', [
       {
         name: 'Sekar MK',
         email: 'sekarmadukusumawardani@gmail.com',
@@ -50,11 +50,23 @@ module.exports = {
         login_type: loginType.basic,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        name: 'Muhammad Naufal Aji Satrio',
+        email: 'muhnaufalaji@gmail.com',
+        password: await bcrypt.hash('naufal123', 10),
+        avatar_id: 1,
+        role: roles.user,
+        balance: 100000000000,
+        biodata_id: 4,
+        login_type: loginType.basic,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
