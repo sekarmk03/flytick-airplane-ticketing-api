@@ -265,7 +265,7 @@ module.exports = {
             let {
                 name,
                 role,
-                balance
+                balance = null,
             } = req.body;
 
             const body = req.body
@@ -323,6 +323,8 @@ module.exports = {
                 }, {
                     where: { id: imageData.id }
                 });
+
+                image = userData.avatar_id;
             }
 
             if (!name) name = userData.name;
