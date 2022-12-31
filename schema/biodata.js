@@ -1,13 +1,13 @@
 module.exports = {
     createBiodata: {
-        email: {type: 'email', optional: true},
-        name: 'string',
-        nik: { type: 'string', nullable: true, optional: true },
-        birth_place: { type: 'string', nullable: true, optional: true },
-        telp: { type: 'string', nullable: true, optional: true },
-        nationality: { type: 'number', nullable: true, optional: true },
-        no_passport: { type: 'string', nullable: true, optional: true },
-        issue_date: { type: 'string', nullable: true, optional: true },
-        expire_date: { type: 'string', nullable: true, optional: true }
+        email: {optional: true, type: 'email'},
+        name: {optional: true, type: 'string'},
+        nik: { nullable: true, optional: true, type: 'string' },
+        birth_place: { nullable: true, optional: true, type: 'string' },
+        telp: { nullable: true, optional: true, type: 'string' },
+        nationality: { nullable: true, optional: true, type: 'number' },
+        no_passport: { nullable: true, optional: true, type: 'string' },
+        issue_date: { nullable: true, optional: true, type: 'string', },
+        expire_date: { nullable: true, optional: true, type: 'string' }
     }
 }
