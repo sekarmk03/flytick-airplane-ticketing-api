@@ -45,7 +45,6 @@ module.exports = {
                             model: Ticket,
                             as: 'tickets',
                             include: { model: Schedule, as: 'schedule', include: [
-                                {model: Biodata, as: 'passenger'},
                                 {model: Flight, as: 'flight'},
                                 {model: Airport, as: 'fromAirport'},
                                 {model: Airport, as: 'toAirport'}
@@ -70,7 +69,6 @@ module.exports = {
                         model: Ticket,
                         as: 'tickets',
                         include: { model: Schedule, as: 'schedule', include: [
-                            {model: Biodata, as: 'passenger'},
                             {model: Flight, as: 'flight'},
                             {model: Airport, as: 'fromAirport'},
                             {model: Airport, as: 'toAirport'}
@@ -123,12 +121,15 @@ module.exports = {
                     {
                         model: Ticket,
                         as: 'tickets',
-                        include: { model: Schedule, as: 'schedule', include: [
+                        include: [
                             {model: Biodata, as: 'passenger'},
-                            {model: Flight, as: 'flight'},
-                            {model: Airport, as: 'fromAirport'},
-                            {model: Airport, as: 'toAirport'}
-                        ] }
+                            {
+                                model: Schedule, as: 'schedule', include: [
+                                    {model: Flight, as: 'flight'},
+                                    {model: Airport, as: 'fromAirport'},
+                                    {model: Airport, as: 'toAirport'}
+                            ] }
+                        ]
                     }
                 ]
             });
