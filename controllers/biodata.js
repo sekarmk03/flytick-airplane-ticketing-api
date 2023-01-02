@@ -89,7 +89,7 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const {
-                email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null
+                email = null, name, nik, birth_place = null, birth_date = null, telp, nationality = 1, no_passport = null, issue_date = null, expire_date = null
             } = req.body;
 
             const body = req.body

@@ -345,7 +345,6 @@ module.exports = {
                         contentType: 'application/pdf'
                     })
                 });
-                console.log(attachments);
                 
                 let sendEmail = await mail.sendMail(userData.email, 'E-Ticket', htmlEmail, attachments);
             }
