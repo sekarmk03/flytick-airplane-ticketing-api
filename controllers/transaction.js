@@ -5,7 +5,8 @@ const {
     User,
     Airport,
     Flight,
-    Notification
+    Notification,
+    Biodata
 } = require('../models');
 const c_ticket = require('./ticket');
 const c_biodata = require('./biodata');
@@ -44,6 +45,7 @@ module.exports = {
                             model: Ticket,
                             as: 'tickets',
                             include: { model: Schedule, as: 'schedule', include: [
+                                {model: Biodata, as: 'passenger'},
                                 {model: Flight, as: 'flight'},
                                 {model: Airport, as: 'fromAirport'},
                                 {model: Airport, as: 'toAirport'}
@@ -68,6 +70,7 @@ module.exports = {
                         model: Ticket,
                         as: 'tickets',
                         include: { model: Schedule, as: 'schedule', include: [
+                            {model: Biodata, as: 'passenger'},
                             {model: Flight, as: 'flight'},
                             {model: Airport, as: 'fromAirport'},
                             {model: Airport, as: 'toAirport'}
@@ -121,6 +124,7 @@ module.exports = {
                         model: Ticket,
                         as: 'tickets',
                         include: { model: Schedule, as: 'schedule', include: [
+                            {model: Biodata, as: 'passenger'},
                             {model: Flight, as: 'flight'},
                             {model: Airport, as: 'fromAirport'},
                             {model: Airport, as: 'toAirport'}
