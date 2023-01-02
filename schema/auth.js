@@ -3,6 +3,6 @@ module.exports = {
         name: 'string',
         email: 'email',
         password: 'string|min:8',
-        role: { type: 'string', enum: ['user', 'admin'], optional: true }
+        role: { optional: true, type: 'string', enum: ['user', 'admin']}
     }
 }

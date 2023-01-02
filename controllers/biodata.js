@@ -89,7 +89,7 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const {
-                email = null, name, nik, birth_place, birth_date, telp, nationality, no_passport = null, issue_date = null, expire_date = null
+                email = null, name, nik, birth_place = null, birth_date = null, telp, nationality = 1, no_passport = null, issue_date = null, expire_date = null
             } = req.body;
 
             const body = req.body
@@ -136,20 +136,20 @@ module.exports = {
         try {
             // const {id} = req.params;
             let {
-                email,
-                name,
-                nik,
-                birth_place,
-                birth_date,
-                telp,
-                nationality,
+                email = null,
+                name = null,
+                nik = null,
+                birth_place = null,
+                birth_date = null,
+                telp = null,
+                nationality = null,
                 no_passport = null,
                 issue_date = null,
                 expire_date = null
             } = req.body;
 
             const body = req.body
-            req.body.nationality = parseInt(nationality);
+            if(nationality) req.body.nationality = parseInt(nationality);
 
             const validate = v.validate(body, schema.biodata.createBiodata)
 

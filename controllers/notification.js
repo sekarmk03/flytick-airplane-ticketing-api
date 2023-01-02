@@ -241,7 +241,10 @@ module.exports = {
             const notification = await Notification.update({
                 is_read: true
             }, {
-                where: {is_read: false}
+                where: {
+                    user_id: req.user.id,
+                    is_read: false
+                }
             });
             return res.status(200).json({
                 status: true,

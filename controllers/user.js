@@ -265,7 +265,7 @@ module.exports = {
             let {
                 name,
                 role,
-                balance
+                balance = null,
             } = req.body;
 
             const body = req.body
@@ -309,20 +309,42 @@ module.exports = {
 
                 if (imageData.imagekit_id != 'oauth-image' && imageData.imagekit_id != 'default-image') {
                     await imagekit.deleteFile(imageData.imagekit_id);
+
+                    const uploadNewImage = await imagekit.upload({
+                        file: image,
+                        fileName: req.file.originalname
+                    });
+    
+                    await Image.update({
+                        imagekit_id: uploadNewImage.fileId,
+                        imagekit_url: uploadNewImage.url,
+                        imagekit_path: uploadNewImage.filePath
+                    }, {
+                        where: { id: imageData.id }
+                    });
+
+                    image = userData.avatar_id;
+                } else {
+                    const uploadNewImage = await imagekit.upload({
+                        file: image,
+                        fileName: req.file.originalname
+                    });
+
+                    const newImage = await Image.create({
+                        filename: uploadNewImage.name,
+                        imagekit_id: uploadNewImage.fileId,
+                        imagekit_url: uploadNewImage.url,
+                        imagekit_path: uploadNewImage.filePath
+                    });
+
+                    await User.update({
+                        avatar_id: newImage.id
+                    }, {
+                        where: {id: userData.id}
+                    });
+
+                    image = newImage.id;
                 }
-
-                const uploadNewImage = await imagekit.upload({
-                    file: image,
-                    fileName: req.file.originalname
-                });
-
-                await Image.update({
-                    imagekit_id: uploadNewImage.fileId,
-                    imagekit_url: uploadNewImage.url,
-                    imagekit_path: uploadNewImage.filePath
-                }, {
-                    where: { id: imageData.id }
-                });
             }
 
             if (!name) name = userData.name;
