@@ -431,7 +431,7 @@ module.exports = {
         return res.render('forgotPasswordView', { message: null })
     },
 
-    // forgot password
+    // forgot password handler
     forgotPassword: async (req, res, next) => {
         try {
             const { email } = req.body
@@ -449,7 +449,7 @@ module.exports = {
             if (userData) {
                 const payload = { user_id: userData.id }
                 const token = jwt.sign(payload, JWT_SECRET_KEY)
-                const link = `https://flytick-dev.up.railway.app/api/user/forgot-password/api/user/reset-password?token=${token}`
+                const link = `https://flytick-dev.up.railway.app/api/user/reset-password?token=${token}`
 
                 const htmlEmail = await mail.getHtml('forgot_password.ejs', { link: link, name: userData.name })
                 const sendEmail = await mail.sendMail(userData.email, 'Reset Your Password', htmlEmail)
