@@ -427,7 +427,7 @@ module.exports = {
             if (userData) {
                 const payload = { user_id: userData.id }
                 const token = jwt.sign(payload, JWT_SECRET_KEY)
-                const link = `http://localhost:3000/api/user/reset-password?token=${token}`
+                const link = `https://flytick-dev.up.railway.app/api/user/forgot-password/api/user/reset-password?token=${token}`
 
                 const htmlEmail = await mail.getHtml('forgot_password.ejs', { link: link, name: userData.name })
                 const sendEmail = await mail.sendMail(userData.email, 'Reset Your Password', htmlEmail)
