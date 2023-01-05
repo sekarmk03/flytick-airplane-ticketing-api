@@ -490,11 +490,23 @@ module.exports = {
                 where: { id: payload.user_id }
             })
 
-            return res.status(200).json({
-                status: true,
-                message: 'reset password success!',
-                data: null
-            })
+            // create notification
+            await Notification.create({
+                user_id: req.user.id,
+                topic: 'account',
+                title: 'Password Changed!',
+                message: "Your password has been changed. Contact us if you don't recognize this activity!",
+                is_read: false
+            });
+
+            return res.redirect('https://flytick.km3ggwp.com/signin');
+            next();
+
+            // return res.status(200).json({
+            //     status: true,
+            //     message: 'reset password success!',
+            //     data: null
+            // })
         } catch (err) {
             next(err)
         }
