@@ -308,8 +308,8 @@ const update_checked_in = async (req, res, next) => {
             });
         }
 
-        if(ticket.checked_in == true) {
-            return res.status(200).json({
+        if(ticket.checked_in === true) {
+            return res.status(400).json({
                 status: true,
                 message: 'ticket already used',
                 data: null
