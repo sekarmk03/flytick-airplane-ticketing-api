@@ -60,12 +60,12 @@ module.exports = {
                         {
                             model: City,
                             as: 'city',
-                            attributes: ['name']
+                            attributes: ['id', 'name']
                         },
                         {
                             model: Country,
                             as: 'country',
-                            attributes: ['name']
+                            attributes: ['id', 'name']
                         }
                     ],
                     order: [
