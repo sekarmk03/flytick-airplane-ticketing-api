@@ -60,7 +60,12 @@ module.exports = {
                         {model: Flight, as: 'flight', where: {is_ready: true}},
                         {model: Airport, as: 'fromAirport', where: {id: from_airport}},
                         {model: Airport, as: 'toAirport', where: {id: to_airport}}
-                    ]
+                    ],
+                    order: [
+                        [sort, type]
+                    ],
+                    limit: limit,
+                    offset: start
                 });
                 countSchedules = schedules;
             } else {
@@ -69,7 +74,12 @@ module.exports = {
                         {model: Flight, as: 'flight'},
                         {model: Airport, as: 'fromAirport'},
                         {model: Airport, as: 'toAirport'}
-                    ]
+                    ],
+                    order: [
+                        [sort, type]
+                    ],
+                    limit: limit,
+                    offset: start
                 });
                 countSchedules = await Schedule.findAll();
             }
