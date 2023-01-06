@@ -38,18 +38,31 @@ module.exports = {
                     })
                 } // buat di transaction aja
     
-                schedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer}) ORDER BY sc."${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
-                    type: QueryTypes.SELECT
-                })
+                // schedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer}) ORDER BY sc."${sort}" ${type} LIMIT ${limit} OFFSET ${start}`, {
+                //     type: QueryTypes.SELECT
+                // })
     
-                countSchedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer})`, {
-                    type: QueryTypes.SELECT
-                })
+                // countSchedules = await sequelize.query(`SELECT * FROM "Schedules" as sc JOIN "Flights" fl ON fl.id=sc.flight_id WHERE sc.departure_time BETWEEN '${departure_time} 00:00:00' AND '${departure_time} 23:59:59' AND sc.from_airport = ${from_airport} AND sc.to_airport = ${to_airport} AND fl.is_ready=true AND fl.capacity>=(sc.passenger + ${buyer})`, {
+                //     type: QueryTypes.SELECT
+                // })
 
-                const fromAirport = await Airport.findOne({where: {id: from_airport}});
-                const toAirport = await Airport.findOne({where: {id: to_airport}});
+                // const fromAirport = await Airport.findOne({where: {id: from_airport}});
+                // const toAirport = await Airport.findOne({where: {id: to_airport}});
 
-                schedules = {schedules, fromAirport, toAirport};
+                // schedules = {schedules, fromAirport, toAirport};
+
+                const startTime = new Date(`${departure_time} 00:00:00`);
+                const endTime = new Date(`${departure_time} 23:59:59`);
+
+                schedules = await Schedule.findAll({
+                    where: {departure_time: {[Op.between]: [startTime, endTime]}, from_airport: from_airport, to_airport: to_airport},
+                    include: [
+                        {model: Flight, as: 'flight', where: {is_ready: true}},
+                        {model: Airport, as: 'fromAirport', where: {id: from_airport}},
+                        {model: Airport, as: 'toAirport', where: {id: to_airport}}
+                    ]
+                });
+                countSchedules = schedules;
             } else {
                 schedules = await Schedule.findAll({
                     include: [
