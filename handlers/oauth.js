@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 const googleOauth2 = require('../utils/google');
+const { google } = require('../utils/google-config');
 const facebookOauth2 = require('../utils/facebook');
 const loginType = require('../utils/login_type');
 const { User, Image, Biodata } = require('../models');
 const { JWT_SECRET_KEY } = process.env;
 const roles = require('../utils/roles');
+const mail = require('../utils/mailer');
 
 module.exports = {
     google: async (req, res, next) => {
@@ -12,26 +14,38 @@ module.exports = {
             const {access_token} = req.body;
 
             if(!access_token) {
-                return res.status()
+                return res.status(400).json({
+                    status: 'true',
+                    message: 'access token required',
+                    data: null
+                });
             }
 
-            await googleOauth2.setCredentials(access_token);
+            const ticket = await google.verifyIdToken({
+                idToken: access_token,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
 
-            const userInfo = await googleOauth2.getUserData();
+            const userInfo = ticket.getPayload();
+            const user = await User.findOne({where: {email: userInfo.email}});
 
-            let user = await User.findOne({where: {email: userInfo.data.email}});
+            // await googleOauth2.setCredentials(access_token);
+
+            // const userInfo = await googleOauth2.getUserData();
+
+            // let user = await User.findOne({where: {email: userInfo.data.email}});
 
             if(!user) {
                 const newAvatar = await Image.create({
-                    filename: userInfo.data.email,
+                    filename: userInfo.email,
                     imagekit_id: 'oauth-image',
-                    imagekit_url: userInfo.data.picture,
+                    imagekit_url: userInfo.picture,
                     imagekit_path: ''
                 });
 
                 user = await User.create({
-                    name: userInfo.data.name,
-                    email: userInfo.data.email,
+                    name: userInfo.name,
+                    email: userInfo.email,
                     password: '',
                     avatar_id: newAvatar.id,
                     role: roles.user,
@@ -43,12 +57,12 @@ module.exports = {
                 const newBiodata = await Biodata.create({
                     email: user.email,
                     name: user.name,
-                    nik: null,
-                    birth_place: null,
-                    birth_date: null,
-                    telp: null,
-                    nationality: null,
-                    no_passport: null,
+                    nik: '',
+                    birth_place: '',
+                    birth_date: new Date(),
+                    telp: '',
+                    nationality: 0,
+                    no_passport: '',
                     issue_date: null,
                     expire_date: null
                 });
@@ -57,6 +71,19 @@ module.exports = {
                     biodata_id: newBiodata.id
                 }, {
                     where: { id: user.id }
+                });
+
+                const htmlEmail = await mail.getHtml('welcome.ejs', { name })
+
+                const sendEmail = await mail.sendMail(email, 'Welcome to flytick!', htmlEmail)
+
+                // create notification
+                await Notification.create({
+                    user_id: newUser.id,
+                    topic: 'account',
+                    title: 'Account Created!',
+                    message: 'Welcome to FlyTick App! Here you can book ticket for your travel plan easily. Fly The Best Part Of The Day.',
+                    is_read: false
                 });
             }
 
