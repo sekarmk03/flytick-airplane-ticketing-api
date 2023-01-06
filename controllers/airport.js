@@ -13,7 +13,29 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-            if(req.user.role == 'user') {
+            if(!req.user || req.user.role == 'admin') {
+                const dataAirport = await Airport.findAll({
+                    include: [
+                        {
+                            model: City,
+                            as: 'city',
+                            attributes: ['name']
+                        },
+                        {
+                            model: Country,
+                            as: 'country',
+                            attributes: ['name']
+                        }
+                    ],
+                    raw: true
+                });
+
+                return res.status(200).json({
+                    status: true,
+                    message: 'get all airport success',
+                    data: dataAirport
+                });
+            } else {
                 let {
                     sort = "code", type = "ASC", search = "", page ="1", limit="10"
                 } = req.query;
@@ -74,28 +96,6 @@ module.exports = {
                     message: 'get all airport success',
                     pagination,
                     data: dataAirport.rows
-                })
-            } else {
-                const dataAirport = await Airport.findAll({
-                    include: [
-                        {
-                            model: City,
-                            as: 'city',
-                            attributes: ['name']
-                        },
-                        {
-                            model: Country,
-                            as: 'country',
-                            attributes: ['name']
-                        }
-                    ],
-                    raw: true
-                });
-
-                return res.status(200).json({
-                    status: true,
-                    message: 'get all airport success',
-                    data: dataAirport
                 });
             }
         } catch (err) {

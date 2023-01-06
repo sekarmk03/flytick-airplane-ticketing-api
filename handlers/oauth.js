@@ -11,6 +11,10 @@ module.exports = {
         try {
             const {access_token} = req.body;
 
+            if(!access_token) {
+                return res.status()
+            }
+
             await googleOauth2.setCredentials(access_token);
 
             const userInfo = await googleOauth2.getUserData();
