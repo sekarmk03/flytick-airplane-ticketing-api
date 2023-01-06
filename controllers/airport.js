@@ -13,7 +13,7 @@ const v = new validator
 module.exports = {
     index: async (req, res, next) => {
         try {
-            if(req.user) {
+            if(req.user.role == 'user') {
                 let {
                     sort = "code", type = "ASC", search = "", page ="1", limit="10"
                 } = req.query;

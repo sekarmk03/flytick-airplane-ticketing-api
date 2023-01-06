@@ -9,9 +9,7 @@ const roles = require('../utils/roles');
 module.exports = {
     google: async (req, res, next) => {
         try {
-            const access_token = req.body.access_token;
-            console.log(req.body);
-            console.log(access_token);
+            const {access_token} = req.body;
 
             await googleOauth2.setCredentials(access_token);
 

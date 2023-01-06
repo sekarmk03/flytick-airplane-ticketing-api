@@ -8,12 +8,17 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "name", type = "ASC", search = "", page = "1", limit = "10"
+                sort = "name", type = "ASC", search = "", page = "0", limit = "10"
             } = req.query;
             page = parseInt(page);
             limit = parseInt(limit)
             let start = 0 + (page - 1) * limit;
             let end = page * limit;
+            if(page == 0) {
+                limit = await City.count();
+                start = 0;
+                end = 1 * limit;
+            }
             const dataCity = await City.findAndCountAll({
                 order: [
                     [sort, type]

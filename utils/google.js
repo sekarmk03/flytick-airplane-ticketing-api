@@ -2,13 +2,13 @@ const { google } = require('googleapis');
 
 const {
     OAUTH_REDIRECT_URI,
-    OAUTH_CLIENT_ID,
-    OAUTH_CLIENT_SECRET
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET
 } = process.env;
 
 const oauth2Client = new google.auth.OAuth2(
-    OAUTH_CLIENT_ID,
-    OAUTH_CLIENT_SECRET,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
     OAUTH_REDIRECT_URI
 );
 
@@ -31,7 +31,8 @@ module.exports = {
     setCredentials: async (code) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const {tokens} = await oauth2Client.getToken(code);
+                const tokens = await oauth2Client.getToken(code);
+                console.log(tokens);
                 oauth2Client.setCredentials(tokens);
 
                 return resolve(tokens);

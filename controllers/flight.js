@@ -53,12 +53,17 @@ module.exports = {
     index: async (req, res, next) => {
         try {
             let {
-                sort = "code", type = "ASC", search = "", page = "1", limit = "10"
+                sort = "code", type = "ASC", search = "", page = "0", limit = "10"
             } = req.query;
             page = parseInt(page);
             limit = parseInt(limit)
             let start = 0 + (page - 1) * limit;
             let end = page * limit;
+            if(page == 0) {
+                limit = await Flight.count();
+                start = 0;
+                end = 1 * limit;
+            }
             const allFlight = await Flight.findAndCountAll({
                 where: {
                     code: {
