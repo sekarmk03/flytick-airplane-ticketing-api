@@ -113,6 +113,8 @@ module.exports = {
                 }
             });
             const flight = await Flight.findOne({where: {id: schedule.get().flight_id}});
+            const fromAirport = await Airport.findOne({where: {id: schedule.from_airport}});
+            const toAirport = await Airport.findOne({where: {id: schedule.to_airport}});
             if (!schedule) {
                 return res.status(400).json({
                     status: false,
@@ -123,7 +125,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get schedule success',
-                data: {schedule, flight}
+                data: {schedule, flight, fromAirport, toAirport}
             });
         } catch (err) {
             next(err)
